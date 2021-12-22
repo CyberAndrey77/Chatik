@@ -1,0 +1,12 @@
+﻿<prism:PrismApplication x:Class="Client.App"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:local="clr-namespace:Client"
+                        xmlns:prism="http://prismlibrary.com/" >
+    <Application.Resources>
+        <Button x:Key="sendButton" Height="30px" Width="50px"  Content="Send" Background="AliceBlue"></Button>
+        <TextBox x:Key="sendMessage" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+
+    </Application.Resources>
+</prism:PrismApplication>
+

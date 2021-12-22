@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="Client.Views.CreateDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Views"
+             xmlns:viewModels="clr-namespace:Client.ViewModels"
+             mc:Ignorable="d" 
+             Height="450" Width="238"
+             d:DataContext="{d:DesignInstance viewModels:CreateDialogViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Выберите пользователя"/>
+        <ListBox Grid.Row="1" SelectedItem="{Binding SelectedUser}" ItemsSource="{Binding Users, Mode=OneWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <Label Content="{Binding Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Button Grid.Row="2" Content="Написать" Height="30" Command="{Binding CloseDialogCommand}"/>
+    </Grid>
+</UserControl>
