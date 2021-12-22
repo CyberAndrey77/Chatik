@@ -8,20 +8,30 @@ namespace Common.EventArgs
 {
     public class MessageReceivedEventArgs : System.EventArgs
     {
-        public string Name { get; set; }
+        public string SenderName { get; set; }
         public string Message { get; set; }
         public DateTime Time { get; set; }
+
+        public string ReceiverName { get; set; }
         
-        public MessageReceivedEventArgs(string name, string message)
+        public MessageReceivedEventArgs(string senderName, string message)
         {
-            Name = name;
+            SenderName = senderName;
             Message = message;
         }
 
-        public MessageReceivedEventArgs(string name, string message, DateTime time)
+        public MessageReceivedEventArgs(string senderName, string message, DateTime time)
         {
-            Name = name;
+            SenderName = senderName;
             Message = message;
+            Time = time;
+        }
+
+        public MessageReceivedEventArgs(string senderName, string message, string receiverName, DateTime time)
+        {
+            SenderName = senderName;
+            Message = message;
+            ReceiverName = receiverName;
             Time = time;
         }
     }

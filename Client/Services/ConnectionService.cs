@@ -84,7 +84,7 @@ namespace Client.Services
 
         private void OnGetMessage(object sender, MessageReceivedEventArgs e)
         {
-            MessageEvent?.Invoke(this, new MessageEventArgs(e.Name, e.Message, e.Time));
+            MessageEvent?.Invoke(this, new MessageEventArgs(e.SenderName, e.Message, e.Time));
         }
 
         private void OnUsersTaken(object sender, NetWork.UsersTakenEventArgs e)

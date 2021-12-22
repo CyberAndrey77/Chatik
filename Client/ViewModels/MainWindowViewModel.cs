@@ -19,7 +19,7 @@ namespace Client.ViewModels
     {
         private string _title = "Chatik";
         private object _currentContentVM;
-        private ChatViewModel _chatViewModel;
+        private ChatControlViewModel _chatControlViewModel;
         private LoginViewModel _loginViewModel;
         private IConnectionService _connectionService;
         private readonly IMessageService _messageService;
@@ -59,8 +59,8 @@ namespace Client.ViewModels
         {
             if (e.IsConnectSuccess)
             {
-                _chatViewModel = new ChatViewModel(_messageService, _connectionService, _dialogService);
-                CurrentContentVM = _chatViewModel;
+                _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _dialogService);
+                CurrentContentVM = _chatControlViewModel;
             }
             else
             {

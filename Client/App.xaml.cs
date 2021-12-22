@@ -24,7 +24,7 @@ namespace Client
             containerRegistry.RegisterDialog<CreateDialogView, CreateDialogViewModel>("CreateDialog");
             containerRegistry.RegisterSingleton<IMessageService, MessageService>();
             containerRegistry.RegisterSingleton<IConnectionService, ConnectionService>();
-            containerRegistry.Register<ChatViewModel>();
+            containerRegistry.Register<ChatControlViewModel>();
             containerRegistry.Register<MainWindowViewModel>();
         }
 
@@ -32,7 +32,7 @@ namespace Client
         {
             base.ConfigureViewModelLocator();
 
-            BindViewModelToView<ChatViewModel, ChatView>();
+            BindViewModelToView<ChatControlViewModel, ChatControlView>();
             BindViewModelToView<MainWindowViewModel, MainWindow>();
             BindViewModelToView<LoginView, LoginViewModel>();
         }

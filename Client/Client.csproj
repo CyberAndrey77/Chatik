@@ -77,9 +77,10 @@
     <Compile Include="Services\IConnectionService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Services\EventArgs\GetUsersEventArgs.cs" />
+    <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="ViewModels\CreateDialogViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
-    <Compile Include="ViewModels\ChatViewModel.cs" />
+    <Compile Include="ViewModels\ChatControlViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="Views\CreateDialogView.xaml.cs">
       <DependentUpon>CreateDialogView.xaml</DependentUpon>
@@ -87,8 +88,8 @@
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ChatView.xaml.cs">
-      <DependentUpon>ChatView.xaml</DependentUpon>
+    <Compile Include="Views\ChatControlView.xaml.cs">
+      <DependentUpon>ChatControlView.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\CreateDialogView.xaml">
       <SubType>Designer</SubType>
@@ -111,7 +112,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\ChatView.xaml">
+    <Page Include="Views\ChatControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

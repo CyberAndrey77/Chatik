@@ -3,11 +3,11 @@
 namespace Client.Views
 {
     /// <summary>
-    /// Логика взаимодействия для ChatView.xaml
+    /// Логика взаимодействия для ChatControlView.xaml
     /// </summary>
-    public partial class ChatView : UserControl
+    public partial class ChatControlView : UserControl
     {
-        public ChatView()
+        public ChatControlView()
         {
             InitializeComponent();
         }

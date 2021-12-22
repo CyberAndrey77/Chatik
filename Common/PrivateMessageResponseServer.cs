@@ -28,7 +28,7 @@ namespace Common
         {
             var container = new MessageContainer
             {
-                Identifier = nameof(ClientMessageResponse),
+                Identifier = nameof(PrivateMessageResponseServer),
                 Payload = this
             };
 

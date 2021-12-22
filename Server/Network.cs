@@ -39,7 +39,11 @@ namespace Server
 
         private void OnMessage(object sender, MessageReceivedEventArgs e)
         {
-            _messageHandler($"{e.Time}: {e.Name}: {e.Message}");
+            if (e.ReceiverName == string.Empty)
+            {
+                _messageHandler($"{e.Time}: {e.SenderName}: {e.Message}");
+            }
+            _messageHandler($"{e.Time}: {e.SenderName}: {e.Message}: {e.ReceiverName}");
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)

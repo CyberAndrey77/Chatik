@@ -109,7 +109,7 @@ namespace Server
 
             //MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connection.Login, clientMessage.Message, DateTime.Now));
 
-            //SendMessageAll(new ServerMessageResponse(clientMessage.Name, clientMessage.Message, DateTime.Now).GetContainer(), id);
+            //SendMessageAll(new ServerMessageResponse(clientMessage.SenderName, clientMessage.Message, DateTime.Now).GetContainer(), id);
         }
 
         public void SendMessageAll(MessageContainer container, Guid id)
@@ -142,7 +142,7 @@ namespace Server
 
             SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, privateMessageResponseClient.MessageId).GetContainer(), id);
 
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connection.Login, privateMessageResponseClient.Message, DateTime.Now));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connection.Login, privateMessageResponseClient.Message, privateMessageResponseClient.ReceiverName, DateTime.Now));
 
             SendMessageAll(new PrivateMessageResponseServer(privateMessageResponseClient.SenderName, privateMessageResponseClient.Message, privateMessageResponseClient.ReceiverName, DateTime.Now).GetContainer(), id);
         }

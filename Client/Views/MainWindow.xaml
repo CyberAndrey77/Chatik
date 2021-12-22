@@ -12,8 +12,8 @@
         Title="{Binding Title}" Height="350" Width="525"
         >
     <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModels:ChatViewModel}">
-            <view:ChatView/>
+        <DataTemplate DataType="{x:Type viewModels:ChatControlViewModel}">
+            <view:ChatControlView/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:LoginViewModel}">
             <view:LoginView/>
