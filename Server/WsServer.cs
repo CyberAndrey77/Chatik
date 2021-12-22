@@ -144,7 +144,9 @@ namespace Server
 
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connection.Login, privateMessageResponseClient.Message, privateMessageResponseClient.ReceiverName, DateTime.Now));
 
-            SendMessageAll(new PrivateMessageResponseServer(privateMessageResponseClient.SenderName, privateMessageResponseClient.Message, privateMessageResponseClient.ReceiverName, DateTime.Now).GetContainer(), id);
+            var receiver = _connections.First(x => x.Value.Login == privateMessageResponseClient.ReceiverName);
+
+            SendMessageToClient(new PrivateMessageResponseServer(privateMessageResponseClient.SenderName, privateMessageResponseClient.Message, privateMessageResponseClient.ReceiverName, DateTime.Now).GetContainer(), receiver.Key);
         }
     }
 }

@@ -188,12 +188,12 @@ namespace Client.ViewModels
                 {
                     Users.Add(new User(e.Login));
 
-                    ChatViewModels[0].Users.Add(new User(e.Login));
+                   // ChatViewModels[0].Users.Add(new User(e.Login));
                 }
                 else
                 {
 
-                    ChatViewModels[0].Users.Remove(Users.First(x => x.Name == e.Login));
+                    //ChatViewModels[0].Users.Remove(Users.First(x => x.Name == e.Login));
                     Users.Remove(Users.First(x => x.Name == e.Login));
                 }
                 
