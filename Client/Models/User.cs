@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace Client.Models
 {
-    public class User
+    public class User:ICloneable
     {
         public string Name { get; set; }
 
         public User(string name)
         {
             Name = name;
+        }
+
+        public object Clone()
+        {
+            return new User(Name);
         }
     }
 }

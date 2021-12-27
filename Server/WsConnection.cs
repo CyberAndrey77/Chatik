@@ -57,23 +57,23 @@ namespace Server
                     //Login = messageRequest.Login;
                     _wsServer.HandleConnect(Id, messageRequest);
                     break;
-                case nameof(ClientMessageResponse):
-                    var messageResponse = ((JObject)message.Payload).ToObject(typeof(ClientMessageResponse)) as ClientMessageResponse;
-                    if (messageResponse == null)
-                    {
-                        throw new ArgumentNullException();
-                    }
-                    _wsServer.HandleMessage(Id, messageResponse);
-                    break;
-                case nameof(CreateDialogResponse):
-                    var createDialogResponse = ((JObject) message.Payload).ToObject(typeof(CreateDialogResponse)) as CreateDialogResponse;
+                //case nameof(ClientMessageResponse):
+                //    var messageResponse = ((JObject)message.Payload).ToObject(typeof(ClientMessageResponse)) as ClientMessageResponse;
+                //    if (messageResponse == null)
+                //    {
+                //        throw new ArgumentNullException();
+                //    }
+                //    _wsServer.HandleMessage(Id, messageResponse);
+                //    break;
+                case nameof(CreateChatResponse):
+                    var createDialogResponse = ((JObject) message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
 
                     if (createDialogResponse == null)
                     {
                         throw new ArgumentNullException();
                     }
 
-                    _wsServer.CreateDialog(createDialogResponse);
+                    _wsServer.CreateChat(Id, createDialogResponse);
                     break;
                 case nameof(PrivateMessageResponseClient):
                     var privateMessageResponse = ((JObject)message.Payload).ToObject(typeof(PrivateMessageResponseClient)) as PrivateMessageResponseClient;
@@ -83,6 +83,15 @@ namespace Server
                         throw new ArgumentNullException();
                     }
                     _wsServer.HandleMessageToClient(Id, privateMessageResponse);
+                    break;
+                case nameof(ChatMessageResponse):
+                    var chatMessageResponse = ((JObject)message.Payload).ToObject(typeof(ChatMessageResponse)) as ChatMessageResponse;
+                    if (chatMessageResponse == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+
+                    _wsServer.HandleChatMessage(Id, chatMessageResponse);
                     break;
                 default:
                     throw new ArgumentNullException();

@@ -84,9 +84,25 @@ namespace Server
             SendMessageToClient(new ConnectedUser(connectionUsers).GetContainer(), id);
         }
 
-        internal void CreateDialog(CreateDialogResponse createDialogResponse)
+        internal void CreateChat(Guid id, CreateChatResponse createChatResponse)
         {
-            
+            //TODO тут занесение в бд происходит
+
+            //TODO ответ клинту
+            //var invented = _connections.First(x => x.Value.Login == createChatResponse.CreatorName);
+            //SendMessageToClient(
+            //    new CreateChatResponse(createChatResponse.ChatName, createChatResponse.CreatorName,
+            //        createChatResponse.InventedNames).GetContainer(), invented.Key);
+
+            foreach (var connection in _connections)
+            {
+                if (createChatResponse.InventedNames.Contains(connection.Value.Login))
+                {
+                    SendMessageToClient(
+                        new CreateChatResponse(createChatResponse.ChatName, createChatResponse.CreatorName,
+                            createChatResponse.InventedNames, DateTime.Now).GetContainer(), connection.Key);
+                }
+            }
         }
 
         private void SendMessageToClient(MessageContainer messageContainer, Guid id)
@@ -98,8 +114,24 @@ namespace Server
             connection.Send(messageContainer);
         }
 
-        public void HandleMessage(Guid id, ClientMessageResponse clientMessage)
+        public void HandleChatMessage(Guid id, ChatMessageResponse chatMessage)
         {
+            if (!_connections.TryGetValue(id, out WsConnection connection))
+            {
+                return;
+            }
+
+            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, chatMessage.MessageId).GetContainer(), id);
+
+            foreach (var userConnection in _connections)
+            {
+                if (chatMessage.Users.Contains(userConnection.Value.Login))
+                {
+                    SendMessageToClient(
+                        new ChatMessageResponseServer(chatMessage.SenderName, chatMessage.Message,
+                            chatMessage.ChatName, chatMessage.Users, DateTime.Now).GetContainer(), userConnection.Key);
+                }
+            }
             //if (!_connections.TryGetValue(id, out WsConnection connection))
             //{
             //    return;

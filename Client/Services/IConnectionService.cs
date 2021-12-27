@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Client.Models;
 using Client.NetWork;
 using Client.NetWork.EventArgs;
 using Client.Services.EventArgs;
@@ -15,7 +16,11 @@ namespace Client.Services
         EventHandler<GetUserEventArgs> UserEvent { get; set; }
         EventHandler<PrivateMessageEventArgs> GetPrivateMessageEvent { get; set; }
 
-        void CreateDialog(string creator, string invented);
+        EventHandler<ChatEventArgs> ChatCreated { get; set; }
+
+        EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
+
+        void CreateChat(string chatName, string creator, List<string> invented);
 
         EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
         string Name { get; set; }
@@ -26,5 +31,6 @@ namespace Client.Services
         void Disconnect();
         void SendMessage(string name, string message);
         void SendPrivateMessage(string senderName, string message, string receiverName);
+        void SendChatMessage(string name, string text, string chatName, List<string> users);
     }
 }

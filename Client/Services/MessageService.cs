@@ -11,6 +11,7 @@ namespace Client.Services
         private readonly IConnectionService _connectionService;
         public EventHandler<MessageEventArgs> MessageEvent { get; set; }
         public EventHandler<PrivateMessageEventArgs> GetPrivateMessageEvent { get; set; }
+        public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
 
         public void SendMessage(string name, string message)
         {
@@ -22,6 +23,12 @@ namespace Client.Services
             _connectionService = connectionService;
             _connectionService.MessageEvent += GetMessage;
             _connectionService.GetPrivateMessageEvent += GetPrivateMessage;
+            _connectionService.ChatMessageEvent += OnChatMessage;
+        }
+
+        private void OnChatMessage(object sender, ChatMessageEventArgs e)
+        {
+            ChatMessageEvent?.Invoke(this, e);
         }
 
         private void GetPrivateMessage(object sender, PrivateMessageEventArgs e)
@@ -37,6 +44,11 @@ namespace Client.Services
         public void SendPrivateMessage(string senderName, string message, string receiverName)
         {
             _connectionService.SendPrivateMessage(senderName, message, receiverName);
+        }
+
+        public void SendChatMessage(string name, string text, string chatName, List<string> users)
+        {
+            _connectionService.SendChatMessage(name, text, chatName, users);
         }
     }
 }

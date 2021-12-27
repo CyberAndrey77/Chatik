@@ -10,6 +10,6 @@ namespace Client.Services
     public interface IChatService
     {
         EventHandler<ChatEventArgs> ChatEvent { get; set; }
-        void CreateDialog(string creator, string invented);
+        void CreateChat(string chatName,string creator, List<string> invented);
     }
 }

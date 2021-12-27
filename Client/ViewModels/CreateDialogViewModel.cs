@@ -29,7 +29,7 @@ namespace Client.ViewModels
         public DelegateCommand CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand(CloseDialog));
         
-        private string _title = "Notification";
+        private string _title = "Создание диалога";
         public string Title
         {
             get { return _title; }

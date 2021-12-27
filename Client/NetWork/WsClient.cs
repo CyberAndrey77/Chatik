@@ -4,7 +4,10 @@ using Common.EventArgs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using Client.Models;
 using Client.NetWork.EventArgs;
+using Client.Services.EventArgs;
 
 namespace Client.NetWork
 {
@@ -25,6 +28,8 @@ namespace Client.NetWork
         public event EventHandler<UserStatusChangeEventArgs> UserEvent;
         public event EventHandler<MessageRequestEvent> MessageRequestEvent;
         public event EventHandler<PrivateMessageEventArgs> PrivateMessageEvent;
+        public event EventHandler<ChatEventArgs> CreatedChat;
+        public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
 
         public WsClient()
         {
@@ -115,10 +120,32 @@ namespace Client.NetWork
                     PrivateMessageEvent?.Invoke(this, new PrivateMessageEventArgs
                         (privateMessageResponseServer.SenderName, privateMessageResponseServer.Message, privateMessageResponseServer.ReceiverName, privateMessageResponseServer.Time));
                     break;
+                case nameof(CreateChatResponse):
+                    var createChatResponse = ((JObject)message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
+                    if (createChatResponse == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    CreatedChat?.Invoke(this, new ChatEventArgs(createChatResponse.ChatName, createChatResponse.CreatorName, createChatResponse.InventedNames, createChatResponse.Time));
+                    break;
+                case nameof(ChatMessageResponseServer):
+                    var chatMessageResponseServer = ((JObject)message.Payload).ToObject(typeof(ChatMessageResponseServer)) as ChatMessageResponseServer;
+                    if (chatMessageResponseServer == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    ChatMessageEvent?.Invoke(this, new ChatMessageEventArgs(chatMessageResponseServer.SenderName, chatMessageResponseServer.Message, chatMessageResponseServer.ChatName, chatMessageResponseServer.Users, chatMessageResponseServer.Time));
+                    break;
                 default:
                     throw new ArgumentNullException();
             }
 
+        }
+
+        internal void SendChatMessage(string name, string text, string chatName, List<string> users)
+        {
+            _sendQueue.Enqueue(new ChatMessageResponse(name, text, chatName, users).GetContainer());
+            Send();
         }
 
         internal void SendPrivateMessage(string senderName, string message, string receiverName)
@@ -127,9 +154,9 @@ namespace Client.NetWork
             Send();
         }
 
-        internal void CreateDialog(string creator, string invented)
+        internal void CreateChat(string chatName, string creator, List<string> invented)
         {
-            _sendQueue.Enqueue(new CreateDialogResponse(creator, invented).GetContainer());
+            _sendQueue.Enqueue(new CreateChatResponse(chatName, creator, invented, DateTime.Now).GetContainer());
             Send();
         }
 

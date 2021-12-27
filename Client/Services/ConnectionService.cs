@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Client.Models;
 using Client.NetWork;
 using Client.NetWork.EventArgs;
 using Client.Services.EventArgs;
@@ -24,6 +25,8 @@ namespace Client.Services
         public EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
 
         public EventHandler<PrivateMessageEventArgs> GetPrivateMessageEvent { get; set; }
+        public EventHandler<ChatEventArgs> ChatCreated { get; set; }
+        public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
 
         public string Name { get; set; }
         public string IpAddress { get; set; }
@@ -38,8 +41,20 @@ namespace Client.Services
             _wsClient.UserEvent += OnUserStatusChange;
             _wsClient.MessageRequestEvent += OnMessageStatusChange;
             _wsClient.PrivateMessageEvent += GetPrivateMessage;
+            _wsClient.CreatedChat += OnChatCreated;
+            _wsClient.ChatMessageEvent += OnChatMessage;
             _wsClient.Connect(IpAddress, Port);
             _wsClient.Login(Name);
+        }
+
+        private void OnChatMessage(object sender, ChatMessageEventArgs e)
+        {
+            ChatMessageEvent?.Invoke(this, e);
+        }
+
+        private void OnChatCreated(object sender, ChatEventArgs e)
+        {
+            ChatCreated?.Invoke(this, e);
         }
 
         private void GetPrivateMessage(object sender, PrivateMessageEventArgs e)
@@ -102,14 +117,19 @@ namespace Client.Services
             MessageStatusChangeEvent?.Invoke(this, e);
         }
 
-        public void CreateDialog(string creator, string invented)
+        public void CreateChat(string chatName, string creator, List<string> invented)
         {
-            _wsClient.CreateDialog(creator, invented);
+            _wsClient.CreateChat(chatName, creator, invented);
         }
 
         public void SendPrivateMessage(string senderName, string message, string receiverName)
         {
             _wsClient.SendPrivateMessage(senderName, message, receiverName);
+        }
+
+        public void SendChatMessage(string name, string text, string chatName, List<string> users)
+        {
+            _wsClient.SendChatMessage(name, text, chatName, users);
         }
     }
 }
