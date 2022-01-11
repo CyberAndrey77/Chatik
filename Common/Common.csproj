@@ -45,6 +45,7 @@
     <Compile Include="ChatMessageResponse.cs" />
     <Compile Include="ConnectedUser.cs" />
     <Compile Include="ConnectionRequest.cs" />
+    <Compile Include="CreateChatRequest.cs" />
     <Compile Include="CreateChatResponse.cs" />
     <Compile Include="Enums\ConnectionRequestCode.cs" />
     <Compile Include="ConnectionResponse.cs" />

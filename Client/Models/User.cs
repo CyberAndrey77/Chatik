@@ -8,16 +8,18 @@ namespace Client.Models
 {
     public class User:ICloneable
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
-        public User(string name)
+        public User(Guid id, string name)
         {
+            Id = id;
             Name = name;
         }
 
         public object Clone()
         {
-            return new User(Name);
+            return new User(Id, Name);
         }
     }
 }

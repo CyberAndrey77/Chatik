@@ -19,10 +19,13 @@ namespace Client.Services
         EventHandler<ChatEventArgs> ChatCreated { get; set; }
 
         EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
+        EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
 
-        void CreateChat(string chatName, string creator, List<string> invented);
+        void CreateChat(string chatName, string creator, List<Guid> invented);
 
         EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
+
+        Guid Id { get; set; }
         string Name { get; set; }
         string IpAddress { get; set; }
         int Port { get; set; }
@@ -30,7 +33,7 @@ namespace Client.Services
         void ConnectToServer();
         void Disconnect();
         void SendMessage(string name, string message);
-        void SendPrivateMessage(string senderName, string message, string receiverName);
-        void SendChatMessage(string name, string text, string chatName, List<string> users);
+        void SendPrivateMessage(Guid senderUserId, string message, Guid receiverUSerId);
+        void SendChatMessage(Guid name, string text, string chatName, List<Guid> userIds);
     }
 }

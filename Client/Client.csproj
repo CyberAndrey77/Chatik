@@ -64,6 +64,7 @@
     <Compile Include="NetWork\EventArgs\PrivateMessageEventArgs.cs" />
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />
+    <Compile Include="NetWork\EventArgs\UserIdEventArgs.cs" />
     <Compile Include="NetWork\UsersTakenEventArgs.cs" />
     <Compile Include="NetWork\WsClient.cs" />
     <Compile Include="Services\ChatService.cs" />

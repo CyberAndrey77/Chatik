@@ -59,7 +59,7 @@ namespace Server
             //поиск поьзователей
             if (_connections.Values.Any(x => x.Login == response.Login))
             {
-                SendMessageToClient(new ConnectionRequest(response.Login, ConnectionRequestCode.LoginIsAlreadyTaken).GetContainer(), id);
+                SendMessageToClient(new ConnectionRequest(response.Login, ConnectionRequestCode.LoginIsAlreadyTaken, id).GetContainer(), id);
                 return;
             }
 
@@ -70,16 +70,16 @@ namespace Server
 
             connection.Login = response.Login;
             ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(response.Login, ConnectionRequestCode.Connect));
-            SendMessageAll(new ConnectionRequest(response.Login, ConnectionRequestCode.Connect).GetContainer(), id);
+            SendMessageAll(new ConnectionRequest(response.Login, ConnectionRequestCode.Connect, id).GetContainer(), id);
 
-            var connectionUsers = new List<string>();
+            var connectionUsers = new Dictionary<Guid, string>();
             foreach (var user in _connections)
             {
                 if (user.Value.Login == null)
                 {
                     continue;
                 }
-                connectionUsers.Add(user.Value.Login);
+                connectionUsers.Add(user.Key, user.Value.Login);
             }
             SendMessageToClient(new ConnectedUser(connectionUsers).GetContainer(), id);
         }
@@ -89,19 +89,16 @@ namespace Server
             //TODO тут занесение в бд происходит
 
             //TODO ответ клинту
-            //var invented = _connections.First(x => x.Value.Login == createChatResponse.CreatorName);
-            //SendMessageToClient(
-            //    new CreateChatResponse(createChatResponse.ChatName, createChatResponse.CreatorName,
-            //        createChatResponse.InventedNames).GetContainer(), invented.Key);
+            SendMessageToClient(new CreateChatRequest(createChatResponse.ChatName, createChatResponse.CreatorName,
+                DateTime.Now).GetContainer(), createChatResponse.UserIds[0]);
 
-            foreach (var connection in _connections)
+
+
+            for (int i = 1; i < createChatResponse.UserIds.Count; i++)
             {
-                if (createChatResponse.InventedNames.Contains(connection.Value.Login))
-                {
-                    SendMessageToClient(
-                        new CreateChatResponse(createChatResponse.ChatName, createChatResponse.CreatorName,
-                            createChatResponse.InventedNames, DateTime.Now).GetContainer(), connection.Key);
-                }
+                SendMessageToClient(
+                    new CreateChatResponse(createChatResponse.ChatName, createChatResponse.CreatorName,
+                        createChatResponse.UserIds, DateTime.Now).GetContainer(), createChatResponse.UserIds[i]);
             }
         }
 
@@ -116,42 +113,19 @@ namespace Server
 
         public void HandleChatMessage(Guid id, ChatMessageResponse chatMessage)
         {
-            if (!_connections.TryGetValue(id, out WsConnection connection))
-            {
-                return;
-            }
-
             SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, chatMessage.MessageId).GetContainer(), id);
 
-            foreach (var userConnection in _connections)
+            foreach (var userId in chatMessage.UserIds.Where(userId => userId != id))
             {
-                if (chatMessage.Users.Contains(userConnection.Value.Login))
-                {
-                    SendMessageToClient(
-                        new ChatMessageResponseServer(chatMessage.SenderName, chatMessage.Message,
-                            chatMessage.ChatName, chatMessage.Users, DateTime.Now).GetContainer(), userConnection.Key);
-                }
+                SendMessageToClient(
+                    new ChatMessageResponseServer(userId, chatMessage.Message, chatMessage.ChatName, chatMessage.UserIds, DateTime.Now).GetContainer(), userId);
             }
-            //if (!_connections.TryGetValue(id, out WsConnection connection))
-            //{
-            //    return;
-            //}
-
-            //SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, clientMessage.MessageId).GetContainer(), id);
-
-            //MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connection.Login, clientMessage.Message, DateTime.Now));
-
-            //SendMessageAll(new ServerMessageResponse(clientMessage.SenderName, clientMessage.Message, DateTime.Now).GetContainer(), id);
         }
 
         public void SendMessageAll(MessageContainer container, Guid id)
         {
             foreach (var connect in _connections)
             {
-                if (connect.Key == id)
-                {
-                    continue;
-                }
                 connect.Value.Send(container);
             }
         }
@@ -160,25 +134,29 @@ namespace Server
         {
             if (_connections.TryRemove(id, out WsConnection connection) && connection.Login != null)
             {
-                SendMessageAll(new ConnectionRequest(connection.Login, ConnectionRequestCode.Disconnect).GetContainer(), id);
+                SendMessageAll(new ConnectionRequest(connection.Login, ConnectionRequestCode.Disconnect, id).GetContainer(), id);
                 ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(connection.Login, ConnectionRequestCode.Disconnect));
             }
         }
 
         public void HandleMessageToClient(Guid id, PrivateMessageResponseClient privateMessageResponseClient)
         {
-            if (!_connections.TryGetValue(id, out WsConnection connection))
+            if (!_connections.TryGetValue(id, out WsConnection senderUser))
+            {
+                return;
+            }
+
+            if (!_connections.TryGetValue(privateMessageResponseClient.ReceiverUserId, out WsConnection receiverUser))
             {
                 return;
             }
 
             SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, privateMessageResponseClient.MessageId).GetContainer(), id);
 
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connection.Login, privateMessageResponseClient.Message, privateMessageResponseClient.ReceiverName, DateTime.Now));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(senderUser.Login, privateMessageResponseClient.Message, receiverUser.Login, DateTime.Now));
 
-            var receiver = _connections.First(x => x.Value.Login == privateMessageResponseClient.ReceiverName);
-
-            SendMessageToClient(new PrivateMessageResponseServer(privateMessageResponseClient.SenderName, privateMessageResponseClient.Message, privateMessageResponseClient.ReceiverName, DateTime.Now).GetContainer(), receiver.Key);
+            SendMessageToClient(new PrivateMessageResponseServer(privateMessageResponseClient.SenderUserId, privateMessageResponseClient.Message,
+                privateMessageResponseClient.ReceiverUserId, DateTime.Now).GetContainer(), receiverUser.Id);
         }
     }
 }

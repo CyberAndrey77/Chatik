@@ -17,10 +17,13 @@ namespace Common
             set;
         }
 
-        public ConnectionRequest(string login, ConnectionRequestCode codeConnected)
+        public Guid Id { get; set; }
+
+        public ConnectionRequest(string login, ConnectionRequestCode codeConnected, Guid id)
         {
             Login = login;
             CodeConnected = codeConnected;
+            Id = id;
         }
 
         public MessageContainer GetContainer()

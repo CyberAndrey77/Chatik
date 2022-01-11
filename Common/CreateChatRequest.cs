@@ -1,40 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Common
 {
-    public class CreateChatResponse
+    public class CreateChatRequest
     {
         public string ChatName { get; set; }
         public string CreatorName { get; set; }
-        public List<Guid> UserIds { get; set; }
-
         public DateTime Time { get; set; }
 
-        //public CreateChatResponse(string chatName, string creator, List<string> user)
-        //{
-        //    ChatName = chatName;
-        //    CreatorName = creator;
-        //    UserIds = user;
-        //}
-        
-
-        public CreateChatResponse(string chatName, string creator, List<Guid> user, DateTime time)
+        public CreateChatRequest(string chatName, string creatorName, DateTime time)
         {
             ChatName = chatName;
-            CreatorName = creator;
-            UserIds = user;
+            CreatorName = creatorName;
             Time = time;
         }
-
+        
         public MessageContainer GetContainer()
         {
             var container = new MessageContainer
             {
-                Identifier = nameof(CreateChatResponse),
+                Identifier = nameof(CreateChatRequest),
                 Payload = this
             };
 

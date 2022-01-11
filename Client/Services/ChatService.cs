@@ -10,9 +10,10 @@ namespace Client.Services
     public class ChatService : IChatService
     {
         private readonly IConnectionService _connectionService;
-        public EventHandler<ChatEventArgs> ChatEvent { get; set; }
+        public EventHandler<ChatEventArgs> ChatCreatedEvent { get; set; }
+        public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
 
-        public void CreateChat(string chatName, string creator, List<string> invented)
+        public void CreateChat(string chatName, string creator, List<Guid> invented)
         {
             _connectionService.CreateChat(chatName, creator, invented);
         }
@@ -21,11 +22,19 @@ namespace Client.Services
         {
             _connectionService = connectionService;
             _connectionService.ChatCreated += OnChatCreated;
+            _connectionService.ChatIsCreatedEvent += OnChatIsCreated;
+        }
+
+        private void OnChatIsCreated(object sender, ChatEventArgs e)
+        {
+            ChatIsCreatedEvent?.Invoke(this, e);
         }
 
         private void OnChatCreated(object sender, ChatEventArgs e)
         {
-            ChatEvent?.Invoke(this, e);
+            ChatCreatedEvent?.Invoke(this, e);
         }
+
+
     }
 }

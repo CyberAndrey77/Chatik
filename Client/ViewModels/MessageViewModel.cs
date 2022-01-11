@@ -90,7 +90,7 @@ namespace Client.ViewModels
         {
             //Time = message.Time;
             //Text = message.Text;
-            //SenderName = message.SenderName;
+            //SenderUserId = message.SenderUserId;
 
             //Message = message;
             Id = Guid.NewGuid();

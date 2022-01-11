@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Client.Services.EventArgs
 {
     public class GetUsersEventArgs : System.EventArgs
     {
-        public List<string> Users { get; set; }
+        public Dictionary<Guid, string> Users { get; set; }
 
-        public GetUsersEventArgs(List<string> users)
+        public GetUsersEventArgs(Dictionary<Guid, string> users)
         {
             Users = users;
         }

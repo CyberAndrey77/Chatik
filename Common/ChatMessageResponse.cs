@@ -10,16 +10,16 @@ namespace Common
     {
         public Guid MessageId { get; }
         public string Message { get; set; }
-        public string SenderName { get; set; }
+        public Guid SenderUserId { get; set; }
         public string ChatName { get; set; }
-        public List<string> Users { get; set; }
+        public List<Guid> UserIds { get; set; }
 
-        public ChatMessageResponse(string senderName, string message, string chatName, List<string> users)
+        public ChatMessageResponse(Guid senderUserId, string message, string chatName, List<Guid> userIds)
         {
             Message = message;
-            SenderName = senderName;
+            SenderUserId = senderUserId;
             ChatName = chatName;
-            Users = users;
+            UserIds = userIds;
             MessageId = Guid.NewGuid();
         }
 

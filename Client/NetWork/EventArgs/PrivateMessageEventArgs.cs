@@ -8,16 +8,19 @@ namespace Client.NetWork.EventArgs
 {
     public class PrivateMessageEventArgs : System.EventArgs
     {
-        public string SenderName { get; set; }
+        //public string SenderUserId { get; set; }
+        public Guid SenderId { get; set; }
         public string Message { get; set; }
-        public string ReceiverName { get; set; }
+        //public string ReceiverName { get; set; }
+
+        public Guid ReceiverId { get; set; }
         public DateTime Time { get; set; }
 
-        public PrivateMessageEventArgs(string senderName, string message, string receiverName, DateTime time)
+        public PrivateMessageEventArgs(Guid senderId, string message, Guid receiverId, DateTime time)
         {
-            SenderName = senderName;
+            SenderId = senderId;
+            ReceiverId = receiverId;
             Message = message;
-            ReceiverName = receiverName;
             Time = time;
         }
     }

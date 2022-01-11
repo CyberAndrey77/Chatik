@@ -12,14 +12,22 @@ namespace Client.Services.EventArgs
         public string CreatorName { get; set; }
 
         public DateTime Time { get; set; }
-        public List<string> InventedNames { get; set; }
+        public List<Guid> UserIds { get; set; }
 
-        public ChatEventArgs(string chatName, string creator, List<string> inventedList, DateTime time)
+        public ChatEventArgs(string chatName, string creatorName, List<Guid> userIds, DateTime time)
         {
             ChatName = chatName;
-            CreatorName = creator;
-            InventedNames = inventedList;
+            CreatorName = creatorName;
+            UserIds = userIds;
             Time = time;
+        }
+
+        public ChatEventArgs(string chatName, string creatorName, DateTime time)
+        {
+            ChatName = chatName;
+            CreatorName = creatorName;
+            Time = time;
+            UserIds = new List<Guid>();
         }
     }
 }

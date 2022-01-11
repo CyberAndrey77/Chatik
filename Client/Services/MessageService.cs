@@ -41,14 +41,14 @@ namespace Client.Services
             MessageEvent?.Invoke(this, new MessageEventArgs(e.Name, e.Message, e.Time));
         }
 
-        public void SendPrivateMessage(string senderName, string message, string receiverName)
+        public void SendPrivateMessage(Guid senderUserId, string message, Guid receiverUSerId)
         {
-            _connectionService.SendPrivateMessage(senderName, message, receiverName);
+            _connectionService.SendPrivateMessage(senderUserId, message, receiverUSerId);
         }
 
-        public void SendChatMessage(string name, string text, string chatName, List<string> users)
+        public void SendChatMessage(Guid senderUserId, string text, string chatName, List<Guid> userIds)
         {
-            _connectionService.SendChatMessage(name, text, chatName, users);
+            _connectionService.SendChatMessage(senderUserId, text, chatName, userIds);
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Client.ViewModels
         public virtual void OnDialogOpened(IDialogParameters parameters)
         {
             parameters.TryGetValue("users", out ObservableCollection<User> users);
-            //Users = users;
+            //UserIds = users;
             Users = new ObservableCollection<SelectedItemViewModel>();
             foreach (var user in users)
             {
