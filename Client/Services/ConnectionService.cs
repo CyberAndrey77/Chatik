@@ -25,8 +25,10 @@ namespace Client.Services
         public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
         public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
 
+        public EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
+
         public string Name { get; set; }
-        public Guid Id{ get; set; }
+        public int Id{ get; set; }
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
@@ -43,8 +45,14 @@ namespace Client.Services
             _wsClient.ChatMessageEvent += OnChatMessage;
             _wsClient.GetUserIdEvent += OnGetUserId;
             _wsClient.ChatIsCreated += ChatIsCreated;
+            _wsClient.GetUserChats += GetChats;
             _wsClient.Connect(IpAddress, Port);
             _wsClient.Login(Name);
+        }
+
+        private void GetChats(object sender, UserChatEventArgs<Chat> e)
+        {
+            GetUserChats?.Invoke(this, e);
         }
 
         private void ChatIsCreated(object sender, ChatEventArgs e)
@@ -127,17 +135,17 @@ namespace Client.Services
             MessageStatusChangeEvent?.Invoke(this, e);
         }
 
-        public void CreateChat(string chatName, string creator, List<Guid> invented)
+        public void CreateChat(string chatName, string creator, List<int> invented)
         {
             _wsClient.CreateChat(chatName, creator, invented);
         }
 
-        public void SendPrivateMessage(Guid senderUserId, string message, Guid receiverUSerId)
+        public void SendPrivateMessage(int senderUserId, string message, int receiverUSerId)
         {
             _wsClient.SendPrivateMessage(senderUserId, message, receiverUSerId);
         }
 
-        public void SendChatMessage(Guid name, string text, string chatName, List<Guid> userIds)
+        public void SendChatMessage(int name, string text, string chatName, List<int> userIds)
         {
             _wsClient.SendChatMessage(name, text, chatName, userIds);
         }

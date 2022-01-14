@@ -33,6 +33,7 @@ namespace Client.NetWork
         public event EventHandler<ChatEventArgs> CreatedChat;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<ChatEventArgs> ChatIsCreated;
+        public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
 
         public WsClient()
         {
@@ -47,7 +48,10 @@ namespace Client.NetWork
             _socket.OnClose += OnClose;
             _socket.OnMessage += OnMessage;
             _socket.Connect();
-            _socket.WaitTime = TimeSpan.MaxValue;
+            if (_socket != null)
+            {
+                _socket.WaitTime = TimeSpan.MaxValue;
+            }
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
@@ -154,25 +158,33 @@ namespace Client.NetWork
                     }
                     ChatIsCreated?.Invoke(this, new ChatEventArgs(createChatRequest.ChatName, createChatRequest.CreatorName, createChatRequest.Time));
                     break;
+                case nameof(UserChats<Chat>):
+                    var userChats = ((JObject)message.Payload).ToObject(typeof(UserChats<Chat>)) as UserChats<Chat>;
+                    if (userChats == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    GetUserChats?.Invoke(this, new UserChatEventArgs<Chat>(userChats.Chats));
+                    break;
                 default:
                     throw new ArgumentNullException();
             }
 
         }
 
-        internal void SendChatMessage(Guid senderUserId, string text, string chatName, List<Guid> users)
+        internal void SendChatMessage(int senderUserId, string text, string chatName, List<int> users)
         {
             _sendQueue.Enqueue(new ChatMessageResponse(senderUserId, text, chatName, users).GetContainer());
             Send();
         }
 
-        internal void SendPrivateMessage(Guid senderUserId, string message, Guid receiverUSerId)
+        internal void SendPrivateMessage(int senderUserId, string message, int receiverUSerId)
         {
             _sendQueue.Enqueue(new PrivateMessageResponseClient(senderUserId, message, receiverUSerId).GetContainer());
             Send();
         }
 
-        internal void CreateChat(string chatName, string creator, List<Guid> users)
+        internal void CreateChat(string chatName, string creator, List<int> users)
         {
             _sendQueue.Enqueue(new CreateChatResponse(chatName, creator, users, DateTime.Now).GetContainer());
             Send();
@@ -180,7 +192,7 @@ namespace Client.NetWork
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, _code));
+            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, ConnectionRequestCode.Disconnect));
 
             _socket.OnOpen -= OnOpen;
             _socket.OnClose -= OnClose;
@@ -195,12 +207,7 @@ namespace Client.NetWork
 
         public void Disconnect()
         {
-            if (_socket == null)
-            {
-                return;
-            }
-
-            _socket.Close();
+            _socket?.Close();
         }
 
         public void Login(string login)

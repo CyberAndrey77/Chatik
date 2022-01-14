@@ -10,9 +10,9 @@ namespace Common
     {
         public Guid MessageId { get; }
         public string Message { get; set; }
-        public Guid SenderUserId { get; set; }
-        public Guid ReceiverUserId { get; set; }
-        public PrivateMessageResponseClient(Guid senderUserId, string message, Guid receiverUserId)
+        public int SenderUserId { get; set; }
+        public int ReceiverUserId { get; set; }
+        public PrivateMessageResponseClient(int senderUserId, string message, int receiverUserId)
         {
             Message = message;
             SenderUserId = senderUserId;

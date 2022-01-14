@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
+using Server.Repository;
 
 namespace Server
 {
@@ -9,10 +10,11 @@ namespace Server
         static void Main()
         {
             var config = FileManager.GetConfig();
-            Network network = new Network(config);
-            network.StartSever(ShowMessage);
+            //DataBaseManager dataBaseManager = new DataBaseManager(new Network(config.Port), new ChatRepository(config.ConnectionString));
+            DataBaseManager dataBaseManager = new DataBaseManager(new Network(config.Port), config.ConnectionString);
+            dataBaseManager.Network.StartSever(ShowMessage);
             Console.ReadKey();
-            network.StopServer();
+            dataBaseManager.Network.StopServer();
         }
 
         private static void ShowMessage(string message)

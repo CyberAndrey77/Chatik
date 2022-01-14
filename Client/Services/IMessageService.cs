@@ -14,8 +14,8 @@ namespace Client.Services
 
         void SendMessage(string name, string message);
 
-        void SendPrivateMessage(Guid senderUserId, string message, Guid receiverUSerId);
+        void SendPrivateMessage(int senderUserId, string message, int receiverUSerId);
         void GetMessage(object sender, MessageEventArgs e);
-        void SendChatMessage(Guid senderUserId, string text, string chatName, List<Guid> userIds);
+        void SendChatMessage(int senderUserId, string text, string chatName, List<int> userIds);
     }
 }

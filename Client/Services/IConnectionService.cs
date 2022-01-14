@@ -5,6 +5,7 @@ using Client.Models;
 using Client.NetWork;
 using Client.NetWork.EventArgs;
 using Client.Services.EventArgs;
+using Common.EventArgs;
 
 namespace Client.Services
 {
@@ -20,12 +21,13 @@ namespace Client.Services
 
         EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
         EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
+        EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
 
-        void CreateChat(string chatName, string creator, List<Guid> invented);
+        void CreateChat(string chatName, string creator, List<int> invented);
 
         EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
 
-        Guid Id { get; set; }
+        int Id { get; set; }
         string Name { get; set; }
         string IpAddress { get; set; }
         int Port { get; set; }
@@ -33,7 +35,7 @@ namespace Client.Services
         void ConnectToServer();
         void Disconnect();
         void SendMessage(string name, string message);
-        void SendPrivateMessage(Guid senderUserId, string message, Guid receiverUSerId);
-        void SendChatMessage(Guid name, string text, string chatName, List<Guid> userIds);
+        void SendPrivateMessage(int senderUserId, string message, int receiverUSerId);
+        void SendChatMessage(int name, string text, string chatName, List<int> userIds);
     }
 }

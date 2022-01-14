@@ -17,5 +17,10 @@ namespace Server.Repository
         {
             
         }
+
+        public ChatDB()
+        {
+            
+        }
     }
 }

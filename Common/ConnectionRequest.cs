@@ -17,9 +17,9 @@ namespace Common
             set;
         }
 
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
-        public ConnectionRequest(string login, ConnectionRequestCode codeConnected, Guid id)
+        public ConnectionRequest(string login, ConnectionRequestCode codeConnected, int id)
         {
             Login = login;
             CodeConnected = codeConnected;

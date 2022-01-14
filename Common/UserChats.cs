@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Common
 {
-    public class ConnectedUser
+    public class UserChats<T>
     {
-        public Dictionary<int,string> Users { get; set; }
+        public List<T> Chats { get; set; }
 
-        public ConnectedUser(Dictionary<int, string> users)
+        public UserChats(List<T> chats)
         {
-            Users = users;
+            Chats = chats;
         }
 
         public MessageContainer GetContainer()
         {
             var container = new MessageContainer
             {
-                Identifier = nameof(ConnectedUser),
+                Identifier = nameof(UserChats<T>),
                 Payload = this
             };
 

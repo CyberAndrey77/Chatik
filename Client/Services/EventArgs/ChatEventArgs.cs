@@ -12,9 +12,9 @@ namespace Client.Services.EventArgs
         public string CreatorName { get; set; }
 
         public DateTime Time { get; set; }
-        public List<Guid> UserIds { get; set; }
+        public List<int> UserIds { get; set; }
 
-        public ChatEventArgs(string chatName, string creatorName, List<Guid> userIds, DateTime time)
+        public ChatEventArgs(string chatName, string creatorName, List<int> userIds, DateTime time)
         {
             ChatName = chatName;
             CreatorName = creatorName;
@@ -27,7 +27,7 @@ namespace Client.Services.EventArgs
             ChatName = chatName;
             CreatorName = creatorName;
             Time = time;
-            UserIds = new List<Guid>();
+            UserIds = new List<int>();
         }
     }
 }

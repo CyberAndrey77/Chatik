@@ -5,9 +5,9 @@ namespace Client.Services.EventArgs
 {
     public class GetUsersEventArgs : System.EventArgs
     {
-        public Dictionary<Guid, string> Users { get; set; }
+        public Dictionary<int, string> Users { get; set; }
 
-        public GetUsersEventArgs(Dictionary<Guid, string> users)
+        public GetUsersEventArgs(Dictionary<int, string> users)
         {
             Users = users;
         }

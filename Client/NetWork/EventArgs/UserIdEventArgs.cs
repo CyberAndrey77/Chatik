@@ -4,9 +4,9 @@ namespace Client.NetWork.EventArgs
 {
     public class UserIdEventArgs: System.EventArgs
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
-        public UserIdEventArgs(Guid id)
+        public UserIdEventArgs(int id)
         {
             UserId = id;
         }

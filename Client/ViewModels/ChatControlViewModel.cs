@@ -16,6 +16,7 @@ using Common.Enums;
 using Prism.Interactivity;
 using Prism.Services.Dialogs;
 using Client.NetWork.EventArgs;
+using Common.EventArgs;
 
 namespace Client.ViewModels
 {
@@ -107,6 +108,7 @@ namespace Client.ViewModels
             _connectionService.UserListEvent += OnGetUsers;
             _connectionService.UserEvent += OnUserConnectOrDisconnect;
             _connectionService.MessageStatusChangeEvent += OnMessageStatusChange;
+            _connectionService.GetUserChats += GetChats;
             _messageService.MessageEvent += OnMessageReceived;
             _messageService.GetPrivateMessageEvent += OnPrivateMessage;
             _messageService.ChatMessageEvent += OnChatMessage;
@@ -123,6 +125,21 @@ namespace Client.ViewModels
             SendCommand = new DelegateCommand(ExecuteCommand);
             CreateDialog = new DelegateCommand(CreateDialogWithUser);
             CreateChatCommand = new DelegateCommand(CreateChat);
+        }
+
+        private void GetChats(object sender, UserChatEventArgs<Chat> e)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                //ChatViewModels.Add(new ChatViewModel(Users, "Главный чат", false));
+                foreach (var chat in e.Chats)
+                {
+
+                    ChatViewModels.Add(new ChatViewModel((ObservableCollection<User>)new ObservableCollection<User>().AddRange(chat.Users), chat.Name, chat.IsDialog));
+                }
+                SelectedChat = ChatViewModels[0];
+            });
+            
         }
 
         private void OnChatIsCreated(object sender, ChatEventArgs e)
@@ -228,7 +245,7 @@ namespace Client.ViewModels
             App.Current.Dispatcher.Invoke(delegate
             {
                 //if (ChatViewModels.Where(x => x.SenderUserId == e.SenderUserId).Count() == 0)
-                //if (!ChatViewModels.Any(x => x.Name == e.ChatName))
+                //if (!ChatViewModels.Any(x => x.Name == e.Chats))
                 //{
                 //    var users = new ObservableCollection<User>();
                 //    foreach (var user in e.UserIds)
@@ -347,10 +364,6 @@ namespace Client.ViewModels
                 }
                 
                 Users = new ObservableCollection<User>(Users.OrderBy(x => x.Name));
-
-                //TODO после создания базы данных убрать отсюда этот кусок.
-                ChatViewModels.Add(new ChatViewModel(Users, "Главный чат", false));
-                SelectedChat = ChatViewModels[0];
             });
         }
 
@@ -382,11 +395,7 @@ namespace Client.ViewModels
             }
             else
             {
-                var users = new List<Guid>();
-                foreach (var user in SelectedChat.Users)
-                {
-                    users.Add(user.Id);
-                }
+                var users = SelectedChat.Users.Select(user => user.Id).ToList();
                 _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Name, users);
             }
             

@@ -10,19 +10,19 @@ namespace Common
     {
         public string ChatName { get; set; }
         public string CreatorName { get; set; }
-        public List<Guid> UserIds { get; set; }
+        public List<int> UserIds { get; set; }
 
         public DateTime Time { get; set; }
 
         //public CreateChatResponse(string chatName, string creator, List<string> user)
         //{
-        //    ChatName = chatName;
+        //    Chats = chatName;
         //    CreatorName = creator;
         //    UserIds = user;
         //}
         
 
-        public CreateChatResponse(string chatName, string creator, List<Guid> user, DateTime time)
+        public CreateChatResponse(string chatName, string creator, List<int> user, DateTime time)
         {
             ChatName = chatName;
             CreatorName = creator;

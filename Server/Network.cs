@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common;
 using Common.Enums;
+using Server.Models;
 
 namespace Server
 {
@@ -14,27 +15,37 @@ namespace Server
     {
         public delegate void MessageHandler(string message);
 
+        public WsServer Server { get; set; }
+
+        public EventHandler<ConnectStatusChangeEventArgs> ConnectionEvent;
+        public EventHandler<UserChatEventArgs<Chat>> GetUserChats;
+
         private MessageHandler _messageHandler;
         private readonly int _port;
-        private WsServer _server;
         
         internal void StartSever(MessageHandler messageHandler)
         {
             _messageHandler = messageHandler;
-            _server = new WsServer(new IPEndPoint(IPAddress.Any, _port));
-            _messageHandler(_server.Start());
-            _server.ConnectionStatusChanged += OnConnection;
-            _server.MessageReceived += OnMessage;
+            Server = new WsServer(new IPEndPoint(IPAddress.Any, _port));
+            _messageHandler(Server.Start());
+            Server.ConnectionStatusChanged += OnConnection;
+            Server.GetUserChats += OnGetUserChats;
+            Server.MessageReceived += OnMessage;
+        }
+
+        private void OnGetUserChats(object sender, UserChatEventArgs<Chat> e)
+        {
+            GetUserChats?.Invoke(this, e);
         }
 
         public void StopServer()
         {
-            _server.Stop();
+            Server.Stop();
         }
 
-        public Network(Config config)
+        public Network(int port)
         {
-            _port = config.Port;
+            _port = port;
         }
 
         private void OnMessage(object sender, MessageReceivedEventArgs e)
@@ -48,6 +59,7 @@ namespace Server
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
         {
+            ConnectionEvent?.Invoke(this, e);
             string connect = e.ConnectionRequestCode == ConnectionRequestCode.Connect ? "Подключился" : "Отключился";
             string message = $"{DateTime.Now}: {connect} клиент {e.Name}";
             _messageHandler(message);

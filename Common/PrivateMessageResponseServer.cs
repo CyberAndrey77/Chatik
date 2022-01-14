@@ -11,12 +11,12 @@ namespace Common
         public Guid MessageId { get; }
         public string Message { get; set; }
         //public string SenderUserId { get; set; }
-        public Guid SenderId { get; set; }
+        public int SenderId { get; set; }
         //public string ReceiverUserId { get; set; }
-        public Guid ReceiverId { get; set; }
+        public int ReceiverId { get; set; }
 
         public DateTime Time { get; set; }
-        public PrivateMessageResponseServer(Guid senderId, string message, Guid receiverId, DateTime time)
+        public PrivateMessageResponseServer(int senderId, string message, int receiverId, DateTime time)
         {
             Message = message; 
             SenderId = senderId;

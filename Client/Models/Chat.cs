@@ -22,6 +22,11 @@ namespace Client.Models
             IsDialog = isDialog;
         }
 
+        public Chat(string name)
+        {
+            Name = name;
+        }
+
         public Chat()
         {
             

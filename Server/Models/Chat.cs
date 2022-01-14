@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +10,13 @@ namespace Server.Models
 {
     public class Chat
     {
-        public int ChatId { get; set; }
-        public string ChatName { get; set; }
+        [Key]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool IsDialog { get; set; }
+        public int CountUnreadMessages { get; set; }
 
-        public List<User> Users { get; set; }
+        [ForeignKey("User")]
+        public List<User> Users { get; set; } = new();
     }
 }

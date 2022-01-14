@@ -6,26 +6,29 @@ using System.Net;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using Common;
 using Common.Enums;
 using Common.EventArgs;
+using Server.Models;
 using WebSocketSharp.Server;
 
 namespace Server
 {
-    class WsServer
+    public class WsServer
     {
         private readonly IPEndPoint _listenAddress;
         private WebSocketServer _server;
-        private readonly ConcurrentDictionary<Guid, WsConnection> _connections;
+        internal readonly ConcurrentDictionary<int, WsConnection> Connections;
 
         public event EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
 
         public WsServer(IPEndPoint listenAddress)
         {
             _listenAddress = listenAddress;
-            _connections = new ConcurrentDictionary<Guid, WsConnection>();
+            Connections = new ConcurrentDictionary<int, WsConnection>();
         }
 
         public string Start()
@@ -39,41 +42,41 @@ namespace Server
 
         public void AddConnection(WsConnection connection)
         {
-            _connections.TryAdd(connection.Id, connection);
+            Connections.TryAdd(connection.Id, connection);
         }
 
         public void Stop()
         {
-            foreach (var connection in _connections)
+            foreach (var connection in Connections)
             {
                 FreeConnection(connection.Key);
                 connection.Value.Close();
             }
-            _connections.Clear();
+            Connections.Clear();
             _server?.Stop();
             _server = null;
         }
 
-        public void HandleConnect(Guid id, ConnectionResponse response)
+        public void HandleConnect(int id, ConnectionResponse response)
         {
             //поиск поьзователей
-            if (_connections.Values.Any(x => x.Login == response.Login))
+            if (Connections.Values.Any(x => x.Login == response.Login))
             {
                 SendMessageToClient(new ConnectionRequest(response.Login, ConnectionRequestCode.LoginIsAlreadyTaken, id).GetContainer(), id);
                 return;
             }
 
-            if (!_connections.TryGetValue(id, out WsConnection connection))
+            if (!Connections.TryGetValue(id, out WsConnection connection))
             {
                 return;
             }
 
             connection.Login = response.Login;
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(response.Login, ConnectionRequestCode.Connect));
-            SendMessageAll(new ConnectionRequest(response.Login, ConnectionRequestCode.Connect, id).GetContainer(), id);
+            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(connection.Id, response.Login, ConnectionRequestCode.Connect));
+            SendMessageAll(new ConnectionRequest(response.Login, ConnectionRequestCode.Connect, connection.Id).GetContainer(), connection.Id);
 
-            var connectionUsers = new Dictionary<Guid, string>();
-            foreach (var user in _connections)
+            var connectionUsers = new Dictionary<int, string>();
+            foreach (var user in Connections)
             {
                 if (user.Value.Login == null)
                 {
@@ -81,10 +84,14 @@ namespace Server
                 }
                 connectionUsers.Add(user.Key, user.Value.Login);
             }
-            SendMessageToClient(new ConnectedUser(connectionUsers).GetContainer(), id);
+            SendMessageToClient(new ConnectedUser(connectionUsers).GetContainer(), connection.Id);
+
+            var userChatsEvent = new UserChatEventArgs<Chat>(new List<Chat>(), connection.Id);
+            GetUserChats?.Invoke(this, userChatsEvent);
+            SendMessageToClient(new UserChats<Chat>(userChatsEvent.Chats).GetContainer(), connection.Id);
         }
 
-        internal void CreateChat(Guid id, CreateChatResponse createChatResponse)
+        internal void CreateChat(int id, CreateChatResponse createChatResponse)
         {
             //TODO тут занесение в бд происходит
 
@@ -102,16 +109,16 @@ namespace Server
             }
         }
 
-        private void SendMessageToClient(MessageContainer messageContainer, Guid id)
+        private void SendMessageToClient(MessageContainer messageContainer, int id)
         {
-            if (!_connections.TryGetValue(id, out WsConnection connection))
+            if (!Connections.TryGetValue(id, out WsConnection connection))
             {
                 return;
             }
             connection.Send(messageContainer);
         }
 
-        public void HandleChatMessage(Guid id, ChatMessageResponse chatMessage)
+        public void HandleChatMessage(int id, ChatMessageResponse chatMessage)
         {
             SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, chatMessage.MessageId).GetContainer(), id);
 
@@ -122,31 +129,33 @@ namespace Server
             }
         }
 
-        public void SendMessageAll(MessageContainer container, Guid id)
+        public void SendMessageAll(MessageContainer container, int id)
         {
-            foreach (var connect in _connections)
+            foreach (var connect in Connections)
             {
                 connect.Value.Send(container);
             }
         }
 
-        public void FreeConnection(Guid id)
+        public void FreeConnection(int id)
         {
-            if (_connections.TryRemove(id, out WsConnection connection) && connection.Login != null)
+            if (Connections.TryRemove(id, out WsConnection connection) && connection.Login != null)
             {
-                SendMessageAll(new ConnectionRequest(connection.Login, ConnectionRequestCode.Disconnect, id).GetContainer(), id);
+                SendMessageAll(new ConnectionRequest(connection.Login, ConnectionRequestCode.Disconnect, connection.Id).GetContainer(), connection.Id);
                 ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(connection.Login, ConnectionRequestCode.Disconnect));
             }
+            Thread.Sleep(1000);
         }
 
-        public void HandleMessageToClient(Guid id, PrivateMessageResponseClient privateMessageResponseClient)
+        public void HandleMessageToClient(int id, PrivateMessageResponseClient privateMessageResponseClient)
         {
-            if (!_connections.TryGetValue(id, out WsConnection senderUser))
+            //TODO тут занесение в бд происходит
+            if (!Connections.TryGetValue(id, out WsConnection senderUser))
             {
                 return;
             }
 
-            if (!_connections.TryGetValue(privateMessageResponseClient.ReceiverUserId, out WsConnection receiverUser))
+            if (!Connections.TryGetValue(privateMessageResponseClient.ReceiverUserId, out WsConnection receiverUser))
             {
                 return;
             }

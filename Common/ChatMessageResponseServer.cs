@@ -10,12 +10,12 @@ namespace Common
     {
         public Guid MessageId { get; }
         public string Message { get; set; }
-        public Guid SenderUserId { get; set; }
+        public int SenderUserId { get; set; }
         public string ChatName { get; set; }
-        public List<Guid> UserIds { get; set; }
+        public List<int> UserIds { get; set; }
         public DateTime Time { get; set; }
 
-        public ChatMessageResponseServer(Guid senderUserId, string message, string chatName, List<Guid> userIds,  DateTime time)
+        public ChatMessageResponseServer(int senderUserId, string message, string chatName, List<int> userIds,  DateTime time)
         {
             Message = message;
             SenderUserId = senderUserId;

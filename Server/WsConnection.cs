@@ -12,18 +12,19 @@ using WebSocketSharp.Server;
 
 namespace Server
 {
-    class WsConnection : WebSocketBehavior
+    public class WsConnection : WebSocketBehavior
     {
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
         private WsServer _wsServer;
 
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Login { get; set; }
 
         public WsConnection()
         {
             _sendQueue = new ConcurrentQueue<MessageContainer>();
-            Id = Guid.NewGuid();
+            //UserId = Guid.NewGuid();
+            Id = GetHashCode();
         }
 
         public void AddServer(WsServer wsServer)
@@ -54,7 +55,6 @@ namespace Server
                     {
                         throw new ArgumentNullException();
                     }
-                    //Login = messageRequest.Login;
                     _wsServer.HandleConnect(Id, messageRequest);
                     break;
                 //case nameof(ClientMessageResponse):
@@ -63,7 +63,7 @@ namespace Server
                 //    {
                 //        throw new ArgumentNullException();
                 //    }
-                //    _wsServer.HandleMessage(Id, messageResponse);
+                //    _wsServer.HandleMessage(UserId, messageResponse);
                 //    break;
                 case nameof(CreateChatResponse):
                     var createDialogResponse = ((JObject) message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
@@ -113,7 +113,10 @@ namespace Server
                 return;
             }
 
-            string serializedMessages = JsonConvert.SerializeObject(message);
+            string serializedMessages = JsonConvert.SerializeObject(message, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
             SendAsync(serializedMessages, SendCompleted);
         }
 

@@ -8,7 +8,7 @@ namespace Server.Repository
 {
     public interface IRepository<T> : IDisposable where T : class
     {
-        IEnumerable<T> GetElementList();
+        List<T> GetElementList(int id);
         T GetElement(int id);
         void Create(T item);
         void Update(T item);

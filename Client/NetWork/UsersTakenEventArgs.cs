@@ -6,9 +6,9 @@ namespace Client.NetWork
 {
     public class UsersTakenEventArgs : System.EventArgs
     {
-        public Dictionary<Guid, string> Users { get; set; }
+        public Dictionary<int, string> Users { get; set; }
 
-        public UsersTakenEventArgs(Dictionary<Guid, string> users)
+        public UsersTakenEventArgs(Dictionary<int, string> users)
         {
             Users = users;
         }
