@@ -29,6 +29,9 @@ namespace Server.Repository
                 case Chat chat:
                     _chatDb.Chats.Add(chat);
                     break;
+                case Message message:
+                    _chatDb.Messages.Add(message);
+                    break;
             }
             Save();
             Dispose();
@@ -63,6 +66,9 @@ namespace Server.Repository
                 case nameof(Chat):
                     var chat = _chatDb.Chats.FirstOrDefault(x => x.Id == id);
                     return chat as T;
+                case nameof(User):
+                    var user = _chatDb.Users.FirstOrDefault(x => x.Id == id);
+                    return user as T;
                 default:
                     throw new NotImplementedException();
             }

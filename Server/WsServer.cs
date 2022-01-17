@@ -24,6 +24,7 @@ namespace Server
         public event EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
+        public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
 
         public WsServer(IPEndPoint listenAddress)
         {
@@ -100,12 +101,11 @@ namespace Server
                 DateTime.Now).GetContainer(), createChatResponse.UserIds[0]);
 
 
-
             for (int i = 1; i < createChatResponse.UserIds.Count; i++)
             {
                 SendMessageToClient(
                     new CreateChatResponse(createChatResponse.ChatName, createChatResponse.CreatorName,
-                        createChatResponse.UserIds, DateTime.Now).GetContainer(), createChatResponse.UserIds[i]);
+                        createChatResponse.UserIds, DateTime.Now, createChatResponse.IsDialog).GetContainer(), createChatResponse.UserIds[i]);
             }
         }
 
@@ -120,12 +120,16 @@ namespace Server
 
         public void HandleChatMessage(int id, ChatMessageResponse chatMessage)
         {
-            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, chatMessage.MessageId).GetContainer(), id);
+            var chatId = chatMessage.ChatId;
+            var chatEvent = new ChatMessageEventArgs(id, chatMessage.Message, chatId, chatMessage.UserIds, chatMessage.IsDialog);
+            ChatMessageEvent?.Invoke(this, chatEvent);
+
+            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, chatEvent.Time, chatMessage.MessageId).GetContainer(), id);
 
             foreach (var userId in chatMessage.UserIds.Where(userId => userId != id))
             {
                 SendMessageToClient(
-                    new ChatMessageResponseServer(userId, chatMessage.Message, chatMessage.ChatName, chatMessage.UserIds, DateTime.Now).GetContainer(), userId);
+                    new ChatMessageResponseServer(userId, chatEvent.Message, chatEvent.ChatId, chatEvent.UserIds, chatEvent.IsDialog, chatEvent.Time).GetContainer(), userId);
             }
         }
 
@@ -144,10 +148,10 @@ namespace Server
                 SendMessageAll(new ConnectionRequest(connection.Login, ConnectionRequestCode.Disconnect, connection.Id).GetContainer(), connection.Id);
                 ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(connection.Login, ConnectionRequestCode.Disconnect));
             }
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
         }
 
-        public void HandleMessageToClient(int id, PrivateMessageResponseClient privateMessageResponseClient)
+        public void HandleMessageToClient(int id, PrivateMessageResponseClient privateMessage)
         {
             //TODO тут занесение в бд происходит
             if (!Connections.TryGetValue(id, out WsConnection senderUser))
@@ -155,17 +159,17 @@ namespace Server
                 return;
             }
 
-            if (!Connections.TryGetValue(privateMessageResponseClient.ReceiverUserId, out WsConnection receiverUser))
+            if (!Connections.TryGetValue(privateMessage.UserIds.First(id => id != privateMessage.SenderUserId), out WsConnection receiverUser))
             {
                 return;
             }
 
-            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, privateMessageResponseClient.MessageId).GetContainer(), id);
+            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, DateTime.Now, privateMessage.MessageId).GetContainer(), id);
 
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(senderUser.Login, privateMessageResponseClient.Message, receiverUser.Login, DateTime.Now));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(senderUser.Login, privateMessage.Message, receiverUser.Login, DateTime.Now));
 
-            SendMessageToClient(new PrivateMessageResponseServer(privateMessageResponseClient.SenderUserId, privateMessageResponseClient.Message,
-                privateMessageResponseClient.ReceiverUserId, DateTime.Now).GetContainer(), receiverUser.Id);
+            SendMessageToClient(new PrivateMessageResponseServer(privateMessage.SenderUserId, privateMessage.Message, privateMessage.ChatId,
+                privateMessage.UserIds, DateTime.Now).GetContainer(), receiverUser.Id);
         }
     }
 }

@@ -16,6 +16,6 @@ namespace Server.Models
         public string Name { get; set; }
 
         [ForeignKey("Chat")]
-        public List<Chat> Chats { get; set; } = new();
+        public List<Chat> Chats { get; set; }
     }
 }

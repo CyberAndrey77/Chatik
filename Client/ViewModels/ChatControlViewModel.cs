@@ -134,8 +134,20 @@ namespace Client.ViewModels
                 //ChatViewModels.Add(new ChatViewModel(Users, "Главный чат", false));
                 foreach (var chat in e.Chats)
                 {
+                    if (chat.IsDialog)
+                    {
+                        chat.Name = chat.Name.Replace(_connectionService.Name, "");
+                    }
 
-                    ChatViewModels.Add(new ChatViewModel((ObservableCollection<User>)new ObservableCollection<User>().AddRange(chat.Users), chat.Name, chat.IsDialog));
+                    ChatViewModels.Add(new ChatViewModel(
+                        (ObservableCollection<User>) new ObservableCollection<User>().AddRange(chat.Users), chat.Name,
+                        chat.IsDialog)
+                    {
+                        Chat =
+                        {
+                            Id = chat.Id
+                        }
+                    });
                 }
                 SelectedChat = ChatViewModels[0];
             });
@@ -202,15 +214,53 @@ namespace Client.ViewModels
             });
         }
 
-        private void OnPrivateMessage(object sender, PrivateMessageEventArgs e)
+        //private void OnPrivateMessage(object sender, PrivateMessageEventArgs e)
+        //{
+        //    App.Current.Dispatcher.Invoke(delegate
+        //    {
+        //        User senderUser = Users.First(x => x.Id == e.SenderId);
+        //        //if (ChatViewModels.Where(x => x.SenderUserId == e.SenderUserId).Count() == 0)
+        //        if (!ChatViewModels.Any(x => x.Name == senderUser.Name))
+        //        {
+        //            User receiverUser = Users.First(x => x.Id == e.ReceiverId);
+        //            var users = new ObservableCollection<User>()
+        //            {
+        //                new User(senderUser.Id, senderUser.Name),
+        //                new User(receiverUser.Id, receiverUser.Name)
+        //            };
+        //            ChatViewModels.Add(new ChatViewModel(users, senderUser.Name, true));
+        //        }
+
+        //        var chat = ChatViewModels.First(x => x.Name == senderUser.Name);
+
+        //        if (SelectedChat.Name != chat.Name)
+        //        {
+        //            chat.CountUnreadMessages++;
+        //            return;
+        //        }
+
+        //        var messageViewModel = new MessageViewModel()
+        //        {
+        //            Name = senderUser.Name,
+        //            Text = e.Message,
+        //            Time = e.Time,
+        //            MessageType = MessageType.Ingoing,
+        //            MessageStatus = MessageStatus.Delivered
+        //        };
+
+        //        MessageViewModels.Add(messageViewModel);
+        //    });
+        //}
+
+        private void OnPrivateMessage(object sender, ChatMessageEventArgs e)
         {
             App.Current.Dispatcher.Invoke(delegate
             {
-                User senderUser = Users.First(x => x.Id == e.SenderId);
-                //if (ChatViewModels.Where(x => x.SenderUserId == e.SenderUserId).Count() == 0)
-                if (!ChatViewModels.Any(x => x.Name == senderUser.Name))
+                User senderUser = Users.First(x => x.Id == e.SenderUserId);
+                var chat = ChatViewModels.FirstOrDefault(x => x.Chat.Id == e.ChatId);
+                if (chat == null)
                 {
-                    User receiverUser = Users.First(x => x.Id == e.ReceiverId);
+                    User receiverUser = Users.First(x => x.Id == e.UserIds.First(u => u != e.SenderUserId));
                     var users = new ObservableCollection<User>()
                     {
                         new User(senderUser.Id, senderUser.Name),
@@ -219,7 +269,6 @@ namespace Client.ViewModels
                     ChatViewModels.Add(new ChatViewModel(users, senderUser.Name, true));
                 }
 
-                var chat = ChatViewModels.First(x => x.Name == senderUser.Name);
 
                 if (SelectedChat.Name != chat.Name)
                 {
@@ -245,17 +294,32 @@ namespace Client.ViewModels
             App.Current.Dispatcher.Invoke(delegate
             {
                 //if (ChatViewModels.Where(x => x.SenderUserId == e.SenderUserId).Count() == 0)
-                //if (!ChatViewModels.Any(x => x.Name == e.Chats))
-                //{
-                //    var users = new ObservableCollection<User>();
-                //    foreach (var user in e.UserIds)
-                //    {
-                //        users.Add(new User(user));
-                //    }
-                //    ChatViewModels.Add(new ChatViewModel(users, e.SenderUserId, true));
-                //}
+                var chat = ChatViewModels.FirstOrDefault(x => x.Chat.Id == e.ChatId);
 
-                var chat = ChatViewModels.First(x => x.Name == e.ChatName);
+                if (chat == null)
+                {
+                    var users = new ObservableCollection<User>();
+                    foreach (var id in e.UserIds)
+                    {
+                        users.Add(new User(id, Users.First(x => x.Id == id).Name));
+                    }
+                    string chatName = string.Empty;
+                    foreach (var user in users)
+                    {
+                        chatName += user.Name;
+                    }
+
+                    chat = new ChatViewModel(users, chatName, true)
+                    {
+                        Chat =
+                        {
+                            Id = e.ChatId
+                        }
+                    };
+                    ChatViewModels.Add(chat);
+                }
+
+                
 
                 if (SelectedChat.Name != chat.Name)
                 {
@@ -298,7 +362,7 @@ namespace Client.ViewModels
                     selectedUser
                 };
 
-                var newDialog = new ChatViewModel(users, selectedUser.Name, true);
+                var newDialog = new ChatViewModel(users, _connectionService.Name + selectedUser.Name, true);
                 ChatViewModels.Add(newDialog);
                 SelectedChat = newDialog;
             });
@@ -325,7 +389,7 @@ namespace Client.ViewModels
 
                 var selectedUsersList = selectedUsers.Select(user => user.Id).ToList();
 
-                _chatService.CreateChat(chatName, _connectionService.Name, selectedUsersList);
+                _chatService.CreateChat(chatName, _connectionService.Name, selectedUsersList, false);
 
                 var newChat = new ChatViewModel(selectedUsers, chatName, false);
                 ChatViewModels.Add(newChat);
@@ -389,17 +453,21 @@ namespace Client.ViewModels
             _sendQueue.Enqueue(message);
 
             //_messageService.SendMessage(message.SenderUserId, message.Text);
-            if (SelectedChat.IsDialog)
-            {
-                _messageService.SendPrivateMessage(_connectionService.Id, message.Text, Users.First(x => x.Name == ChatName).Id);
-            }
-            else
-            {
-                var users = SelectedChat.Users.Select(user => user.Id).ToList();
-                _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Name, users);
-            }
-            
 
+            var users = SelectedChat.Users.Select(user => user.Id).ToList();
+            _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Chat.Id, users, SelectedChat.IsDialog);
+
+            //if (SelectedChat.IsDialog)
+            //{
+            //    var users = SelectedChat.Users.Select(user => user.Id).ToList();
+            //    _messageService.SendPrivateMessage(_connectionService.Id, message.Text, SelectedChat.Chat.Id, users);
+            //}
+            //else
+            //{
+            //    var users = SelectedChat.Users.Select(user => user.Id).ToList();
+            //    _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Chat.Id, users, SelectedChat.IsDialog);
+            //}
+            
             SendText = string.Empty;
         }
 

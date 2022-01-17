@@ -12,13 +12,14 @@ namespace Server
 {
     public class DataBaseManager
     {
-        private string _connectionString;
+        private readonly string _connectionString;
         public Network Network { get; set; }
         public DataBaseManager(Network network, string connectionString)
         {
             Network = network;
             Network.ConnectionEvent += OnConnectionUser;
             Network.GetUserChats += OnGetUserChats;
+            Network.ChatMessageEvent += OnChatMessage;
             _connectionString = connectionString;
 
             // под индексом 1 всегда находится Главный чат.
@@ -26,6 +27,44 @@ namespace Server
             if (chat != null) return;
             chat = new Chat() {Name = "Главный чат", IsDialog = false};
             CreateChat(chat);
+        }
+
+        private void OnChatMessage(object sender, ChatMessageEventArgs e)
+        {
+            var chat = e.ChatId == 0 ? null : SearchChat(e.ChatId);
+            if (chat == null)
+            {
+                var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
+
+                string chatName = string.Empty;
+                foreach (var user in users)
+                {
+                    chatName += user.Name;
+                }
+
+                chat = new Chat()
+                {
+                    Name = chatName,
+                    Users = users,
+                    IsDialog = e.IsDialog
+                };
+                CreateChat(chat);
+                e.ChatId = chat.Id;
+            }
+
+            //var senderUser = SearchUser(e.SenderUserId);
+            CreateMessage(new Message()
+            {
+                Text = e.Message,
+                Time = e.Time = DateTime.Now,
+                SenderId = e.SenderUserId,
+                ChatId = e.ChatId
+            });
+        }
+
+        private void OnCreateChat()
+        {
+
         }
 
         private void OnGetUserChats(object sender, UserChatEventArgs<Chat> e)
@@ -63,6 +102,12 @@ namespace Server
             return repository.GetElement(login);
         }
 
+        private User SearchUser(int id)
+        {
+            var repository = new ChatRepository<User>(_connectionString);
+            return repository.GetElement(id);
+        }
+
         private Chat SearchChat(int id)
         {
             var repository = new ChatRepository<Chat>(_connectionString);
@@ -88,6 +133,11 @@ namespace Server
             repository.Create(chat);
         }
 
+        private void CreateMessage(Message message)
+        {
+            var repository = new ChatRepository<Message>(_connectionString);
+            repository.Create(message);
+        }
         private void DeleteUser(User user)
         {
             var repository = new ChatRepository<User>(_connectionString);

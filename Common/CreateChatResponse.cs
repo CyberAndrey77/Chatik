@@ -13,6 +13,7 @@ namespace Common
         public List<int> UserIds { get; set; }
 
         public DateTime Time { get; set; }
+        public bool IsDialog { get; set; }
 
         //public CreateChatResponse(string chatName, string creator, List<string> user)
         //{
@@ -20,14 +21,15 @@ namespace Common
         //    CreatorName = creator;
         //    UserIds = user;
         //}
-        
 
-        public CreateChatResponse(string chatName, string creator, List<int> user, DateTime time)
+
+        public CreateChatResponse(string chatName, string creator, List<int> user, DateTime time, bool isDialog)
         {
             ChatName = chatName;
             CreatorName = creator;
             UserIds = user;
             Time = time;
+            IsDialog = isDialog;
         }
 
         public MessageContainer GetContainer()

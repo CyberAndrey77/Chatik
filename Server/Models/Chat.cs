@@ -17,6 +17,6 @@ namespace Server.Models
         public int CountUnreadMessages { get; set; }
 
         [ForeignKey("User")]
-        public List<User> Users { get; set; } = new();
+        public List<User> Users { get; set; }
     }
 }

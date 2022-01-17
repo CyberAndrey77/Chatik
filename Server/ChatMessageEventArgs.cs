@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Server.Models;
 
-namespace Common
+namespace Server
 {
-    public class ChatMessageResponse
+    public class ChatMessageEventArgs: EventArgs
     {
         public Guid MessageId { get; }
         public string Message { get; set; }
@@ -16,7 +14,9 @@ namespace Common
 
         public bool IsDialog { get; set; }
 
-        public ChatMessageResponse(int senderUserId, string message, int chatId, List<int> userIds, bool isDialog)
+        public DateTime Time { get; set; }
+
+        public ChatMessageEventArgs(int senderUserId, string message, int chatId, List<int> userIds, bool isDialog)
         {
             Message = message;
             SenderUserId = senderUserId;
@@ -24,18 +24,6 @@ namespace Common
             UserIds = userIds;
             MessageId = Guid.NewGuid();
             IsDialog = isDialog;
-        }
-
-
-        public virtual MessageContainer GetContainer()
-        {
-            var container = new MessageContainer
-            {
-                Identifier = nameof(ChatMessageResponse),
-                Payload = this
-            };
-
-            return container;
         }
     }
 }

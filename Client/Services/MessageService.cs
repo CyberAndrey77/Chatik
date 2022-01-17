@@ -10,7 +10,7 @@ namespace Client.Services
     {
         private readonly IConnectionService _connectionService;
         public EventHandler<MessageEventArgs> MessageEvent { get; set; }
-        public EventHandler<PrivateMessageEventArgs> GetPrivateMessageEvent { get; set; }
+        public EventHandler<ChatMessageEventArgs> GetPrivateMessageEvent { get; set; }
         public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
 
         public void SendMessage(string name, string message)
@@ -31,7 +31,7 @@ namespace Client.Services
             ChatMessageEvent?.Invoke(this, e);
         }
 
-        private void GetPrivateMessage(object sender, PrivateMessageEventArgs e)
+        private void GetPrivateMessage(object sender, ChatMessageEventArgs e)
         {
             GetPrivateMessageEvent?.Invoke(this, e);
         }
@@ -41,14 +41,14 @@ namespace Client.Services
             MessageEvent?.Invoke(this, new MessageEventArgs(e.Name, e.Message, e.Time));
         }
 
-        public void SendPrivateMessage(int senderUserId, string message, int receiverUSerId)
+        public void SendPrivateMessage(int senderUserId, string message, int chatId, List<int> userIds)
         {
-            _connectionService.SendPrivateMessage(senderUserId, message, receiverUSerId);
+            _connectionService.SendPrivateMessage(senderUserId, message, chatId, userIds);
         }
 
-        public void SendChatMessage(int senderUserId, string text, string chatName, List<int> userIds)
+        public void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog)
         {
-            _connectionService.SendChatMessage(senderUserId, text, chatName, userIds);
+            _connectionService.SendChatMessage(senderUserId, text, chatId, userIds, isDialog);
         }
     }
 }
