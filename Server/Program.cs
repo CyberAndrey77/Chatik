@@ -10,7 +10,7 @@ namespace Server
         static void Main()
         {
             var config = FileManager.GetConfig();
-            //DataBaseManager dataBaseManager = new DataBaseManager(new Network(config.Port), new ChatRepository(config.ConnectionString));
+            //DataBaseManager dataBaseManager = new DataBaseManager(new Network(config.Port), new ChatRepositoryNoRight(config.ConnectionString));
             DataBaseManager dataBaseManager = new DataBaseManager(new Network(config.Port), config.ConnectionString);
             dataBaseManager.Network.StartSever(ShowMessage);
             Console.ReadKey();

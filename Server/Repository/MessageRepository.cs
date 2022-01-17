@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,17 +7,18 @@ using Server.Models;
 
 namespace Server.Repository
 {
-    public class ChatRepository : IRepository<Chat>
+    public class MessageRepository : IRepository<Message>
     {
         private readonly ChatDb _context;
 
-        public ChatRepository(ChatDb context)
+        public MessageRepository(ChatDb context)
         {
             _context = context;
         }
-        public void Create(Chat item)
+
+        public void Create(Message item)
         {
-            _context.Chats.Add(item);
+            _context.Messages.Add(item);
             Save();
         }
 
@@ -32,15 +32,14 @@ namespace Server.Repository
             throw new NotImplementedException();
         }
 
-        public Chat GetElement(int id)
+        public Message GetElement(int id)
         {
-            return _context.Chats.FirstOrDefault(x => x.Id == id);
+            throw new NotImplementedException();
         }
 
-        public List<Chat> GetElementList(int id)
+        public List<Message> GetElementList(int id)
         {
-            var users = _context.Users.Where(u => u.Id == id).Include(c => c.Chats).ToList()[0];//.Select(c => c.Chats);
-            return users.Chats;
+            throw new NotImplementedException();
         }
 
         public void Save()
@@ -48,7 +47,7 @@ namespace Server.Repository
             _context.SaveChanges();
         }
 
-        public void Update(Chat item)
+        public void Update(Message item)
         {
             throw new NotImplementedException();
         }

@@ -8,17 +8,17 @@ using Server.Models;
 
 namespace Server.Repository
 {
-    public class ChatDB: DbContext
+    public class ChatDb: DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
-        public ChatDB(string stringConnection): base(stringConnection)
+        public ChatDb(string stringConnection): base(stringConnection)
         {
             
         }
 
-        public ChatDB()
+        public ChatDb()
         {
             
         }

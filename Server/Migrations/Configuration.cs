@@ -5,14 +5,14 @@
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Server.Repository.ChatDB>
+    internal sealed class Configuration : DbMigrationsConfiguration<Server.Repository.ChatDb>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(Server.Repository.ChatDB context)
+        protected override void Seed(Server.Repository.ChatDb context)
         {
             //  This method will be called after migrating to the latest version.
 

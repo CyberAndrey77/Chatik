@@ -12,6 +12,7 @@ namespace Server
 {
     public class DataBaseManager
     {
+        private ChatDb _chatDbContext;
         private readonly string _connectionString;
         public Network Network { get; set; }
         public DataBaseManager(Network network, string connectionString)
@@ -23,43 +24,49 @@ namespace Server
             _connectionString = connectionString;
 
             // под индексом 1 всегда находится Главный чат.
-            var chat = SearchChat(1);
-            if (chat != null) return;
-            chat = new Chat() {Name = "Главный чат", IsDialog = false};
-            CreateChat(chat);
+            using (_chatDbContext = new ChatDb(_connectionString))
+            {
+                var chat = SearchChat(1);
+                if (chat != null) return;
+                chat = new Chat() {Name = "Главный чат", IsDialog = false};
+                CreateChat(chat);
+            }
         }
 
         private void OnChatMessage(object sender, ChatMessageEventArgs e)
         {
-            var chat = e.ChatId == 0 ? null : SearchChat(e.ChatId);
-            if (chat == null)
+            using (_chatDbContext = new ChatDb(_connectionString))
             {
-                var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
-
-                string chatName = string.Empty;
-                foreach (var user in users)
+                var chat = e.ChatId == 0 ? null : SearchChat(e.ChatId);
+                if (chat == null)
                 {
-                    chatName += user.Name;
+                    var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
+
+                    string chatName = string.Empty;
+                    foreach (var user in users)
+                    {
+                        chatName += user.Name;
+                    }
+
+                    chat = new Chat()
+                    {
+                        Name = chatName,
+                        Users = users,
+                        IsDialog = e.IsDialog
+                    };
+                    CreateChat(chat);
+                    e.ChatId = chat.Id;
                 }
 
-                chat = new Chat()
+                //var senderUser = SearchUser(e.SenderUserId);
+                CreateMessage(new Message()
                 {
-                    Name = chatName,
-                    Users = users,
-                    IsDialog = e.IsDialog
-                };
-                CreateChat(chat);
-                e.ChatId = chat.Id;
+                    Text = e.Message,
+                    Time = e.Time = DateTime.Now,
+                    SenderId = e.SenderUserId,
+                    ChatId = e.ChatId
+                });
             }
-
-            //var senderUser = SearchUser(e.SenderUserId);
-            CreateMessage(new Message()
-            {
-                Text = e.Message,
-                Time = e.Time = DateTime.Now,
-                SenderId = e.SenderUserId,
-                ChatId = e.ChatId
-            });
         }
 
         private void OnCreateChat()
@@ -69,8 +76,11 @@ namespace Server
 
         private void OnGetUserChats(object sender, UserChatEventArgs<Chat> e)
         {
-            var chats = SearchChats(e.UserId);
-            e.Chats = chats;
+            using (_chatDbContext = new ChatDb(_connectionString))
+            {
+                var chats = SearchChats(e.UserId);
+                e.Chats = chats;
+            }
         }
 
         private void OnConnectionUser(object sender, ConnectStatusChangeEventArgs e)
@@ -80,67 +90,70 @@ namespace Server
                 return;
             }
 
-            var user = SearchUser(e.Name);
-            if (user == null)
+            using (_chatDbContext = new ChatDb(_connectionString))
             {
-                user = new User() { Name = e.Name };
+                var user = SearchUser(e.Name);
+                if (user == null)
+                {
+                    user = new User() { Name = e.Name };
 
-                // под индексом 1 всегда находится Главный чат.
-                var chat = SearchChat(1);
-                user.Chats.Add(chat);
-                CreateUser(user);
+                    // под индексом 1 всегда находится Главный чат.
+                    var chat = SearchChat(1);
+                    user.Chats.Add(chat);
+                    CreateUser(user);
+                }
+
+                Network.Server.Connections.TryRemove(e.Id, out var connection);
+                connection.Id = user.Id;
+                Network.Server.Connections.TryAdd(user.Id, connection);
             }
-
-            Network.Server.Connections.TryRemove(e.Id, out var connection);
-            connection.Id = user.Id;
-            Network.Server.Connections.TryAdd(user.Id, connection);
         }
 
         private User SearchUser(string login)
         {
-            var repository = new ChatRepository<User>(_connectionString);
+            var repository = new UserRepository(_chatDbContext);
             return repository.GetElement(login);
         }
 
         private User SearchUser(int id)
         {
-            var repository = new ChatRepository<User>(_connectionString);
+            var repository = new UserRepository(_chatDbContext);
             return repository.GetElement(id);
         }
 
         private Chat SearchChat(int id)
         {
-            var repository = new ChatRepository<Chat>(_connectionString);
+            var repository = new ChatRepository(_chatDbContext);
             return repository.GetElement(id);
         }
 
         private List<Chat> SearchChats(int id)
         {
-            var repository = new ChatRepository<Chat>(_connectionString);
+            var repository = new ChatRepository(_chatDbContext);
             var chatList = repository.GetElementList(id);
             return chatList;
         }
 
         private void CreateUser(User user)
         {
-            var repository = new ChatRepository<User>(_connectionString);
+            var repository = new UserRepository(_chatDbContext);
             repository.Create(user);
         }
 
         private void CreateChat(Chat chat)
         {
-            var repository = new ChatRepository<Chat>(_connectionString);
+            var repository = new ChatRepository(_chatDbContext);
             repository.Create(chat);
         }
 
         private void CreateMessage(Message message)
         {
-            var repository = new ChatRepository<Message>(_connectionString);
+            var repository = new MessageRepository(_chatDbContext);
             repository.Create(message);
         }
         private void DeleteUser(User user)
         {
-            var repository = new ChatRepository<User>(_connectionString);
+            var repository = new UserRepository(_chatDbContext);
         }
     }
 }

@@ -72,9 +72,11 @@
     <Compile Include="Network.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\ChatDB.cs" />
+    <Compile Include="Repository\ChatDb.cs" />
     <Compile Include="Repository\ChatRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\MessageRepository.cs" />
+    <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="WsConnection.cs" />
     <Compile Include="WsServer.cs" />
   </ItemGroup>
