@@ -42,18 +42,18 @@ namespace Server
                 {
                     var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
 
-                    string chatName = string.Empty;
+                    StringBuilder chatNameBuilder = new StringBuilder();
                     foreach (var user in users)
                     {
-                        chatName += user.Name;
+                        chatNameBuilder.Append(user.Name);
                     }
 
                     chat = new Chat()
                     {
-                        Name = chatName,
-                        Users = users,
+                        Name = chatNameBuilder.ToString(),
                         IsDialog = e.IsDialog
                     };
+                    users.ForEach(item => chat.Users.Add(item));
                     CreateChat(chat);
                     e.ChatId = chat.Id;
                 }
