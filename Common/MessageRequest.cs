@@ -5,7 +5,6 @@ namespace Common
 {
     public class MessageRequest
     {
-        public int ChatId { get; set; }
         public Guid MessageId { get; private set; }
         public MessageStatus Status { get; set; }
 

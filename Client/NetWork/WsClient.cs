@@ -156,7 +156,8 @@ namespace Client.NetWork
                     {
                         throw new ArgumentNullException();
                     }
-                    ChatIsCreated?.Invoke(this, new ChatEventArgs(createChatRequest.ChatName, createChatRequest.CreatorName, createChatRequest.Time));
+                    ChatIsCreated?.Invoke(this, new ChatEventArgs(createChatRequest.ChatName, createChatRequest.ChatId, createChatRequest.CreatorName,
+                        createChatRequest.UserIds, createChatRequest.IsDialog, createChatRequest.Time));
                     break;
                 case nameof(UserChats<Chat>):
                     var userChats = ((JObject)message.Payload).ToObject(typeof(UserChats<Chat>)) as UserChats<Chat>;

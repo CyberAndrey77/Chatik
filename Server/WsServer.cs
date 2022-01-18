@@ -25,6 +25,7 @@ namespace Server
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
+        public event EventHandler<CreateChatEventArgs> CreateChatEvent;
 
         public WsServer(IPEndPoint listenAddress)
         {
@@ -94,11 +95,12 @@ namespace Server
 
         internal void CreateChat(int id, CreateChatResponse createChatResponse)
         {
-            //TODO тут занесение в бд происходит
-
-            //TODO ответ клинту
-            SendMessageToClient(new CreateChatRequest(createChatResponse.ChatName, createChatResponse.CreatorName,
-                DateTime.Now).GetContainer(), createChatResponse.UserIds[0]);
+            var chatEvent = new CreateChatEventArgs(id, createChatResponse.ChatName, createChatResponse.UserIds,
+                createChatResponse.IsDialog);
+            CreateChatEvent?.Invoke(this, chatEvent);
+            
+            SendMessageToClient(new CreateChatRequest(chatEvent.ChatName, chatEvent.ChatId, createChatResponse.CreatorName, createChatResponse.IsDialog, chatEvent.UserIds,
+                chatEvent.Time).GetContainer(), createChatResponse.UserIds[0]);
 
 
             for (int i = 1; i < createChatResponse.UserIds.Count; i++)

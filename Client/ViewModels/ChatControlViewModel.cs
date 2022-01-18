@@ -34,6 +34,7 @@ namespace Client.ViewModels
         private readonly ConcurrentQueue<MessageViewModel> _sendQueue;
         private string _chatName;
         private ChatViewModel _selectedChat;
+        private bool _isPrivetChatCreate;
 
         public string SendText
         {
@@ -164,16 +165,25 @@ namespace Client.ViewModels
                 {
                     return;
                 }
-                var messageViewModel = new MessageViewModel()
-                {
-                    Name = e.CreatorName,
-                    Text = $"{e.CreatorName} создал беседу",
-                    Time = DateTime.Now,
-                    MessageType = MessageType.Outgoing,
-                    MessageStatus = MessageStatus.Delivered
-                };
 
-                MessageViewModels.Add(messageViewModel);
+                if (!e.IsDialog)
+                {
+                    var messageViewModel = new MessageViewModel()
+                    {
+                        Name = e.CreatorName,
+                        Text = $"{e.CreatorName} создал беседу",
+                        Time = DateTime.Now,
+                        MessageType = MessageType.Outgoing,
+                        MessageStatus = MessageStatus.Delivered
+                    };
+
+                    MessageViewModels.Add(messageViewModel);
+                }
+                else
+                {
+                    _isPrivetChatCreate = true;
+                    SelectedChat.Chat.Id = e.ChatId;
+                }
             });
         }
 
@@ -213,44 +223,6 @@ namespace Client.ViewModels
                 MessageViewModels.Add(messageViewModel);
             });
         }
-
-        //private void OnPrivateMessage(object sender, PrivateMessageEventArgs e)
-        //{
-        //    App.Current.Dispatcher.Invoke(delegate
-        //    {
-        //        User senderUser = Users.First(x => x.Id == e.SenderId);
-        //        //if (ChatViewModels.Where(x => x.SenderUserId == e.SenderUserId).Count() == 0)
-        //        if (!ChatViewModels.Any(x => x.Name == senderUser.Name))
-        //        {
-        //            User receiverUser = Users.First(x => x.Id == e.ReceiverId);
-        //            var users = new ObservableCollection<User>()
-        //            {
-        //                new User(senderUser.Id, senderUser.Name),
-        //                new User(receiverUser.Id, receiverUser.Name)
-        //            };
-        //            ChatViewModels.Add(new ChatViewModel(users, senderUser.Name, true));
-        //        }
-
-        //        var chat = ChatViewModels.First(x => x.Name == senderUser.Name);
-
-        //        if (SelectedChat.Name != chat.Name)
-        //        {
-        //            chat.CountUnreadMessages++;
-        //            return;
-        //        }
-
-        //        var messageViewModel = new MessageViewModel()
-        //        {
-        //            Name = senderUser.Name,
-        //            Text = e.Message,
-        //            Time = e.Time,
-        //            MessageType = MessageType.Ingoing,
-        //            MessageStatus = MessageStatus.Delivered
-        //        };
-
-        //        MessageViewModels.Add(messageViewModel);
-        //    });
-        //}
 
         private void OnPrivateMessage(object sender, ChatMessageEventArgs e)
         {
@@ -361,8 +333,7 @@ namespace Client.ViewModels
                     new User(_connectionService.Id, _connectionService.Name),
                     selectedUser
                 };
-
-                var newDialog = new ChatViewModel(users, _connectionService.Name + selectedUser.Name, true);
+                var newDialog = new ChatViewModel(users, selectedUser.Name, true){Chat = {Name = _connectionService.Name + selectedUser.Name } };
                 ChatViewModels.Add(newDialog);
                 SelectedChat = newDialog;
             });
@@ -455,6 +426,7 @@ namespace Client.ViewModels
             //_messageService.SendMessage(message.SenderUserId, message.Text);
 
             var users = SelectedChat.Users.Select(user => user.Id).ToList();
+            
             _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Chat.Id, users, SelectedChat.IsDialog);
 
             //if (SelectedChat.IsDialog)

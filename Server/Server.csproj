@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="ChatMessageEventArgs.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="CreateChatEventArgs.cs" />
     <Compile Include="DataBaseManager.cs" />
     <Compile Include="FileManager.cs" />
     <Compile Include="Migrations\Configuration.cs" />
