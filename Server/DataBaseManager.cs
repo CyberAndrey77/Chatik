@@ -48,13 +48,16 @@ namespace Server
                         chatNameBuilder.Append(user.Name);
                     }
 
+                    
                     chat = new Chat()
                     {
                         Name = chatNameBuilder.ToString(),
                         IsDialog = e.IsDialog
                     };
+                    _chatDbContext.Chats.Add(chat);
                     users.ForEach(item => chat.Users.Add(item));
-                    CreateChat(chat);
+                    _chatDbContext.SaveChanges();
+                    //CreateChat(chat);
                     e.ChatId = chat.Id;
                 }
 
