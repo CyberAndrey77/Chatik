@@ -52,7 +52,8 @@ namespace Server
                     chat = new Chat()
                     {
                         Name = chatNameBuilder.ToString(),
-                        IsDialog = e.IsDialog
+                        IsDialog = e.IsDialog,
+                        Users = new List<User>()
                     };
                     _chatDbContext.Chats.Add(chat);
                     users.ForEach(item => chat.Users.Add(item));
