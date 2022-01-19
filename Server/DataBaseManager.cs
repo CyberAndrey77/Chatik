@@ -21,6 +21,7 @@ namespace Server
             Network.ConnectionEvent += OnConnectionUser;
             Network.GetUserChats += OnGetUserChats;
             Network.ChatMessageEvent += OnChatMessage;
+            Network.GetMessageEvent += OnGetMessageEvent;
             _connectionString = connectionString;
 
             // под индексом 1 всегда находится Главный чат.
@@ -33,6 +34,20 @@ namespace Server
             }
         }
 
+        private void OnGetMessageEvent<T>(object sender, GetMessagesEventArgs<T> e)
+        {
+            //хуярим получение сообщений из бд
+            using (_chatDbContext = new ChatDb(_connectionString))
+            {
+                e.Messages = GetMessages(e.ChatId) as List<T>;
+                var chat = SearchChat(e.ChatId);
+                foreach (var user in chat.Users)
+                {
+                    e.Users.Add(user.Id, user.Name);
+                }
+            }
+        }
+
         private void OnChatMessage(object sender, ChatMessageEventArgs e)
         {
             using (_chatDbContext = new ChatDb(_connectionString))
@@ -42,15 +57,15 @@ namespace Server
                 {
                     var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
 
-                    string chatName = string.Empty;
+                    var chatName = new StringBuilder();
                     foreach (var user in users)
                     {
-                        chatName += user.Name;
+                        chatName.Append(user.Name);
                     }
 
                     chat = new Chat()
                     {
-                        Name = chatName,
+                        Name = chatName.ToString(),
                         Users = users,
                         IsDialog = e.IsDialog
                     };
@@ -99,7 +114,7 @@ namespace Server
 
                     // под индексом 1 всегда находится Главный чат.
                     var chat = SearchChat(1);
-                    user.Chats.Add(chat);
+                    user.Chats = new List<Chat>(){chat};
                     CreateUser(user);
                 }
 
@@ -150,6 +165,12 @@ namespace Server
         {
             var repository = new MessageRepository(_chatDbContext);
             repository.Create(message);
+        }
+
+        private List<Message> GetMessages(int chatId)
+        {
+            var repository = new MessageRepository(_chatDbContext);
+            return repository.GetElementList(chatId);
         }
         private void DeleteUser(User user)
         {

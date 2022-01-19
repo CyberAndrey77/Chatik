@@ -26,6 +26,7 @@ namespace Server
         public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<CreateChatEventArgs> CreateChatEvent;
+        public event EventHandler<GetMessagesEventArgs<Message>> GetMessageEvent;
 
         public WsServer(IPEndPoint listenAddress)
         {
@@ -111,6 +112,14 @@ namespace Server
             }
         }
 
+        internal void GetMessage(int userId, int chatId)
+        {
+            var getMessageEvent = new GetMessagesEventArgs<Message>(chatId);
+            GetMessageEvent?.Invoke(this, getMessageEvent);
+
+            SendMessageToClient(new GetMessageRequest<Message>(getMessageEvent.ChatId, getMessageEvent.Messages, getMessageEvent.Users).GetContainer(), userId);
+        }
+
         private void SendMessageToClient(MessageContainer messageContainer, int id)
         {
             if (!Connections.TryGetValue(id, out WsConnection connection))
@@ -122,16 +131,15 @@ namespace Server
 
         public void HandleChatMessage(int id, ChatMessageResponse chatMessage)
         {
-            var chatId = chatMessage.ChatId;
-            var chatEvent = new ChatMessageEventArgs(id, chatMessage.Message, chatId, chatMessage.UserIds, chatMessage.IsDialog);
+            var chatEvent = new ChatMessageEventArgs(id, chatMessage.Message, chatMessage.ChatId, chatMessage.UserIds, chatMessage.IsDialog);
             ChatMessageEvent?.Invoke(this, chatEvent);
 
-            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, chatEvent.Time, chatMessage.MessageId).GetContainer(), id);
+            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, chatEvent.Time, chatMessage.MessageId){ChatId = chatEvent.ChatId}.GetContainer(), id);
 
             foreach (var userId in chatMessage.UserIds.Where(userId => userId != id))
             {
                 SendMessageToClient(
-                    new ChatMessageResponseServer(userId, chatEvent.Message, chatEvent.ChatId, chatEvent.UserIds, chatEvent.IsDialog, chatEvent.Time).GetContainer(), userId);
+                    new ChatMessageResponseServer(id, chatEvent.Message, chatEvent.ChatId, chatEvent.UserIds, chatEvent.IsDialog, chatEvent.Time).GetContainer(), userId);
             }
         }
 

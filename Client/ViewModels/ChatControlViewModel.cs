@@ -34,7 +34,6 @@ namespace Client.ViewModels
         private readonly ConcurrentQueue<MessageViewModel> _sendQueue;
         private string _chatName;
         private ChatViewModel _selectedChat;
-        private bool _isPrivetChatCreate;
 
         public string SendText
         {
@@ -65,6 +64,7 @@ namespace Client.ViewModels
                 SetProperty(ref _selectedChat, value);
                 SelectedChat.CountUnreadMessages = 0;
                 MessageViewModels.Clear();
+                _messageService.GetMessages(SelectedChat.Chat.Id);
                 ChatName = value.Name;
             } 
         }
@@ -113,6 +113,7 @@ namespace Client.ViewModels
             _messageService.MessageEvent += OnMessageReceived;
             _messageService.GetPrivateMessageEvent += OnPrivateMessage;
             _messageService.ChatMessageEvent += OnChatMessage;
+            _messageService.GetMessagesEvent += OnGetMessages;
 
             _chatService.ChatCreatedEvent += OnCreatedChat;
             _chatService.ChatIsCreatedEvent += OnChatIsCreated;
@@ -126,6 +127,25 @@ namespace Client.ViewModels
             SendCommand = new DelegateCommand(ExecuteCommand);
             CreateDialog = new DelegateCommand(CreateDialogWithUser);
             CreateChatCommand = new DelegateCommand(CreateChat);
+        }
+
+        private void OnGetMessages(object sender, GetMessagesEventArgs<Message> e)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                foreach (var message in e.Messages)
+                {
+                    MessageViewModels.Add(new MessageViewModel()
+                    {
+                        Name = e.Users.First(x => x.Key == message.SenderId).Value,
+                        Text = message.Text,
+                        Time = message.Time,
+                        MessageStatus = MessageStatus.Delivered,
+                        MessageType = message.SenderId == _connectionService.Id ? MessageType.Outgoing : MessageType.Ingoing,
+                        Message = message
+                    });
+                }
+            });
         }
 
         private void GetChats(object sender, UserChatEventArgs<Chat> e)
@@ -178,11 +198,6 @@ namespace Client.ViewModels
                     };
 
                     MessageViewModels.Add(messageViewModel);
-                }
-                else
-                {
-                    _isPrivetChatCreate = true;
-                    SelectedChat.Chat.Id = e.ChatId;
                 }
             });
         }
@@ -490,6 +505,12 @@ namespace Client.ViewModels
                             message.MessageStatus = MessageStatus.NotDelivered;
                         }
                         break;
+                }
+
+                var chat = ChatViewModels.FirstOrDefault(x => x.Chat.Id == 0);
+                if (chat != null)
+                {
+                    chat.Chat.Id = e.ChatId;
                 }
                 RaisePropertyChanged(nameof(message));
             });

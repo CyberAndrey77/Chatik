@@ -34,12 +34,14 @@ namespace Server.Repository
 
         public Chat GetElement(int id)
         {
-            return _context.Chats.FirstOrDefault(x => x.Id == id);
+            return _context.Chats.Include(x => x.Users).ToList().Find(x => x.Id == id);
         }
 
         public List<Chat> GetElementList(int id)
         {
-            var users = _context.Users.Where(u => u.Id == id).Include(c => c.Chats).ToList()[0];//.Select(c => c.Chats);
+            //var users = _context.Users.Where(u => u.Id == id).Include(c => c.Chats).ToList()[0];//.Select(c => c.Chats);
+            //var users = _context.Users.Include(c => c.Chats).FirstOrDefault(u => u.Id == id);//.ToList().Find(u => u.Id == id);
+            var users = _context.Users.Include(c => c.Chats).ToList().Find(u => u.Id == id);
             return users.Chats;
         }
 

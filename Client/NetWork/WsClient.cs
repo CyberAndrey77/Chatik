@@ -34,6 +34,7 @@ namespace Client.NetWork
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<ChatEventArgs> ChatIsCreated;
         public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
+        public event EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent; 
 
         public WsClient()
         {
@@ -122,7 +123,7 @@ namespace Client.NetWork
                     {
                         throw new ArgumentNullException();
                     }
-                    MessageRequestEvent?.Invoke(this, new MessageRequestEvent(messageRequest.MessageId, messageRequest.Status, messageRequest.Time));
+                    MessageRequestEvent?.Invoke(this, new MessageRequestEvent(messageRequest.MessageId, messageRequest.Status, messageRequest.Time){ ChatId = messageRequest.ChatId});
                     break;
                 case nameof(PrivateMessageResponseServer):
                     var privateMessageResponseServer = ((JObject)message.Payload).ToObject(typeof(PrivateMessageResponseServer)) as PrivateMessageResponseServer;
@@ -167,10 +168,24 @@ namespace Client.NetWork
                     }
                     GetUserChats?.Invoke(this, new UserChatEventArgs<Chat>(userChats.Chats));
                     break;
+                case nameof(GetMessageRequest<Message>):
+                    var getMessages = ((JObject) message.Payload).ToObject(typeof(GetMessageRequest<Message>)) as GetMessageRequest<Message>;
+                    if (getMessages == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    GetMessagesEvent?.Invoke(this, new GetMessagesEventArgs<Message>(getMessages.ChatId){Messages = getMessages.Messages, Users = getMessages.Users});
+                    break;
                 default:
                     throw new ArgumentNullException();
             }
 
+        }
+
+        internal void GetMessage(int chatId)
+        {
+            _sendQueue.Enqueue(new GetMessageResponse(chatId).GetContainer());
+            Send();
         }
 
         internal void SendChatMessage(int senderUserId, string text, int chatId, List<int> users, bool isDialog)

@@ -20,6 +20,7 @@ namespace Server
         public EventHandler<ConnectStatusChangeEventArgs> ConnectionEvent;
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
+        public event EventHandler<GetMessagesEventArgs<Message>> GetMessageEvent;
 
         private MessageHandler _messageHandler;
         private readonly int _port;
@@ -33,6 +34,12 @@ namespace Server
             Server.GetUserChats += OnGetUserChats;
             Server.MessageReceived += OnMessage;
             Server.ChatMessageEvent += OnChatMessageEvent;
+            Server.GetMessageEvent += OnGetMessageEvent;
+        }
+
+        private void OnGetMessageEvent(object sender, GetMessagesEventArgs<Message> e)
+        {
+            GetMessageEvent?.Invoke(this, e);
         }
 
         private void OnChatMessageEvent(object sender, ChatMessageEventArgs e)

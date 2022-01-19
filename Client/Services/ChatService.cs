@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Client.Models;
+using Common.EventArgs;
 
 namespace Client.Services
 {
@@ -11,7 +13,7 @@ namespace Client.Services
     {
         private readonly IConnectionService _connectionService;
         public EventHandler<ChatEventArgs> ChatCreatedEvent { get; set; }
-        public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
+        public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; } 
 
         public void CreateChat(string chatName, string creator, List<int> invented, bool isDialog)
         {
@@ -34,7 +36,5 @@ namespace Client.Services
         {
             ChatCreatedEvent?.Invoke(this, e);
         }
-
-
     }
 }

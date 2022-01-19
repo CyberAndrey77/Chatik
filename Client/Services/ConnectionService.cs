@@ -27,6 +27,8 @@ namespace Client.Services
 
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
 
+        public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
+
         public string Name { get; set; }
         public int Id{ get; set; }
         public string IpAddress { get; set; }
@@ -46,8 +48,14 @@ namespace Client.Services
             _wsClient.GetUserIdEvent += OnGetUserId;
             _wsClient.ChatIsCreated += ChatIsCreated;
             _wsClient.GetUserChats += GetChats;
+            _wsClient.GetMessagesEvent += OnGetMessages;
             _wsClient.Connect(IpAddress, Port);
             _wsClient.Login(Name);
+        }
+
+        private void OnGetMessages(object sender, GetMessagesEventArgs<Message> e)
+        {
+            GetMessagesEvent?.Invoke(this, e);
         }
 
         private void GetChats(object sender, UserChatEventArgs<Chat> e)
@@ -148,6 +156,11 @@ namespace Client.Services
         public void SendChatMessage(int name, string text, int chatId, List<int> userIds, bool isDialog)
         {
             _wsClient.SendChatMessage(name, text, chatId, userIds, isDialog);
+        }
+
+        public void GetMessages(int chatId)
+        {
+            _wsClient.GetMessage(chatId);
         }
     }
 }

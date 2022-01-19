@@ -39,7 +39,7 @@ namespace Server.Repository
 
         public List<Message> GetElementList(int id)
         {
-            throw new NotImplementedException();
+            return _context.Messages.Where(m => m.ChatId == id).ToList();
         }
 
         public void Save()

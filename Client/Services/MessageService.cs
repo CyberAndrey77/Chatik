@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Client.Models;
 using Client.NetWork.EventArgs;
 using Client.Services.EventArgs;
+using Common.EventArgs;
 
 namespace Client.Services
 {
@@ -12,6 +14,7 @@ namespace Client.Services
         public EventHandler<MessageEventArgs> MessageEvent { get; set; }
         public EventHandler<ChatMessageEventArgs> GetPrivateMessageEvent { get; set; }
         public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
+        public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
 
         public void SendMessage(string name, string message)
         {
@@ -24,6 +27,12 @@ namespace Client.Services
             _connectionService.MessageEvent += GetMessage;
             _connectionService.GetPrivateMessageEvent += GetPrivateMessage;
             _connectionService.ChatMessageEvent += OnChatMessage;
+            _connectionService.GetMessagesEvent += OnGetMessages;
+        }
+
+        private void OnGetMessages(object sender, GetMessagesEventArgs<Message> e)
+        {
+            GetMessagesEvent?.Invoke(this, e);
         }
 
         private void OnChatMessage(object sender, ChatMessageEventArgs e)
@@ -49,6 +58,11 @@ namespace Client.Services
         public void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog)
         {
             _connectionService.SendChatMessage(senderUserId, text, chatId, userIds, isDialog);
+        }
+        
+        public void GetMessages(int chatId)
+        {
+            _connectionService.GetMessages(chatId);
         }
     }
 }
