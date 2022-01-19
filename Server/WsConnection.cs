@@ -93,6 +93,16 @@ namespace Server
 
                     _wsServer.HandleChatMessage(Id, chatMessageResponse);
                     break;
+
+                case nameof(GetMessageResponse):
+                    var getMessage = ((JObject) message.Payload).ToObject(typeof(GetMessageResponse)) as GetMessageResponse;
+                    if (getMessage == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+
+                    _wsServer.GetMessage(Id, getMessage.ChatId);
+                    break;
                 default:
                     throw new ArgumentNullException();
             }

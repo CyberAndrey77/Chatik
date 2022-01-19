@@ -10,33 +10,16 @@ namespace Client.Models
 {
     public class Message
     {
-        private string _text;
-        private string _name;
-        private DateTime _time;
-        private MessageStatus _status;
-        
-        public string Text
-        {
-            get => _text;
-            set => _text = value;
-        }
+        public int ChatId { get; set; }
 
-        public string Name
-        {
-            get => _name;
-            set => _name = value;
-        }
+        public int SenderId { get; set; }
 
-        public DateTime Time
-        {
-            get => _time;
-            set => _time = value;
-        }
+        public string Text { get; set; }
 
-        public MessageStatus Status
-        {
-            get => _status;
-            set => _status = value;
-        }
+        public string Name { get; set; }
+
+        public DateTime Time { get; set; }
+
+        public MessageStatus Status { get; set; }
     }
 }

@@ -2,106 +2,55 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Server.Models;
 
 namespace Server.Repository
 {
-    public class ChatRepository<T> : IRepository<T> where T : class
+    public class ChatRepository : IRepository<Chat>
     {
-        private readonly ChatDB _chatDb;
+        private readonly ChatDb _context;
 
-        public ChatRepository(string connectionString)
+        public ChatRepository(ChatDb context)
         {
-            _chatDb = new ChatDB(connectionString);
+            _context = context;
         }
-
-        public void Create(T item)
+        public void Create(Chat item)
         {
-            switch (item)
-            {
-                case User user:
-                    _chatDb.Users.Add(user);
-                    break;
-                case Chat chat:
-                    _chatDb.Chats.Add(chat);
-                    break;
-            }
+            _context.Chats.Add(item);
             Save();
-            Dispose();
         }
 
         public void Delete(int id)
         {
-            switch (GetType().GenericTypeArguments[0].Name)
-            {
-                case nameof(User):
-                    var user = _chatDb.Users.FirstOrDefault(x => x.Id == id);
-                    if (user == null)
-                    {
-                        return;
-                    }
-                    _chatDb.Users.Remove(user);
-                    break;
-            }
-            Save();
-            Dispose();
+            throw new NotImplementedException();
         }
 
         public void Dispose()
         {
-            _chatDb.Dispose();
-        }
-
-        public T GetElement(int id)
-        {
-            switch (GetType().GenericTypeArguments[0].Name)
-            {
-                case nameof(Chat):
-                    var chat = _chatDb.Chats.FirstOrDefault(x => x.Id == id);
-                    return chat as T;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public T GetElement(string name)
-        {
-            switch (GetType().GenericTypeArguments[0].Name)
-            {
-                case nameof(User):
-                    var user = _chatDb.Users.FirstOrDefault(x => x.Name == name);
-                    return user as T;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public List<T> GetElementList(int id)
-        {
-            switch (GetType().GenericTypeArguments[0].Name)
-            {
-                case nameof(Chat):
-                    var users = _chatDb.Users.Where(u => u.Id == id).Include(c => c.Chats).ToList()[0];//.Select(c => c.Chats);
-                    var chats = users.Chats as List<T>;
-                    //var chatList = chats.Select(chat => chat.Name).ToList();
-                    return chats;// as List<T>;
-                default:
-                    throw new NotImplementedException();
-            }
-
             throw new NotImplementedException();
+        }
+
+        public Chat GetElement(int id)
+        {
+            return _context.Chats.Include(x => x.Users).ToList().Find(x => x.Id == id);
+        }
+
+        public List<Chat> GetElementList(int id)
+        {
+            //var users = _context.Users.Where(u => u.Id == id).Include(c => c.Chats).ToList()[0];//.Select(c => c.Chats);
+            //var users = _context.Users.Include(c => c.Chats).FirstOrDefault(u => u.Id == id);//.ToList().Find(u => u.Id == id);
+            var users = _context.Users.Include(c => c.Chats).ToList().Find(u => u.Id == id);
+            return users.Chats;
         }
 
         public void Save()
         {
-            _chatDb.SaveChanges();
+            _context.SaveChanges();
         }
 
-        public void Update(T item)
+        public void Update(Chat item)
         {
             throw new NotImplementedException();
         }

@@ -9,14 +9,20 @@ namespace Common
 {
     public class CreateChatRequest
     {
+        public int ChatId { get; set; }
         public string ChatName { get; set; }
         public string CreatorName { get; set; }
+        public bool IsDialog { get; set; }
+        public List<int> UserIds { get; set; }
         public DateTime Time { get; set; }
 
-        public CreateChatRequest(string chatName, string creatorName, DateTime time)
+        public CreateChatRequest(string chatName, int chatId, string creatorName, bool isDialog, List<int> userIds, DateTime time)
         {
+            ChatId = chatId;
             ChatName = chatName;
+            IsDialog = isDialog;
             CreatorName = creatorName;
+            UserIds = userIds;
             Time = time;
         }
         

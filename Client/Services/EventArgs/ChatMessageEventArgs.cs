@@ -11,15 +11,15 @@ namespace Client.Services.EventArgs
     {
         public string Message { get; set; }
         public int SenderUserId { get; set; }
-        public string ChatName { get; set; }
+        public int ChatId { get; set; }
         public List<int> UserIds { get; set; }
         public DateTime Time { get; set; }
 
-        public ChatMessageEventArgs(int senderUserId, string message, string chatName, List<int> userIds, DateTime time)
+        public ChatMessageEventArgs(int senderUserId, string message, int chatId, List<int> userIds, DateTime time)
         {
             Message = message;
             SenderUserId = senderUserId;
-            ChatName = chatName;
+            ChatId = chatId;
             UserIds = userIds;
             Time = time;
         }

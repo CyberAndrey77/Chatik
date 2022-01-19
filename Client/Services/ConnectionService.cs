@@ -20,12 +20,14 @@ namespace Client.Services
         public EventHandler<GetUsersEventArgs> UserListEvent { get; set; }
         public EventHandler<GetUserEventArgs> UserEvent { get; set; }
         public EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
-        public EventHandler<PrivateMessageEventArgs> GetPrivateMessageEvent { get; set; }
+        public EventHandler<ChatMessageEventArgs> GetPrivateMessageEvent { get; set; }
         public EventHandler<ChatEventArgs> ChatCreated { get; set; }
         public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
         public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
 
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
+
+        public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
 
         public string Name { get; set; }
         public int Id{ get; set; }
@@ -46,8 +48,14 @@ namespace Client.Services
             _wsClient.GetUserIdEvent += OnGetUserId;
             _wsClient.ChatIsCreated += ChatIsCreated;
             _wsClient.GetUserChats += GetChats;
+            _wsClient.GetMessagesEvent += OnGetMessages;
             _wsClient.Connect(IpAddress, Port);
             _wsClient.Login(Name);
+        }
+
+        private void OnGetMessages(object sender, GetMessagesEventArgs<Message> e)
+        {
+            GetMessagesEvent?.Invoke(this, e);
         }
 
         private void GetChats(object sender, UserChatEventArgs<Chat> e)
@@ -75,7 +83,7 @@ namespace Client.Services
             ChatCreated?.Invoke(this, e);
         }
 
-        private void GetPrivateMessage(object sender, PrivateMessageEventArgs e)
+        private void GetPrivateMessage(object sender, ChatMessageEventArgs e)
         {
             GetPrivateMessageEvent?.Invoke(this, e);
         }
@@ -135,19 +143,24 @@ namespace Client.Services
             MessageStatusChangeEvent?.Invoke(this, e);
         }
 
-        public void CreateChat(string chatName, string creator, List<int> invented)
+        public void CreateChat(string chatName, string creator, List<int> invented, bool isDialog)
         {
-            _wsClient.CreateChat(chatName, creator, invented);
+            _wsClient.CreateChat(chatName, creator, invented, isDialog);
         }
 
-        public void SendPrivateMessage(int senderUserId, string message, int receiverUSerId)
+        public void SendPrivateMessage(int senderUserId, string message, int chatId, List<int> userIds)
         {
-            _wsClient.SendPrivateMessage(senderUserId, message, receiverUSerId);
+            _wsClient.SendPrivateMessage(senderUserId, message, chatId, userIds);
         }
 
-        public void SendChatMessage(int name, string text, string chatName, List<int> userIds)
+        public void SendChatMessage(int name, string text, int chatId, List<int> userIds, bool isDialog)
         {
-            _wsClient.SendChatMessage(name, text, chatName, userIds);
+            _wsClient.SendChatMessage(name, text, chatId, userIds, isDialog);
+        }
+
+        public void GetMessages(int chatId)
+        {
+            _wsClient.GetMessage(chatId);
         }
     }
 }

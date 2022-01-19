@@ -4,6 +4,7 @@ namespace Client.Services.EventArgs
 {
     public class MessageEventArgs : System.EventArgs
     {
+        //public int ChatId { get; set; } 
         public string Message { get; set; }
 
         public string Name { get; set; }
