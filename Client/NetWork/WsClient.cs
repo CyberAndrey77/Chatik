@@ -4,7 +4,10 @@ using Common.EventArgs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using Client.Models;
 using Client.NetWork.EventArgs;
+using Client.Services.EventArgs;
 
 namespace Client.NetWork
 {
@@ -20,11 +23,18 @@ namespace Client.NetWork
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
 
         public event EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
+
+        public event EventHandler<UserIdEventArgs> GetUserIdEvent;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<UsersTakenEventArgs> UsersTaken;
         public event EventHandler<UserStatusChangeEventArgs> UserEvent;
         public event EventHandler<MessageRequestEvent> MessageRequestEvent;
-        public event EventHandler<PrivateMessageEventArgs> PrivateMessageEvent;
+        public event EventHandler<ChatMessageEventArgs> PrivateMessageEvent;
+        public event EventHandler<ChatEventArgs> CreatedChat;
+        public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
+        public event EventHandler<ChatEventArgs> ChatIsCreated;
+        public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
+        public event EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent; 
 
         public WsClient()
         {
@@ -39,7 +49,10 @@ namespace Client.NetWork
             _socket.OnClose += OnClose;
             _socket.OnMessage += OnMessage;
             _socket.Connect();
-            _socket.WaitTime = TimeSpan.MaxValue;
+            if (_socket != null)
+            {
+                _socket.WaitTime = TimeSpan.MaxValue;
+            }
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
@@ -63,20 +76,26 @@ namespace Client.NetWork
                             answer = "подключился";
                             if (_login != connectionRequest.Login)
                             {
-                                UserEvent?.Invoke(this, new UserStatusChangeEventArgs(connectionRequest.Login, true));
+                                UserEvent?.Invoke(this, new UserStatusChangeEventArgs(connectionRequest.Login, true, connectionRequest.Id));
                             }
                             break;
                         case ConnectionRequestCode.Disconnect:
                             answer = "отключился";
                             if (_login != connectionRequest.Login)
                             {
-                                UserEvent?.Invoke(this, new UserStatusChangeEventArgs(connectionRequest.Login, false));
+                                UserEvent?.Invoke(this, new UserStatusChangeEventArgs(connectionRequest.Login, false, connectionRequest.Id));
                             }
                             break;
                         case ConnectionRequestCode.LoginIsAlreadyTaken:
                             answer = "Логин уже занят";
                             _socket.Close();
                             return;
+                    }
+
+                    if (_login == connectionRequest.Login)
+                    {
+                        GetUserIdEvent?.Invoke(this, new UserIdEventArgs(connectionRequest.Id));
+                        break;
                     }
                     MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connectionRequest.Login, $"{connectionRequest.Login} {answer}"));
                     break;
@@ -104,7 +123,7 @@ namespace Client.NetWork
                     {
                         throw new ArgumentNullException();
                     }
-                    MessageRequestEvent?.Invoke(this, new MessageRequestEvent(messageRequest.MessageId, messageRequest.Status, messageRequest.Time));
+                    MessageRequestEvent?.Invoke(this, new MessageRequestEvent(messageRequest.MessageId, messageRequest.Status, messageRequest.Time){ ChatId = messageRequest.ChatId});
                     break;
                 case nameof(PrivateMessageResponseServer):
                     var privateMessageResponseServer = ((JObject)message.Payload).ToObject(typeof(PrivateMessageResponseServer)) as PrivateMessageResponseServer;
@@ -112,8 +131,51 @@ namespace Client.NetWork
                     {
                         throw new ArgumentNullException();
                     }
-                    PrivateMessageEvent?.Invoke(this, new PrivateMessageEventArgs
-                        (privateMessageResponseServer.SenderName, privateMessageResponseServer.Message, privateMessageResponseServer.ReceiverName, privateMessageResponseServer.Time));
+                    PrivateMessageEvent?.Invoke(this, new ChatMessageEventArgs
+                        (privateMessageResponseServer.SenderId, privateMessageResponseServer.Message, privateMessageResponseServer.ChatId, privateMessageResponseServer.UserIds, privateMessageResponseServer.Time));
+                    break;
+                case nameof(CreateChatResponse):
+                    var createChatResponse = ((JObject)message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
+                    if (createChatResponse == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    CreatedChat?.Invoke(this, new ChatEventArgs(createChatResponse.ChatName, createChatResponse.ChatId, createChatResponse.CreatorName, 
+                        createChatResponse.UserIds, createChatResponse.IsDialog, createChatResponse.Time));
+                    break;
+                case nameof(ChatMessageResponseServer):
+                    var chatMessageResponseServer = ((JObject)message.Payload).ToObject(typeof(ChatMessageResponseServer)) as ChatMessageResponseServer;
+                    if (chatMessageResponseServer == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    ChatMessageEvent?.Invoke(this, new ChatMessageEventArgs(chatMessageResponseServer.SenderUserId, chatMessageResponseServer.Message, 
+                        chatMessageResponseServer.ChatId, chatMessageResponseServer.UserIds, chatMessageResponseServer.Time));
+                    break;
+                case nameof(CreateChatRequest):
+                    var createChatRequest = ((JObject)message.Payload).ToObject(typeof(CreateChatRequest)) as CreateChatRequest;
+                    if (createChatRequest == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    ChatIsCreated?.Invoke(this, new ChatEventArgs(createChatRequest.ChatName, createChatRequest.ChatId, createChatRequest.CreatorName,
+                        createChatRequest.UserIds, createChatRequest.IsDialog, createChatRequest.Time));
+                    break;
+                case nameof(UserChats<Chat>):
+                    var userChats = ((JObject)message.Payload).ToObject(typeof(UserChats<Chat>)) as UserChats<Chat>;
+                    if (userChats == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    GetUserChats?.Invoke(this, new UserChatEventArgs<Chat>(userChats.Chats));
+                    break;
+                case nameof(GetMessageRequest<Message>):
+                    var getMessages = ((JObject) message.Payload).ToObject(typeof(GetMessageRequest<Message>)) as GetMessageRequest<Message>;
+                    if (getMessages == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    GetMessagesEvent?.Invoke(this, new GetMessagesEventArgs<Message>(getMessages.ChatId){Messages = getMessages.Messages, Users = getMessages.Users});
                     break;
                 default:
                     throw new ArgumentNullException();
@@ -121,21 +183,33 @@ namespace Client.NetWork
 
         }
 
-        internal void SendPrivateMessage(string senderName, string message, string receiverName)
+        internal void GetMessage(int chatId)
         {
-            _sendQueue.Enqueue(new PrivateMessageResponseClient(senderName, message, receiverName).GetContainer());
+            _sendQueue.Enqueue(new GetMessageResponse(chatId).GetContainer());
             Send();
         }
 
-        internal void CreateDialog(string creator, string invented)
+        internal void SendChatMessage(int senderUserId, string text, int chatId, List<int> users, bool isDialog)
         {
-            _sendQueue.Enqueue(new CreateDialogResponse(creator, invented).GetContainer());
+            _sendQueue.Enqueue(new ChatMessageResponse(senderUserId, text, chatId, users, isDialog).GetContainer());
+            Send();
+        }
+
+        internal void SendPrivateMessage(int senderUserId, string message, int chatId, List<int> userIds)
+        {
+            _sendQueue.Enqueue(new PrivateMessageResponseClient(senderUserId, message, chatId, userIds).GetContainer());
+            Send();
+        }
+
+        internal void CreateChat(string chatName, int chatId, string creator, List<int> users, bool isDialog)
+        {
+            _sendQueue.Enqueue(new CreateChatResponse(chatName, chatId, creator, users, DateTime.Now, isDialog).GetContainer());
             Send();
         }
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, _code));
+            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, _code == ConnectionRequestCode.Connect ? ConnectionRequestCode.Disconnect : ConnectionRequestCode.LoginIsAlreadyTaken));
 
             _socket.OnOpen -= OnOpen;
             _socket.OnClose -= OnClose;
@@ -150,12 +224,7 @@ namespace Client.NetWork
 
         public void Disconnect()
         {
-            if (_socket == null)
-            {
-                return;
-            }
-
-            _socket.Close();
+            _socket?.Close();
         }
 
         public void Login(string login)

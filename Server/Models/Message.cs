@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -9,18 +10,16 @@ namespace Server.Models
 {
     public class Message
     {
+        [Key]
         public int ChatMessageId { get; set; }
+        public string Text { get; set; }
+        public DateTime Time { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("SenderUser")]
         public int SenderId { get; set; }
+        [ForeignKey("Chat")]
         public int? ChatId { get; set; }
-
-        [ForeignKey("User")]
-        public int? ReceiverId { get; set; }
-        public int ContentId { get; set; }
-
-        public User User { get; set; }
+        public User SenderUser { get; set; }
         public Chat Chat { get; set; }
-        public Content Content { get; set; }
     }
 }

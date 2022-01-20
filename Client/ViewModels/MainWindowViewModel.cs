@@ -24,6 +24,7 @@ namespace Client.ViewModels
         private IConnectionService _connectionService;
         private readonly IMessageService _messageService;
         private IDialogService _dialogService;
+        private IChatService _chatService;
 
         public string Title
         {
@@ -38,11 +39,12 @@ namespace Client.ViewModels
         }
         //<!--Closing="{Binding OnClosingMainWindow}"-->
         //public CancelEventHandler OnClosingMainWindow { get; set; }
-        public MainWindowViewModel(IMessageService messageService, IConnectionService connectionService, IDialogService dialogService)
+        public MainWindowViewModel(IMessageService messageService, IConnectionService connectionService, IChatService chatService, IDialogService dialogService)
         {
             _messageService = messageService;
             _connectionService = connectionService;
             _dialogService = dialogService;
+            _chatService = chatService;
             //OnClosingMainWindow += CloseWindows;
             _connectionService.ConnectionEvent += OnConnection;
             _loginViewModel = new LoginViewModel(connectionService);
@@ -59,7 +61,7 @@ namespace Client.ViewModels
         {
             if (e.IsConnectSuccess)
             {
-                _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _dialogService);
+                _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _chatService, _dialogService);
                 CurrentContentVM = _chatControlViewModel;
             }
             else

@@ -89,7 +89,7 @@
                    </ListBox.ItemTemplate>
                </ListBox>
 
-                <Button Grid.Row="1" Content="Новый чат" Height="20"/>
+                <Button Grid.Row="1" Content="Новый чат" Height="20" Command="{Binding CreateChatCommand}"/>
                 <Button Grid.Row="2" Content="Новый диалог" Command="{Binding CreateDialog}" Height="20"/>
             </Grid>
         </Expander>

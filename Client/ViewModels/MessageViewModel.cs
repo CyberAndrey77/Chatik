@@ -69,14 +69,7 @@ namespace Client.ViewModels
             set
             {
                 SetProperty(ref _messageType, value);
-                if (value == MessageType.Ingoing)
-                {
-                    Column = 0;
-                }
-                else
-                {
-                    Column = 1;
-                }
+                Column = value == MessageType.Ingoing ? 0 : 1;
             }
         }
 
@@ -90,7 +83,7 @@ namespace Client.ViewModels
         {
             //Time = message.Time;
             //Text = message.Text;
-            //SenderName = message.SenderName;
+            //SenderUserId = message.SenderUserId;
 
             //Message = message;
             Id = Guid.NewGuid();

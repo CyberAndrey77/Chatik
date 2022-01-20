@@ -10,15 +10,22 @@ namespace Common
     {
         public Guid MessageId { get; }
         public string Message { get; set; }
-        public string SenderName { get; set; }
-        public string ReceiverName { get; set; }
+        //public string SenderUserId { get; set; }
+        public int SenderId { get; set; }
+        //public string UserIds { get; set; }
+        public int ReceiverId { get; set; }
 
         public DateTime Time { get; set; }
-        public PrivateMessageResponseServer(string senderName, string message, string receiverName, DateTime time)
+        
+        public int ChatId { get; set; }
+        public List<int> UserIds { get; set; }
+
+        public PrivateMessageResponseServer(int senderId, string message,int chatId, List<int> userIds, DateTime time)
         {
-            Message = message;
-            SenderName = senderName;
-            ReceiverName = receiverName;
+            Message = message; 
+            SenderId = senderId;
+            ChatId = chatId;
+            UserIds = userIds;
             MessageId = Guid.NewGuid();
             Time = time;
         }

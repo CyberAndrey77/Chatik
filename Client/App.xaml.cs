@@ -22,8 +22,10 @@ namespace Client
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterDialog<CreateDialogView, CreateDialogViewModel>("CreateDialog");
+            containerRegistry.RegisterDialog<CreateChatView, CreateChatViewModel>("CreateChat");
             containerRegistry.RegisterSingleton<IMessageService, MessageService>();
             containerRegistry.RegisterSingleton<IConnectionService, ConnectionService>();
+            containerRegistry.RegisterSingleton<IChatService, ChatService>();
             containerRegistry.Register<ChatControlViewModel>();
             containerRegistry.Register<MainWindowViewModel>();
         }

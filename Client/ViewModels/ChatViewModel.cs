@@ -54,5 +54,11 @@ namespace Client.ViewModels
             Name = name;
             IsDialog = isDialog;
         }
+
+        public ChatViewModel(string name)
+        {
+            Chat = new Chat(name);
+            Name = name;
+        }
     }
 }

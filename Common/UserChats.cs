@@ -6,22 +6,20 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    public class CreateDialogResponse
+    public class UserChats<T>
     {
-        public string CreatorName { get; set; }
-        public string InventedName { get; set; }
+        public List<T> Chats { get; set; }
 
-        public CreateDialogResponse(string creator, string invented)
+        public UserChats(List<T> chats)
         {
-            CreatorName = creator;
-            InventedName = invented;
+            Chats = chats;
         }
 
         public MessageContainer GetContainer()
         {
             var container = new MessageContainer
             {
-                Identifier = nameof(CreateDialogResponse),
+                Identifier = nameof(UserChats<T>),
                 Payload = this
             };
 

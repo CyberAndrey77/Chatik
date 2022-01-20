@@ -9,6 +9,7 @@ namespace Client.NetWork
 {
     public class MessageRequestEvent : System.EventArgs
     {
+        public int ChatId { get; set; }
         public Guid Id { get; private set; }
         public MessageStatus Status { get; set; }
 

@@ -64,11 +64,13 @@
     <Compile Include="NetWork\EventArgs\PrivateMessageEventArgs.cs" />
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />
+    <Compile Include="NetWork\EventArgs\UserIdEventArgs.cs" />
     <Compile Include="NetWork\UsersTakenEventArgs.cs" />
     <Compile Include="NetWork\WsClient.cs" />
-    <Compile Include="Services\ClassService.cs" />
+    <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\ConnectionService.cs" />
     <Compile Include="Services\EventArgs\ChatEventArgs.cs" />
+    <Compile Include="Services\EventArgs\ChatMessageEventArgs.cs" />
     <Compile Include="Services\EventArgs\GetUserEventArgs.cs" />
     <Compile Include="Services\IChatService.cs" />
     <Compile Include="Services\IMessageService.cs" />
@@ -78,10 +80,15 @@
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Services\EventArgs\GetUsersEventArgs.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
+    <Compile Include="ViewModels\CreateChatViewModel.cs" />
     <Compile Include="ViewModels\CreateDialogViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ChatControlViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
+    <Compile Include="ViewModels\SelectedItemViewModel.cs" />
+    <Compile Include="Views\CreateChatView.xaml.cs">
+      <DependentUpon>CreateChatView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CreateDialogView.xaml.cs">
       <DependentUpon>CreateDialogView.xaml</DependentUpon>
     </Compile>
@@ -91,6 +98,10 @@
     <Compile Include="Views\ChatControlView.xaml.cs">
       <DependentUpon>ChatControlView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\CreateChatView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CreateDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

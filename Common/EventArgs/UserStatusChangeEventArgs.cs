@@ -10,11 +10,13 @@ namespace Common.EventArgs
     {
         public string UserName { get; set; }
         public bool IsConnect { get; set; }
+        public  int Id { get; set; }
 
-        public UserStatusChangeEventArgs(string userNAme, bool isConnect)
+        public UserStatusChangeEventArgs(string userNAme, bool isConnect, int id)
         {
             UserName = userNAme;
             IsConnect = isConnect;
+            Id = id;
         }
     }
 }
