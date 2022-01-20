@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /Client/Views/CreateChatView.xaml
 /Client/Views
+/Server/Models/EventLog.cs

@@ -8,6 +8,7 @@ namespace Common
 {
     public class CreateChatResponse
     {
+        public int ChatId { get; set; }
         public string ChatName { get; set; }
         public string CreatorName { get; set; }
         public List<int> UserIds { get; set; }
@@ -23,8 +24,9 @@ namespace Common
         //}
 
 
-        public CreateChatResponse(string chatName, string creator, List<int> user, DateTime time, bool isDialog)
+        public CreateChatResponse(string chatName, int chatId, string creator, List<int> user, DateTime time, bool isDialog)
         {
+            ChatId = chatId;
             ChatName = chatName;
             CreatorName = creator;
             UserIds = user;

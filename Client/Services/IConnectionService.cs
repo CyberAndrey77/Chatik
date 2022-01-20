@@ -24,7 +24,7 @@ namespace Client.Services
         EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
         EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
 
-        void CreateChat(string chatName, string creator, List<int> invented, bool isDialog);
+        void CreateChat(string chatName, int chatId, string creator, List<int> invented, bool isDialog);
 
         EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
 

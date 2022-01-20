@@ -21,6 +21,7 @@ namespace Server
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<GetMessagesEventArgs<Message>> GetMessageEvent;
+        public event EventHandler<CreateChatEventArgs> CreateChatEvent;
 
         private MessageHandler _messageHandler;
         private readonly int _port;
@@ -35,6 +36,12 @@ namespace Server
             Server.MessageReceived += OnMessage;
             Server.ChatMessageEvent += OnChatMessageEvent;
             Server.GetMessageEvent += OnGetMessageEvent;
+            Server.CreateChatEvent += OnChatCreateEvent;
+        }
+
+        private void OnChatCreateEvent(object sender, CreateChatEventArgs e)
+        {
+            CreateChatEvent?.Invoke(this, e);
         }
 
         private void OnGetMessageEvent(object sender, GetMessagesEventArgs<Message> e)

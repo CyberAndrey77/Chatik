@@ -22,6 +22,7 @@ namespace Server
             Network.GetUserChats += OnGetUserChats;
             Network.ChatMessageEvent += OnChatMessage;
             Network.GetMessageEvent += OnGetMessageEvent;
+            Network.CreateChatEvent += OnCreateChatEvent; 
             _connectionString = connectionString;
 
             // под индексом 1 всегда находится Главный чат.
@@ -31,6 +32,30 @@ namespace Server
                 if (chat != null) return;
                 chat = new Chat() {Name = "Главный чат", IsDialog = false};
                 CreateChat(chat);
+            }
+        }
+
+        private void OnCreateChatEvent(object sender, CreateChatEventArgs e)
+        {
+            using (_chatDbContext = new ChatDb(_connectionString))
+            {
+                var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
+                var chat = new Chat()
+                {
+                    Name = e.ChatName,
+                    Users = users,
+                    IsDialog = e.IsDialog
+                };
+                CreateChat(chat);
+                e.ChatId = chat.Id;
+
+                CreateMessage(new Message()
+                {
+                    Text = $"{users[0].Name} создал беседу",
+                    Time = e.Time = DateTime.Now,
+                    SenderId = e.SenderUserId,
+                    ChatId = e.ChatId
+                });
             }
         }
 
@@ -57,15 +82,16 @@ namespace Server
                 {
                     var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
 
-                    var chatName = new StringBuilder();
-                    foreach (var user in users)
-                    {
-                        chatName.Append(user.Name);
-                    }
+                    //var chatName = new StringBuilder();
+                    //foreach (var user in users)
+                    //{
+                    //    chatName.Append(user.Name);
+                    //}
 
+                    var chatName = $"{users[0].Name}|{users[1].Name}";
                     chat = new Chat()
                     {
-                        Name = chatName.ToString(),
+                        Name = chatName,
                         Users = users,
                         IsDialog = e.IsDialog
                     };
@@ -82,11 +108,6 @@ namespace Server
                     ChatId = e.ChatId
                 });
             }
-        }
-
-        private void OnCreateChat()
-        {
-
         }
 
         private void OnGetUserChats(object sender, UserChatEventArgs<Chat> e)

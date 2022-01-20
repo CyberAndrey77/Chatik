@@ -101,7 +101,7 @@ namespace Server
                         throw new ArgumentNullException();
                     }
 
-                    _wsServer.GetMessage(Id, getMessage.ChatId);
+                    _wsServer.GetMessages(Id, getMessage.ChatId);
                     break;
                 default:
                     throw new ArgumentNullException();

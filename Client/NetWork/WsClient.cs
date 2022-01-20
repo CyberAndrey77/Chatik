@@ -140,7 +140,8 @@ namespace Client.NetWork
                     {
                         throw new ArgumentNullException();
                     }
-                    CreatedChat?.Invoke(this, new ChatEventArgs(createChatResponse.ChatName, createChatResponse.CreatorName, createChatResponse.UserIds, createChatResponse.Time));
+                    CreatedChat?.Invoke(this, new ChatEventArgs(createChatResponse.ChatName, createChatResponse.ChatId, createChatResponse.CreatorName, 
+                        createChatResponse.UserIds, createChatResponse.IsDialog, createChatResponse.Time));
                     break;
                 case nameof(ChatMessageResponseServer):
                     var chatMessageResponseServer = ((JObject)message.Payload).ToObject(typeof(ChatMessageResponseServer)) as ChatMessageResponseServer;
@@ -200,15 +201,15 @@ namespace Client.NetWork
             Send();
         }
 
-        internal void CreateChat(string chatName, string creator, List<int> users, bool isDialog)
+        internal void CreateChat(string chatName, int chatId, string creator, List<int> users, bool isDialog)
         {
-            _sendQueue.Enqueue(new CreateChatResponse(chatName, creator, users, DateTime.Now, isDialog).GetContainer());
+            _sendQueue.Enqueue(new CreateChatResponse(chatName, chatId, creator, users, DateTime.Now, isDialog).GetContainer());
             Send();
         }
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, ConnectionRequestCode.Disconnect));
+            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, _code == ConnectionRequestCode.Connect ? ConnectionRequestCode.Disconnect : ConnectionRequestCode.LoginIsAlreadyTaken));
 
             _socket.OnOpen -= OnOpen;
             _socket.OnClose -= OnClose;

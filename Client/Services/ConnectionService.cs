@@ -143,9 +143,9 @@ namespace Client.Services
             MessageStatusChangeEvent?.Invoke(this, e);
         }
 
-        public void CreateChat(string chatName, string creator, List<int> invented, bool isDialog)
+        public void CreateChat(string chatName, int chatId, string creator, List<int> invented, bool isDialog)
         {
-            _wsClient.CreateChat(chatName, creator, invented, isDialog);
+            _wsClient.CreateChat(chatName, chatId, creator, invented, isDialog);
         }
 
         public void SendPrivateMessage(int senderUserId, string message, int chatId, List<int> userIds)

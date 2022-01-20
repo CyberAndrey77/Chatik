@@ -107,12 +107,12 @@ namespace Server
             for (int i = 1; i < createChatResponse.UserIds.Count; i++)
             {
                 SendMessageToClient(
-                    new CreateChatResponse(createChatResponse.ChatName, createChatResponse.CreatorName,
-                        createChatResponse.UserIds, DateTime.Now, createChatResponse.IsDialog).GetContainer(), createChatResponse.UserIds[i]);
+                    new CreateChatResponse(createChatResponse.ChatName, chatEvent.ChatId, createChatResponse.CreatorName,
+                        createChatResponse.UserIds, chatEvent.Time, createChatResponse.IsDialog).GetContainer(), createChatResponse.UserIds[i]);
             }
         }
 
-        internal void GetMessage(int userId, int chatId)
+        internal void GetMessages(int userId, int chatId)
         {
             var getMessageEvent = new GetMessagesEventArgs<Message>(chatId);
             GetMessageEvent?.Invoke(this, getMessageEvent);
