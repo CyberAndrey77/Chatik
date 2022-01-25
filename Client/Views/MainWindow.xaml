@@ -15,6 +15,9 @@
         <DataTemplate DataType="{x:Type viewModels:ChatControlViewModel}">
             <view:ChatControlView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:LogControlViewModel}">
+            <view:LogControlView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:LoginViewModel}">
             <view:LoginView/>
         </DataTemplate>
@@ -23,5 +26,16 @@
     <!--<Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
     </Grid>-->
-    <ContentPresenter Content="{Binding CurrentContentVM}"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="Чаты" Command="{Binding ShowChat}"></MenuItem>
+            <MenuItem Header="Логи" Command="{Binding ShowLog}"></MenuItem>
+        </Menu>
+        <ContentPresenter Grid.Row="1" Content="{Binding CurrentContentVm}"/>
+    </Grid>
+    
 </Window>

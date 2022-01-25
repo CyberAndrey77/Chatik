@@ -57,9 +57,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converts\EnumToCollectionConverter.cs" />
     <Compile Include="Models\Chat.cs" />
+    <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\MessageType.cs" />
+    <Compile Include="Models\RecordType.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="NetWork\EventArgs\PrivateMessageEventArgs.cs" />
     <Compile Include="NetWork\ITransport.cs" />
@@ -82,6 +85,7 @@
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="ViewModels\CreateChatViewModel.cs" />
     <Compile Include="ViewModels\CreateDialogViewModel.cs" />
+    <Compile Include="ViewModels\LogControlViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ChatControlViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
@@ -91,6 +95,9 @@
     </Compile>
     <Compile Include="Views\CreateDialogView.xaml.cs">
       <DependentUpon>CreateDialogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogControlView.xaml.cs">
+      <DependentUpon>LogControlView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -103,6 +110,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CreateDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LogControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

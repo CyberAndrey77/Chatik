@@ -34,7 +34,8 @@ namespace Client.NetWork
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<ChatEventArgs> ChatIsCreated;
         public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
-        public event EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent; 
+        public event EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent;
+        public event EventHandler<LogEventArgs<Log>> GetLogsEvent;
 
         public WsClient()
         {
@@ -95,8 +96,10 @@ namespace Client.NetWork
                     if (_login == connectionRequest.Login)
                     {
                         GetUserIdEvent?.Invoke(this, new UserIdEventArgs(connectionRequest.Id));
+                        ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, ConnectionRequestCode.Connect));
                         break;
                     }
+                    // TODO Поменять на логичное событие
                     MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connectionRequest.Login, $"{connectionRequest.Login} {answer}"));
                     break;
                 case nameof(ServerMessageResponse):
@@ -175,12 +178,27 @@ namespace Client.NetWork
                     {
                         throw new ArgumentNullException();
                     }
-                    GetMessagesEvent?.Invoke(this, new GetMessagesEventArgs<Message>(getMessages.ChatId){Messages = getMessages.Messages, Users = getMessages.Users});
+                    GetMessagesEvent?.Invoke(this, new GetMessagesEventArgs<Message>(getMessages.ChatId) { Messages = getMessages.Messages, Users = getMessages.Users });
+                    break;
+                case nameof(GetLogsRequest<Log>):
+                    var logs =
+                        ((JObject)message.Payload).ToObject(typeof(GetLogsRequest<Log>)) as GetLogsRequest<Log>;
+                    if (logs == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    GetLogsEvent?.Invoke(this, new LogEventArgs<Log>() { LogsList = logs.LogsList });
                     break;
                 default:
                     throw new ArgumentNullException();
             }
 
+        }
+
+        internal void GetLogs(int selectType, DateTime starTime, DateTime endTime)
+        {
+            _sendQueue.Enqueue(new GetLogsResponse<Log>(selectType, starTime, endTime).GetContainer());
+            Send();
         }
 
         internal void GetMessage(int chatId)
@@ -209,7 +227,7 @@ namespace Client.NetWork
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, _code == ConnectionRequestCode.Connect ? ConnectionRequestCode.Disconnect : ConnectionRequestCode.LoginIsAlreadyTaken));
+            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, _code == ConnectionRequestCode.Disconnect ? ConnectionRequestCode.Disconnect : ConnectionRequestCode.LoginIsAlreadyTaken));
 
             _socket.OnOpen -= OnOpen;
             _socket.OnClose -= OnClose;
@@ -219,7 +237,7 @@ namespace Client.NetWork
 
         private void OnOpen(object sender, System.EventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, ConnectionRequestCode.Connect));
+            //ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, ConnectionRequestCode.Connect));
         }
 
         public void Disconnect()

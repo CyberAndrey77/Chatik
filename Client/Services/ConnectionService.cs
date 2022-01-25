@@ -28,6 +28,7 @@ namespace Client.Services
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
 
         public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
+        public EventHandler<LogEventArgs<Log>> GetLogsEvent { get; set; }
 
         public string Name { get; set; }
         public int Id{ get; set; }
@@ -37,7 +38,7 @@ namespace Client.Services
         public void ConnectToServer()
         {
             _wsClient = new WsClient();
-            _wsClient.ConnectionStatusChanged += HasConnected;
+            _wsClient.ConnectionStatusChanged += OnConnectionChange;
             _wsClient.MessageReceived += OnGetMessage;
             _wsClient.UsersTaken += OnUsersTaken;
             _wsClient.UserEvent += OnUserStatusChange;
@@ -49,8 +50,14 @@ namespace Client.Services
             _wsClient.ChatIsCreated += ChatIsCreated;
             _wsClient.GetUserChats += GetChats;
             _wsClient.GetMessagesEvent += OnGetMessages;
+            _wsClient.GetLogsEvent += OnGetLogs;
             _wsClient.Connect(IpAddress, Port);
             _wsClient.Login(Name);
+        }
+
+        private void OnGetLogs(object sender, LogEventArgs<Log> e)
+        {
+            GetLogsEvent?.Invoke(this, e);
         }
 
         private void OnGetMessages(object sender, GetMessagesEventArgs<Message> e)
@@ -95,7 +102,7 @@ namespace Client.Services
                 return;
             }
             _wsClient.Disconnect();
-            _wsClient.ConnectionStatusChanged -= HasConnected;
+            _wsClient.ConnectionStatusChanged -= OnConnectionChange;
             _wsClient.MessageReceived -= OnGetMessage;
             _wsClient.UsersTaken -= OnUsersTaken;
             _wsClient.UserEvent -= OnUserStatusChange;
@@ -107,7 +114,7 @@ namespace Client.Services
             _wsClient.SendMessage(name, message);
         }
 
-        private void HasConnected(object sender, ConnectStatusChangeEventArgs e)
+        private void OnConnectionChange(object sender, ConnectStatusChangeEventArgs e)
         {
             switch (e.ConnectionRequestCode)
             {
@@ -161,6 +168,11 @@ namespace Client.Services
         public void GetMessages(int chatId)
         {
             _wsClient.GetMessage(chatId);
+        }
+
+        public void GetLogs(int selectType, DateTime starTime, DateTime endTime)
+        {
+            _wsClient.GetLogs(selectType, starTime, endTime);
         }
     }
 }

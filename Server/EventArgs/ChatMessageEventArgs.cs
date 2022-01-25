@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Server.Models;
-
-namespace Server
+﻿namespace Server.EventArgs
 {
+    using System;
+    using System.Collections.Generic;
+    using Server.Models;
     public class ChatMessageEventArgs: EventArgs
     {
         public Guid MessageId { get; }

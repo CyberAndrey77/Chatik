@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common;
 using Common.Enums;
+using Server.EventArgs;
 using Server.Models;
 
 namespace Server
@@ -16,12 +17,13 @@ namespace Server
         public delegate void MessageHandler(string message);
 
         public WsServer Server { get; set; }
-
+        
         public EventHandler<ConnectStatusChangeEventArgs> ConnectionEvent;
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<GetMessagesEventArgs<Message>> GetMessageEvent;
         public event EventHandler<CreateChatEventArgs> CreateChatEvent;
+        public event EventHandler<LogEventArgs<Log>> GetLogsEvent;
 
         private MessageHandler _messageHandler;
         private readonly int _port;
@@ -37,6 +39,12 @@ namespace Server
             Server.ChatMessageEvent += OnChatMessageEvent;
             Server.GetMessageEvent += OnGetMessageEvent;
             Server.CreateChatEvent += OnChatCreateEvent;
+            Server.GetLogsEvent += OnGetLogs;
+        }
+
+        private void OnGetLogs(object sender, LogEventArgs<Log> e)
+        {
+            GetLogsEvent?.Invoke(this, e);
         }
 
         private void OnChatCreateEvent(object sender, CreateChatEventArgs e)

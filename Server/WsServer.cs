@@ -3,13 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Runtime.Remoting.Messaging;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
 using Common;
 using Common.Enums;
 using Common.EventArgs;
+using Server.EventArgs;
 using Server.Models;
 using WebSocketSharp.Server;
 
@@ -27,6 +25,7 @@ namespace Server
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<CreateChatEventArgs> CreateChatEvent;
         public event EventHandler<GetMessagesEventArgs<Message>> GetMessageEvent;
+        public event EventHandler<LogEventArgs<Log>> GetLogsEvent;
 
         public WsServer(IPEndPoint listenAddress)
         {
@@ -76,7 +75,7 @@ namespace Server
 
             connection.Login = response.Login;
             ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(connection.Id, response.Login, ConnectionRequestCode.Connect));
-            SendMessageAll(new ConnectionRequest(response.Login, ConnectionRequestCode.Connect, connection.Id).GetContainer(), connection.Id);
+            //SendMessageAll(new ConnectionRequest(response.Login, ConnectionRequestCode.Connect, connection.Id).GetContainer(), connection.Id);
 
             var connectionUsers = new Dictionary<int, string>();
             foreach (var user in Connections)
@@ -91,7 +90,7 @@ namespace Server
 
             var userChatsEvent = new UserChatEventArgs<Chat>(new List<Chat>(), connection.Id);
             GetUserChats?.Invoke(this, userChatsEvent);
-            SendMessageToClient(new UserChats<Chat>(userChatsEvent.Chats).GetContainer(), connection.Id);
+            //SendMessageToClient(new UserChats<Chat>(userChatsEvent.Chats).GetContainer(), connection.Id);
         }
 
         internal void CreateChat(int id, CreateChatResponse createChatResponse)
@@ -100,27 +99,44 @@ namespace Server
                 createChatResponse.IsDialog);
             CreateChatEvent?.Invoke(this, chatEvent);
             
-            SendMessageToClient(new CreateChatRequest(chatEvent.ChatName, chatEvent.ChatId, createChatResponse.CreatorName, createChatResponse.IsDialog, chatEvent.UserIds,
-                chatEvent.Time).GetContainer(), createChatResponse.UserIds[0]);
+            //SendMessageToClient(new CreateChatRequest(chatEvent.ChatName, chatEvent.ChatId, createChatResponse.CreatorName, createChatResponse.IsDialog, chatEvent.UserIds,
+            //    chatEvent.Time).GetContainer(), createChatResponse.UserIds[0]);
 
 
-            for (int i = 1; i < createChatResponse.UserIds.Count; i++)
+            //for (int i = 1; i < createChatResponse.UserIds.Count; i++)
+            //{
+            //    SendMessageToClient(
+            //        new CreateChatResponse(createChatResponse.ChatName, chatEvent.ChatId, createChatResponse.CreatorName,
+            //            createChatResponse.UserIds, chatEvent.Time, createChatResponse.IsDialog).GetContainer(), createChatResponse.UserIds[i]);
+            //}
+        }
+
+        internal void GetLogs(int id, GetLogsResponse<Log> logs)
+        {
+            var logEvent = new LogEventArgs<Log>
             {
-                SendMessageToClient(
-                    new CreateChatResponse(createChatResponse.ChatName, chatEvent.ChatId, createChatResponse.CreatorName,
-                        createChatResponse.UserIds, chatEvent.Time, createChatResponse.IsDialog).GetContainer(), createChatResponse.UserIds[i]);
-            }
+                UserId = id,
+                Start = logs.Start,
+                End = logs.End,
+                Type = logs.Type
+            };
+            GetLogsEvent?.Invoke(this, logEvent);
+
+            //SendMessageToClient(new GetLogsRequest<Log>(logEvent.LogsList, logEvent.Type, logEvent.Start, logEvent.End).GetContainer(), id);
         }
 
         internal void GetMessages(int userId, int chatId)
         {
-            var getMessageEvent = new GetMessagesEventArgs<Message>(chatId);
+            var getMessageEvent = new GetMessagesEventArgs<Message>(chatId)
+            {
+                SenderId = userId
+            };
             GetMessageEvent?.Invoke(this, getMessageEvent);
 
-            SendMessageToClient(new GetMessageRequest<Message>(getMessageEvent.ChatId, getMessageEvent.Messages, getMessageEvent.Users).GetContainer(), userId);
+            //SendMessageToClient(new GetMessageRequest<Message>(getMessageEvent.ChatId, getMessageEvent.Messages, getMessageEvent.Users).GetContainer(), userId);
         }
 
-        private void SendMessageToClient(MessageContainer messageContainer, int id)
+        internal void SendMessageToClient(MessageContainer messageContainer, int id)
         {
             if (!Connections.TryGetValue(id, out WsConnection connection))
             {
@@ -134,13 +150,13 @@ namespace Server
             var chatEvent = new ChatMessageEventArgs(id, chatMessage.Message, chatMessage.ChatId, chatMessage.UserIds, chatMessage.IsDialog);
             ChatMessageEvent?.Invoke(this, chatEvent);
 
-            SendMessageToClient(new MessageRequest(MessageStatus.Delivered, chatEvent.Time, chatMessage.MessageId){ChatId = chatEvent.ChatId}.GetContainer(), id);
+            //SendMessageToClient(new MessageRequest(MessageStatus.Delivered, chatEvent.Time, chatMessage.MessageId){ChatId = chatEvent.ChatId}.GetContainer(), id);
 
-            foreach (var userId in chatMessage.UserIds.Where(userId => userId != id))
-            {
-                SendMessageToClient(
-                    new ChatMessageResponseServer(id, chatEvent.Message, chatEvent.ChatId, chatEvent.UserIds, chatEvent.IsDialog, chatEvent.Time).GetContainer(), userId);
-            }
+            //foreach (var userId in chatMessage.UserIds.Where(userId => userId != id))
+            //{
+            //    SendMessageToClient(
+            //        new ChatMessageResponseServer(id, chatEvent.Message, chatEvent.ChatId, chatEvent.UserIds, chatEvent.IsDialog, chatEvent.Time).GetContainer(), userId);
+            //}
         }
 
         public void SendMessageAll(MessageContainer container, int id)

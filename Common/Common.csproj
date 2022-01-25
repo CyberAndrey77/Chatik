@@ -52,9 +52,12 @@
     <Compile Include="Enums\MessageStatus.cs" />
     <Compile Include="EventArgs\ConnectStatusChangeEventArgs.cs" />
     <Compile Include="EventArgs\GetMessagesEventArgs.cs" />
+    <Compile Include="EventArgs\LogEventArgs.cs" />
     <Compile Include="EventArgs\MessageReceivedEventArgs.cs" />
     <Compile Include="EventArgs\UserChatEventArgs.cs" />
     <Compile Include="EventArgs\UserStatusChangeEventArgs.cs" />
+    <Compile Include="GetLogsRequest.cs" />
+    <Compile Include="GetLogsResponse.cs" />
     <Compile Include="GetMessageRequest.cs" />
     <Compile Include="GetMessageResponse.cs" />
     <Compile Include="MessageContainer.cs" />

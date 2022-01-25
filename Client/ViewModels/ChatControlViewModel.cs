@@ -332,21 +332,31 @@ namespace Client.ViewModels
 
                 ChatViewModel oldChat = null;
 
-                foreach (var chatVM in ChatViewModels)
-                {
-                    if (chatVM.Users.Count != selectedUsers.Count) continue;
-                    int matchingUsers = 0;
-                    foreach (var user in chatVM.Users)
-                    {
-                        if (selectedUsers.Any(x => x.Id == user.Id))
-                        {
-                            matchingUsers++;
-                        }
+                //if (expr)
+                //{
+                //    foreach (var chatVM in ChatViewModels)
+                //    {
+                //        if (chatVM.Users.Count != selectedUsers.Count) continue;
+                //        int matchingUsers = 0;
+                //        foreach (var user in chatVM.Users)
+                //        {
+                //            if (selectedUsers.Any(x => x.Id == user.Id))
+                //            {
+                //                matchingUsers++;
+                //            }
 
-                        if (matchingUsers == selectedUsers.Count)
-                        {
-                            oldChat = chatVM;
-                        }
+                //            if (matchingUsers == selectedUsers.Count)
+                //            {
+                //                oldChat = chatVM;
+                //            }
+                //        }
+                //    }
+                //}
+                foreach (var chat in ChatViewModels)
+                {
+                    if (chat.Name == selectedUser.Name)
+                    {
+                        oldChat = chat;
                     }
                 }
 

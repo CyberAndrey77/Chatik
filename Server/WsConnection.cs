@@ -7,6 +7,7 @@ using System.Threading;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Server.Models;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -103,10 +104,24 @@ namespace Server
 
                     _wsServer.GetMessages(Id, getMessage.ChatId);
                     break;
+                case nameof(GetLogsResponse<Log>):
+                    var logs =
+                        ((JObject) message.Payload).ToObject(typeof(GetLogsResponse<Log>)) as GetLogsResponse<Log>;
+                    if (logs == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    _wsServer.GetLogs(Id, logs);
+                    break;
                 default:
                     throw new ArgumentNullException();
             }
            // Thread.Sleep(10000);
+        }
+
+        protected override void OnError(ErrorEventArgs e)
+        {
+            base.OnError(e);
         }
 
         public void Close()
@@ -127,12 +142,21 @@ namespace Server
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
-            SendAsync(serializedMessages, SendCompleted);
+            try
+            {
+                SendAsync(serializedMessages, SendCompleted);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private void SendCompleted(bool obj)
         {
             
         }
+
     }
 }
