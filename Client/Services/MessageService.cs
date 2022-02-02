@@ -51,6 +51,7 @@ namespace Client.Services
             if (getMessages == null)
             {
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
             }
             GetMessagesEvent?.Invoke(this, new GetMessagesEventArgs<Message>(getMessages.ChatId)
             {
@@ -69,6 +70,7 @@ namespace Client.Services
             if (chatMessageResponseServer == null)
             {
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
             }
             ChatMessageEvent?.Invoke(this, new ChatMessageEventArgs(chatMessageResponseServer.SenderUserId, chatMessageResponseServer.Message,
                 chatMessageResponseServer.ChatId, chatMessageResponseServer.UserIds, chatMessageResponseServer.Time));
@@ -85,6 +87,7 @@ namespace Client.Services
             if (messageRequest == null)
             {
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
             }
             MessageStatusChangeEvent?.Invoke(this, new MessageRequestEvent(messageRequest.MessageId, messageRequest.Status, messageRequest.Time) 
                 { ChatId = messageRequest.ChatId });

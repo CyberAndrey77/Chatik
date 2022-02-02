@@ -12,7 +12,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -47,8 +47,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="Создать диалог" Style="{StaticResource CreateChat}"/>
-                <Button Grid.Column="1" Content="Создать чат" Style="{StaticResource CreateChat}"/>
+                <Button Grid.Column="0" Content="Создать диалог" Style="{StaticResource CreateChat}" Command="{Binding CreateDialog}"/>
+                <Button Grid.Column="1" Content="Создать чат" Style="{StaticResource CreateChat}" Command="{Binding CreateChatCommand}"/>
             </Grid>
         </Grid>
 
@@ -59,20 +59,15 @@
                 <RowDefinition Height="0.1*"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="{Binding ChatName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <ListBox Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
+            <ListBox Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}" HorizontalContentAlignment="Stretch">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="{Binding Column}" Width="Auto">
+                            <Grid Grid.Column="{Binding Column}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
@@ -86,7 +81,7 @@
                                 <Label Grid.Row="0" Grid.Column="1" FontSize="10px" Content="{Binding Time}"/>
                                 <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="15px">
                                     <Label.Content>
-                                        <TextBlock Text="{Binding  Text}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding  Text}" TextWrapping="Wrap"/>
                                     </Label.Content>
                                 </Label>
                             </Grid>

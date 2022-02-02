@@ -11,17 +11,8 @@ namespace Client.Services
 {
     public interface IConnectionService
     {
-        EventHandler<ConnectionEventArgs> ConnectionEvent { get; set; }
-        EventHandler<MessageEventArgs> MessageEvent { get; set; }
         EventHandler<GetUsersEventArgs> UserListEvent { get; set; }
         EventHandler<GetUserEventArgs> UserEvent { get; set; }
-        EventHandler<ChatMessageEventArgs> GetPrivateMessageEvent { get; set; }
-
-        EventHandler<ChatEventArgs> ChatCreated { get; set; }
-
-        EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
-        EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
-        EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
         EventHandler<ConnectStatusChangeEventArgs> ConnectStatusChangeEvent { get; set; }
         
         int Id { get; set; }

@@ -19,7 +19,6 @@ namespace Client.Services
         //private readonly IConnectionService _connectionService;
         private readonly ITransport _transport;
         private readonly ILogger _logger;
-        public EventHandler<ChatEventArgs> ChatCreatedEvent { get; set; }
         public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
         public EventHandler<ChatEventArgs> ChatIsCreated { get; set; }
@@ -35,7 +34,7 @@ namespace Client.Services
             _transport = transport;
             _logger = LogManager.GetCurrentClassLogger();
             _transport.Subscribe(EnumKey.ChatKeyGetChats, OnGetChats);
-            _transport.Subscribe(EnumKey.ChatKeyChatIsCreate, OnChatIsCreated);
+            //_transport.Subscribe(EnumKey.ChatKeyChatIsCreate, OnChatIsCreated);
             _transport.Subscribe(EnumKey.ChatKeyCreateChat, OnChatCreated);
 
         }
@@ -51,6 +50,7 @@ namespace Client.Services
             if (userChats == null)
             {
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
             }
             GetUserChats?.Invoke(this, new UserChatEventArgs<Chat>(userChats.Chats));
         }
@@ -79,10 +79,12 @@ namespace Client.Services
             {
                 return;
             }
+            //TODO десериализация х занимется!!!!!
             var createChatResponse = ((JObject)message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
             if (createChatResponse == null)
             {
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
             }
             CreatedChat?.Invoke(this, new ChatEventArgs(createChatResponse.ChatName, createChatResponse.ChatId, createChatResponse.CreatorName,
                 createChatResponse.UserIds, createChatResponse.IsDialog, createChatResponse.Time));

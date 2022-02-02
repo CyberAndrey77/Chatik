@@ -19,19 +19,9 @@ namespace Client.Services
         //private WsClient _wsClient;
         private readonly ITransport _transport; 
         private readonly ILogger _logger;
-
-        public EventHandler<ConnectionEventArgs> ConnectionEvent { get; set; }
-        public EventHandler<MessageEventArgs> MessageEvent { get; set; }
+        
         public EventHandler<GetUsersEventArgs> UserListEvent { get; set; }
         public EventHandler<GetUserEventArgs> UserEvent { get; set; }
-        public EventHandler<ChatMessageEventArgs> GetPrivateMessageEvent { get; set; }
-        public EventHandler<ChatEventArgs> ChatCreated { get; set; }
-        public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
-        public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
-
-        public EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
-
-        public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
 
         public EventHandler<ConnectStatusChangeEventArgs> ConnectStatusChangeEvent { get; set; }
 
@@ -58,6 +48,7 @@ namespace Client.Services
             if (connectedUser == null)
             {
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
             }
             UserListEvent?.Invoke(this, new GetUsersEventArgs(connectedUser.Users));
         }
@@ -72,8 +63,17 @@ namespace Client.Services
             if (connectionRequest == null)
             {
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
             }
-            ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(connectionRequest.Id, connectionRequest.Login, connectionRequest.CodeConnected));
+
+            if (Name == connectionRequest.Login)
+            {
+                ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(connectionRequest.Id, connectionRequest.Login, connectionRequest.CodeConnected));
+            }
+            else
+            {
+                UserEvent?.Invoke(this, new GetUserEventArgs(connectionRequest.Login, connectionRequest.CodeConnected == ConnectionRequestCode.Connect, connectionRequest.Id));
+            }
         }
 
         public void ConnectToServer()
@@ -82,50 +82,9 @@ namespace Client.Services
             _transport.Login(Name);
         }
 
-        private void OnGetUserId(object sender, UserIdEventArgs e)
-        {
-            Id = e.UserId;
-        }
-
         public void Disconnect()
         {
             _transport.Disconnect();
-            //if (_wsClient == null)
-            //{
-            //    return;
-            //}
-            //_wsClient.Disconnect();
-            //_wsClient.ConnectionStatusChanged -= OnConnectionChange;
-            //_wsClient.MessageReceived -= OnGetMessage;
-            //_wsClient.UsersTaken -= OnUsersTaken;
-            //_wsClient.UserEvent -= OnUserStatusChange;
-            //_wsClient = null;
-        }
-
-        private void OnConnectionChange(object sender, ConnectStatusChangeEventArgs e)
-        {
-            switch (e.ConnectionRequestCode)
-            {
-                case ConnectionRequestCode.Connect:
-                    ConnectionEvent?.Invoke(this, new ConnectionEventArgs(true, "Успешное подключение"));
-                    break;
-                case ConnectionRequestCode.Disconnect:
-                    ConnectionEvent?.Invoke(this, new ConnectionEventArgs(false, "Соединение потеряно"));
-                    break;
-                case ConnectionRequestCode.LoginIsAlreadyTaken:
-                    ConnectionEvent?.Invoke(this, new ConnectionEventArgs(false, "Логин уже занят"));
-                    break;
-            }
-        }
-
-        private void OnUsersTaken(object sender, NetWork.UsersTakenEventArgs e)
-        {
-            UserListEvent?.Invoke(this, new GetUsersEventArgs(e.Users));
-        }
-        
-        private void OnUserStatusChange(object sender, UserStatusChangeEventArgs e)
-        {
-            UserEvent?.Invoke(this, new GetUserEventArgs(e.UserName, e.IsConnect, e.Id));
         }
     }
 }

@@ -29,16 +29,6 @@ namespace Client.NetWork
         //public delegate void MethodHandler();
 
         public EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
-        public EventHandler<UserIdEventArgs> GetUserIdEvent;
-        public EventHandler<MessageReceivedEventArgs> MessageReceived;
-        public EventHandler<UsersTakenEventArgs> UsersTaken;
-        public EventHandler<UserStatusChangeEventArgs> UserEvent;
-        public EventHandler<MessageRequestEvent> MessageRequestEvent;
-        public EventHandler<ChatMessageEventArgs> PrivateMessageEvent;
-        public EventHandler<ChatMessageEventArgs> ChatMessageEvent;
-        public EventHandler<UserChatEventArgs<Chat>> GetUserChats;
-        public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent;
-        public EventHandler<LogEventArgs<Log>> GetLogsEvent;
 
         public WsClient()
         {
@@ -171,7 +161,8 @@ namespace Client.NetWork
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, _code == ConnectionRequestCode.Disconnect ? ConnectionRequestCode.Disconnect : ConnectionRequestCode.LoginIsAlreadyTaken));
+            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login,
+                _code == ConnectionRequestCode.Disconnect ? ConnectionRequestCode.Disconnect : ConnectionRequestCode.LoginIsAlreadyTaken));
 
             _socket.OnOpen -= OnOpen;
             _socket.OnClose -= OnClose;

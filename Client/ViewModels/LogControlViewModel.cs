@@ -19,7 +19,7 @@ namespace Client.ViewModels
         private RecordType _type;
         private string _message;
         private DateTime _time;
-        private readonly IConnectionService _connectionService;
+        private readonly ILogService _logService;
         private DateTime _startTime;
         private DateTime _endTime;
         private RecordType _selectType;
@@ -91,10 +91,10 @@ namespace Client.ViewModels
 
         public DelegateCommand GetLogsCommand { get; }
 
-        public LogControlViewModel(IConnectionService connectionService)
+        public LogControlViewModel(ILogService logService)
         {
-            _connectionService = connectionService;
-            //.GetLogsEvent += OnGetLogs;
+            _logService = logService;
+            _logService.GetLogsEvent += OnGetLogs;
             StarTime = new DateTime(2021, 12, 1);
             EndTime = DateTime.Today;
             SelectType = RecordType.All;
@@ -116,7 +116,7 @@ namespace Client.ViewModels
 
         private void GetLogs()
         {
-            //_connectionService.GetLogs((int)SelectType, StarTime, EndTime);
+            _logService.GetLogs((int)SelectType, StarTime, EndTime);
         }
     }
 }

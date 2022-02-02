@@ -91,15 +91,15 @@ namespace Server
                     ChatId = e.ChatId
                 });
 
-                Network.Server.SendMessageToClient(new CreateChatRequest(e.ChatName, e.ChatId, users[0].Name, e.IsDialog, e.UserIds,
-                    e.Time).GetContainer(), e.UserIds[0]);
+                //Network.Server.SendMessageToClient(new CreateChatRequest(e.ChatName, e.ChatId, users[0].Name, e.IsDialog, e.UserIds,
+                //    e.Time).GetContainer(), e.UserIds[0]);
 
 
-                for (int i = 1; i < e.UserIds.Count; i++)
+                foreach (var t in e.UserIds)
                 {
                     Network.Server.SendMessageToClient(
                         new CreateChatResponse(e.ChatName, e.ChatId, users[0].Name,
-                            e.UserIds, e.Time, e.IsDialog).GetContainer(), e.UserIds[i]);
+                            e.UserIds, e.Time, e.IsDialog).GetContainer(), t);
                 }
             }
         }
