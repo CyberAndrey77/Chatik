@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Client.Models;
+using Client.NetWork;
 using Client.Services;
 using Common.EventArgs;
 using Prism.Commands;
@@ -93,7 +94,7 @@ namespace Client.ViewModels
         public LogControlViewModel(IConnectionService connectionService)
         {
             _connectionService = connectionService;
-            _connectionService.GetLogsEvent += OnGetLogs;
+            //.GetLogsEvent += OnGetLogs;
             StarTime = new DateTime(2021, 12, 1);
             EndTime = DateTime.Today;
             SelectType = RecordType.All;
@@ -115,7 +116,7 @@ namespace Client.ViewModels
 
         private void GetLogs()
         {
-            _connectionService.GetLogs((int)SelectType, StarTime, EndTime);
+            //_connectionService.GetLogs((int)SelectType, StarTime, EndTime);
         }
     }
 }

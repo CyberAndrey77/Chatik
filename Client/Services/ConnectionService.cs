@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Client.Enums;
 using Client.Models;
 using Client.NetWork;
 using Client.NetWork.EventArgs;
@@ -8,18 +9,21 @@ using Client.Services.EventArgs;
 using Common;
 using Common.Enums;
 using Common.EventArgs;
+using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace Client.Services
 {
     public class ConnectionService : IConnectionService
     {
-        private WsClient _wsClient;
+        //private WsClient _wsClient;
+        private readonly ITransport _transport; 
+        private readonly ILogger _logger;
 
         public EventHandler<ConnectionEventArgs> ConnectionEvent { get; set; }
         public EventHandler<MessageEventArgs> MessageEvent { get; set; }
         public EventHandler<GetUsersEventArgs> UserListEvent { get; set; }
         public EventHandler<GetUserEventArgs> UserEvent { get; set; }
-        public EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
         public EventHandler<ChatMessageEventArgs> GetPrivateMessageEvent { get; set; }
         public EventHandler<ChatEventArgs> ChatCreated { get; set; }
         public EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
@@ -28,51 +32,54 @@ namespace Client.Services
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
 
         public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
-        public EventHandler<LogEventArgs<Log>> GetLogsEvent { get; set; }
+
+        public EventHandler<ConnectStatusChangeEventArgs> ConnectStatusChangeEvent { get; set; }
 
         public string Name { get; set; }
         public int Id{ get; set; }
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
+        public ConnectionService(ITransport transport)
+        {
+            _transport = transport;
+            _logger = LogManager.GetCurrentClassLogger();
+            _transport.Subscribe(EnumKey.ConnectionKeyConnection, OnConnectionChange);
+            _transport.Subscribe(EnumKey.ConnectionKeyConnectedUser, OnGetConnectedUser);
+        }
+
+        private void OnGetConnectedUser(MessageContainer message)
+        {
+            if (message.Identifier != nameof(ConnectedUser))
+            {
+                return;
+            }
+            var connectedUser = ((JObject)message.Payload).ToObject(typeof(ConnectedUser)) as ConnectedUser;
+            if (connectedUser == null)
+            {
+                _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+            }
+            UserListEvent?.Invoke(this, new GetUsersEventArgs(connectedUser.Users));
+        }
+
+        private void OnConnectionChange(MessageContainer message)
+        {
+            if (message.Identifier != nameof(ConnectionRequest))
+            {
+                return;
+            }
+            var connectionRequest = ((JObject)message.Payload).ToObject(typeof(ConnectionRequest)) as ConnectionRequest;
+            if (connectionRequest == null)
+            {
+                _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+            }
+            ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(connectionRequest.Id, connectionRequest.Login, connectionRequest.CodeConnected));
+        }
+
         public void ConnectToServer()
         {
-            _wsClient = new WsClient();
-            _wsClient.ConnectionStatusChanged += OnConnectionChange;
-            _wsClient.MessageReceived += OnGetMessage;
-            _wsClient.UsersTaken += OnUsersTaken;
-            _wsClient.UserEvent += OnUserStatusChange;
-            _wsClient.MessageRequestEvent += OnMessageStatusChange;
-            _wsClient.PrivateMessageEvent += GetPrivateMessage;
-            _wsClient.CreatedChat += OnChatCreated;
-            _wsClient.ChatMessageEvent += OnChatMessage;
-            _wsClient.GetUserIdEvent += OnGetUserId;
-            _wsClient.ChatIsCreated += ChatIsCreated;
-            _wsClient.GetUserChats += GetChats;
-            _wsClient.GetMessagesEvent += OnGetMessages;
-            _wsClient.GetLogsEvent += OnGetLogs;
-            _wsClient.Connect(IpAddress, Port);
-            _wsClient.Login(Name);
-        }
-
-        private void OnGetLogs(object sender, LogEventArgs<Log> e)
-        {
-            GetLogsEvent?.Invoke(this, e);
-        }
-
-        private void OnGetMessages(object sender, GetMessagesEventArgs<Message> e)
-        {
-            GetMessagesEvent?.Invoke(this, e);
-        }
-
-        private void GetChats(object sender, UserChatEventArgs<Chat> e)
-        {
-            GetUserChats?.Invoke(this, e);
-        }
-
-        private void ChatIsCreated(object sender, ChatEventArgs e)
-        {
-            ChatIsCreatedEvent?.Invoke(this, e);
+            _transport.Connect(IpAddress, Port);
+            _transport.Login(Name);
         }
 
         private void OnGetUserId(object sender, UserIdEventArgs e)
@@ -80,38 +87,19 @@ namespace Client.Services
             Id = e.UserId;
         }
 
-        private void OnChatMessage(object sender, ChatMessageEventArgs e)
-        {
-            ChatMessageEvent?.Invoke(this, e);
-        }
-
-        private void OnChatCreated(object sender, ChatEventArgs e)
-        {
-            ChatCreated?.Invoke(this, e);
-        }
-
-        private void GetPrivateMessage(object sender, ChatMessageEventArgs e)
-        {
-            GetPrivateMessageEvent?.Invoke(this, e);
-        }
-
         public void Disconnect()
         {
-            if (_wsClient == null)
-            {
-                return;
-            }
-            _wsClient.Disconnect();
-            _wsClient.ConnectionStatusChanged -= OnConnectionChange;
-            _wsClient.MessageReceived -= OnGetMessage;
-            _wsClient.UsersTaken -= OnUsersTaken;
-            _wsClient.UserEvent -= OnUserStatusChange;
-            _wsClient = null;
-        }
-
-        public void SendMessage(string name, string message)
-        {
-            _wsClient.SendMessage(name, message);
+            _transport.Disconnect();
+            //if (_wsClient == null)
+            //{
+            //    return;
+            //}
+            //_wsClient.Disconnect();
+            //_wsClient.ConnectionStatusChanged -= OnConnectionChange;
+            //_wsClient.MessageReceived -= OnGetMessage;
+            //_wsClient.UsersTaken -= OnUsersTaken;
+            //_wsClient.UserEvent -= OnUserStatusChange;
+            //_wsClient = null;
         }
 
         private void OnConnectionChange(object sender, ConnectStatusChangeEventArgs e)
@@ -130,11 +118,6 @@ namespace Client.Services
             }
         }
 
-        private void OnGetMessage(object sender, MessageReceivedEventArgs e)
-        {
-            MessageEvent?.Invoke(this, new MessageEventArgs(e.SenderName, e.Message, e.Time));
-        }
-
         private void OnUsersTaken(object sender, NetWork.UsersTakenEventArgs e)
         {
             UserListEvent?.Invoke(this, new GetUsersEventArgs(e.Users));
@@ -143,36 +126,6 @@ namespace Client.Services
         private void OnUserStatusChange(object sender, UserStatusChangeEventArgs e)
         {
             UserEvent?.Invoke(this, new GetUserEventArgs(e.UserName, e.IsConnect, e.Id));
-        }
-        
-        private void OnMessageStatusChange(object sender, MessageRequestEvent e)
-        {
-            MessageStatusChangeEvent?.Invoke(this, e);
-        }
-
-        public void CreateChat(string chatName, int chatId, string creator, List<int> invented, bool isDialog)
-        {
-            _wsClient.CreateChat(chatName, chatId, creator, invented, isDialog);
-        }
-
-        public void SendPrivateMessage(int senderUserId, string message, int chatId, List<int> userIds)
-        {
-            _wsClient.SendPrivateMessage(senderUserId, message, chatId, userIds);
-        }
-
-        public void SendChatMessage(int name, string text, int chatId, List<int> userIds, bool isDialog)
-        {
-            _wsClient.SendChatMessage(name, text, chatId, userIds, isDialog);
-        }
-
-        public void GetMessages(int chatId)
-        {
-            _wsClient.GetMessage(chatId);
-        }
-
-        public void GetLogs(int selectType, DateTime starTime, DateTime endTime)
-        {
-            _wsClient.GetLogs(selectType, starTime, endTime);
         }
     }
 }

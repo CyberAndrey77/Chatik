@@ -22,13 +22,8 @@ namespace Client.Services
         EventHandler<ChatMessageEventArgs> ChatMessageEvent { get; set; }
         EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
         EventHandler<UserChatEventArgs<Chat>> GetUserChats { get; set; }
-        EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
-        EventHandler<LogEventArgs<Log>> GetLogsEvent { get; set; }
-
-        void CreateChat(string chatName, int chatId, string creator, List<int> invented, bool isDialog);
-
-        EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
-
+        EventHandler<ConnectStatusChangeEventArgs> ConnectStatusChangeEvent { get; set; }
+        
         int Id { get; set; }
         string Name { get; set; }
         string IpAddress { get; set; }
@@ -36,10 +31,5 @@ namespace Client.Services
 
         void ConnectToServer();
         void Disconnect();
-        void GetMessages(int chatId);
-        void SendMessage(string name, string message);
-        void SendPrivateMessage(int senderUserId, string message, int chatId, List<int> userIds);
-        void SendChatMessage(int name, string text, int chatId, List<int> userIds, bool isDialog);
-        void GetLogs(int selectType, DateTime starTime, DateTime endTime);
     }
 }

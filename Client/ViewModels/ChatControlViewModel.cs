@@ -25,9 +25,9 @@ namespace Client.ViewModels
     {
         private string _sendText;
         private readonly IMessageService _messageService;
-        private IConnectionService _connectionService;
-        private IDialogService _dialogService;
-        private IChatService _chatService;
+        private readonly IConnectionService _connectionService;
+        private readonly IDialogService _dialogService;
+        private readonly IChatService _chatService;
         private MessageViewModel _messageViewModel;
         private ObservableCollection<MessageViewModel> _messageViewModels;
         private ObservableCollection<User> _users;
@@ -35,6 +35,13 @@ namespace Client.ViewModels
         private readonly ConcurrentQueue<MessageViewModel> _sendQueue;
         private string _chatName;
         private ChatViewModel _selectedChat;
+        private string _name;
+
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
 
         public string SendText
         {
@@ -118,16 +125,16 @@ namespace Client.ViewModels
 
             _connectionService.UserListEvent += OnGetUsers;
             _connectionService.UserEvent += OnUserConnectOrDisconnect;
-            _connectionService.MessageStatusChangeEvent += OnMessageStatusChange;
-            _connectionService.GetUserChats += GetChats;
+            _messageService.MessageStatusChangeEvent += OnMessageStatusChange;
+            _chatService.GetUserChats += GetChats;
             _messageService.MessageEvent += OnMessageReceived;
-            //_messageService.GetPrivateMessageEvent += OnPrivateMessage;
             _messageService.ChatMessageEvent += OnChatMessage;
             _messageService.GetMessagesEvent += OnGetMessages;
 
             _chatService.ChatCreatedEvent += OnCreatedChat;
             _chatService.ChatIsCreatedEvent += OnChatIsCreated;
             IsButtonEnable = false;
+            Name = _connectionService.Name;
 
             MessageViewModels = new ObservableCollection<MessageViewModel>();
             Users = new ObservableCollection<User>();

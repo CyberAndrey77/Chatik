@@ -6,9 +6,13 @@ using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Input;
 using Client.Models;
+using Client.NetWork;
 using Client.Services;
 using Client.Services.EventArgs;
 using Client.Views;
+using Common.Enums;
+using Common.EventArgs;
+using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
@@ -46,6 +50,10 @@ namespace Client.ViewModels
         //public CancelEventHandler OnClosingMainWindow { get; set; }
         public MainWindowViewModel(IMessageService messageService, IConnectionService connectionService, IChatService chatService, IDialogService dialogService)
         {
+            var config = new NLog.Config.LoggingConfiguration();
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "file.txt" };
+            config.AddRule(LogLevel.Error, LogLevel.Fatal, logfile);
+            NLog.LogManager.Configuration = config;
             ShowChat = new DelegateCommand(ShowChatCommand);
             ShowLog = new DelegateCommand(ShowLogCommand);
             _messageService = messageService;
@@ -53,10 +61,24 @@ namespace Client.ViewModels
             _dialogService = dialogService;
             _chatService = chatService;
             //OnClosingMainWindow += CloseWindows;
-            _connectionService.ConnectionEvent += OnConnection;
+            _connectionService.ConnectStatusChangeEvent += OnConnection;
             _loginViewModel = new LoginViewModel(connectionService);
             CurrentContentVm = _loginViewModel;
             Application.Current.Exit += CloseWindows;
+        }
+
+        private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
+        {
+            if (e.ConnectionRequestCode == ConnectionRequestCode.Connect)
+            {
+                _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _chatService, _dialogService);
+                CurrentContentVm = _chatControlViewModel;
+            }
+            else
+            {
+                _loginViewModel.MessageError = e.ConnectionRequestCode.ToString(); 
+                CurrentContentVm = _loginViewModel;
+            }
         }
 
         private void ShowLogCommand()
@@ -88,19 +110,19 @@ namespace Client.ViewModels
             _connectionService.Disconnect();
         }
 
-        private void OnConnection(object sender, ConnectionEventArgs e)
-        {
-            _isConnect = e.IsConnectSuccess;
-            if (e.IsConnectSuccess)
-            {
-                _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _chatService, _dialogService);
-                CurrentContentVm = _chatControlViewModel;
-            }
-            else
-            {
-                _loginViewModel.MessageError = e.ConnectedMessage;
-                CurrentContentVm = _loginViewModel;
-            }
-        }
+        //private void OnConnection(object sender, ConnectionEventArgs e)
+        //{
+        //    _isConnect = e.IsConnectSuccess;
+        //    if (e.IsConnectSuccess)
+        //    {
+        //        _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _chatService, _dialogService);
+        //        CurrentContentVm = _chatControlViewModel;
+        //    }
+        //    else
+        //    {
+        //        _loginViewModel.MessageError = e.ConnectedMessage;
+        //        CurrentContentVm = _loginViewModel;
+        //    }
+        //}
     }
 }

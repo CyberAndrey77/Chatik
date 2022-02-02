@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,7 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -58,6 +59,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converts\EnumToCollectionConverter.cs" />
+    <Compile Include="Enums\EnumKey.cs" />
     <Compile Include="Models\Chat.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Message.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />
     <Compile Include="NetWork\EventArgs\UserIdEventArgs.cs" />
+    <Compile Include="NetWork\PackageHelper.cs" />
     <Compile Include="NetWork\UsersTakenEventArgs.cs" />
     <Compile Include="NetWork\WsClient.cs" />
     <Compile Include="Services\ChatService.cs" />
@@ -76,10 +79,12 @@
     <Compile Include="Services\EventArgs\ChatMessageEventArgs.cs" />
     <Compile Include="Services\EventArgs\GetUserEventArgs.cs" />
     <Compile Include="Services\IChatService.cs" />
+    <Compile Include="Services\ILogService.cs" />
     <Compile Include="Services\IMessageService.cs" />
     <Compile Include="Services\EventArgs\ConnectionEventArgs.cs" />
     <Compile Include="Services\EventArgs\MessageEventArgs.cs" />
     <Compile Include="Services\IConnectionService.cs" />
+    <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Services\EventArgs\GetUsersEventArgs.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
@@ -147,6 +152,15 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.7.13</Version>
+    </PackageReference>
+    <PackageReference Include="NLog.Config">
+      <Version>4.7.13</Version>
+    </PackageReference>
+    <PackageReference Include="NLog.Schema">
+      <Version>4.7.13</Version>
     </PackageReference>
     <PackageReference Include="Prism.Unity" Version="8.1.97" />
     <PackageReference Include="WebSocketSharp-netstandard">

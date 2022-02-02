@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
+using Client.NetWork;
 using Client.Services;
 using Prism.Commands;
 using Prism.Mvvm;

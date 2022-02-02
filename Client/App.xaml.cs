@@ -5,6 +5,7 @@ using Prism.Mvvm;
 using Prism.Unity;
 using Client.ViewModels;
 using System;
+using Client.NetWork;
 using Client.Services;
 
 namespace Client
@@ -26,6 +27,8 @@ namespace Client
             containerRegistry.RegisterSingleton<IMessageService, MessageService>();
             containerRegistry.RegisterSingleton<IConnectionService, ConnectionService>();
             containerRegistry.RegisterSingleton<IChatService, ChatService>();
+            containerRegistry.RegisterSingleton<ITransport, WsClient>();
+            containerRegistry.RegisterSingleton<ILogService, LogService>();
             containerRegistry.Register<ChatControlViewModel>();
             containerRegistry.Register<LogControlViewModel>();
             containerRegistry.Register<MainWindowViewModel>();
