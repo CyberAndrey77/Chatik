@@ -73,27 +73,27 @@ namespace Client.NetWork
             handlersList?.ForEach(handler => handler(message));
         }
 
-        public void GetLogs(int selectType, DateTime starTime, DateTime endTime)
+        public void GetLogs(MessageContainer container)
         {
-            _sendQueue.Enqueue(new GetLogsResponse<Log>(selectType, starTime, endTime).GetContainer());
+            _sendQueue.Enqueue(container);
             Send();
         }
 
-        public void GetMessages(int chatId)
+        public void GetMessages(MessageContainer container)
         {
-            _sendQueue.Enqueue(new GetMessageResponse(chatId).GetContainer());
+            _sendQueue.Enqueue(container);
             Send();
         }
 
-        public void SendChatMessage(int senderUserId, string text, int chatId, List<int> users, bool isDialog, Guid messageId)
+        public void SendChatMessage(MessageContainer container)
         {
-            _sendQueue.Enqueue(new ChatMessageResponse(senderUserId, text, chatId, users, isDialog, messageId).GetContainer());
+            _sendQueue.Enqueue(container);
             Send();
         }
 
-        public void CreateChat(string chatName, int chatId, string creator, List<int> users, bool isDialog)
+        public void CreateChat(MessageContainer container)
         {
-            _sendQueue.Enqueue(new CreateChatResponse(chatName, chatId, creator, users, DateTime.Now, isDialog).GetContainer());
+            _sendQueue.Enqueue(container);
             Send();
         }
 

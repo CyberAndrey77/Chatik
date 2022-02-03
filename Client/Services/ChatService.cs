@@ -26,7 +26,7 @@ namespace Client.Services
 
         public void CreateChat(string chatName, int chatId, string creator, List<int> invented, bool isDialog)
         {
-            _transport.CreateChat(chatName, chatId, creator, invented, isDialog);
+            _transport.CreateChat(new CreateChatResponse(chatName, chatId, creator, invented, DateTime.Now, isDialog).GetContainer());
         }
 
         public ChatService(ITransport transport)

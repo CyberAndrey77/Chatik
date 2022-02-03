@@ -95,12 +95,12 @@ namespace Client.Services
 
         public void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog, Guid messageId)
         {
-            _transport.SendChatMessage(senderUserId, text, chatId, userIds, isDialog, messageId);
+            _transport.SendChatMessage(new ChatMessageResponse(senderUserId, text, chatId, userIds, isDialog, messageId).GetContainer());
         }
         
         public void GetMessages(int chatId)
         {
-            _transport.GetMessages(chatId);
+            _transport.GetMessages(new GetMessageResponse(chatId).GetContainer());
         }
     }
 }

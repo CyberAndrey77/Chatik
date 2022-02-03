@@ -30,7 +30,7 @@ namespace Client.Services
 
         public void GetLogs(int selectType, DateTime starTime, DateTime endTime)
         {
-            _transport.GetLogs(selectType, starTime, endTime);
+            _transport.GetLogs(new GetLogsResponse<Log>(selectType, starTime, endTime).GetContainer());
         }
 
         private void OnGetLogs(MessageContainer message)

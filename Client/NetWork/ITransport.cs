@@ -20,9 +20,9 @@ namespace Client.NetWork
         void Login(string login);
 
         void Subscribe(EnumKey key, Action<MessageContainer> method);
-        void SendChatMessage(int senderUserId, string text, int chatId, List<int> users, bool isDialog, Guid messageId);
-        void GetMessages(int chatId);
-        void GetLogs(int selectType, DateTime starTime, DateTime endTime);
-        void CreateChat(string chatName, int chatId, string creator, List<int> users, bool isDialog);
+        void SendChatMessage(MessageContainer container);
+        void GetMessages(MessageContainer container);
+        void GetLogs(MessageContainer container);
+        void CreateChat(MessageContainer container);
     }
 }
