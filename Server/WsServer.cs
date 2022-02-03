@@ -147,7 +147,7 @@ namespace Server
 
         public void HandleChatMessage(int id, ChatMessageResponse chatMessage)
         {
-            var chatEvent = new ChatMessageEventArgs(id, chatMessage.Message, chatMessage.ChatId, chatMessage.UserIds, chatMessage.IsDialog);
+            var chatEvent = new ChatMessageEventArgs(id, chatMessage.Message, chatMessage.ChatId, chatMessage.UserIds, chatMessage.IsDialog, chatMessage.MessageId);
             ChatMessageEvent?.Invoke(this, chatEvent);
 
             //SendMessageToClient(new MessageRequest(MessageStatus.Delivered, chatEvent.Time, chatMessage.MessageId){ChatId = chatEvent.ChatId}.GetContainer(), id);

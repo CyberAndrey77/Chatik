@@ -102,20 +102,5 @@ namespace Client.ViewModels
         {
             _connection.Disconnect();
         }
-
-        //private void OnConnection(object sender, ConnectionEventArgs e)
-        //{
-        //    _isConnect = e.IsConnectSuccess;
-        //    if (e.IsConnectSuccess)
-        //    {
-        //        _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _chatService, _dialogService);
-        //        CurrentContentVm = _chatControlViewModel;
-        //    }
-        //    else
-        //    {
-        //        _loginViewModel.MessageError = e.ConnectedMessage;
-        //        CurrentContentVm = _loginViewModel;
-        //    }
-        //}
     }
 }

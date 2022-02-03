@@ -33,9 +33,15 @@ namespace Client.Services
         public ConnectionService(ITransport transport)
         {
             _transport = transport;
+            _transport.ConnectionStatusChanged += OnConnectionChange;
             _logger = LogManager.GetCurrentClassLogger();
             _transport.Subscribe(EnumKey.ConnectionKeyConnection, OnConnectionChange);
             _transport.Subscribe(EnumKey.ConnectionKeyConnectedUser, OnGetConnectedUser);
+        }
+
+        private void OnConnectionChange(object sender, ConnectStatusChangeEventArgs e)
+        {
+            ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(e.Id, e.Name, e.ConnectionRequestCode));
         }
 
         private void OnGetConnectedUser(MessageContainer message)

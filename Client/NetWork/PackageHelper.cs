@@ -10,9 +10,9 @@ using Common;
 
 namespace Client.NetWork
 {
-    public class PackageHelper
+    public class PackageHelper: IPackageHelper
     {
-        public Dictionary<string, EnumKey> Keys;
+        public Dictionary<string, EnumKey> Keys { get; set; }
 
         public PackageHelper()
         {

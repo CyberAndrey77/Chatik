@@ -20,22 +20,19 @@ namespace Client.NetWork
         private WebSocket _socket;
         private string _login;
         private ConnectionRequestCode _code;
-        PackageHelper _packageHelper;
+        private readonly IPackageHelper _packageHelper;
         private readonly Dictionary<EnumKey, List<Action<MessageContainer>>> _events;
 
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
 
-        private MethodHandler _methodHandler;
-        //public delegate void MethodHandler();
+        public EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged { get; set; }
 
-        public EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
-
-        public WsClient()
+        public WsClient(IPackageHelper packageHelper)
         {
+            _packageHelper = packageHelper;
             _sendQueue = new ConcurrentQueue<MessageContainer>();
             _code = ConnectionRequestCode.Disconnect;
             _events = new Dictionary<EnumKey, List<Action<MessageContainer>>>();
-            _packageHelper = new PackageHelper();
         }
 
         public void Connect(string address, int port)
@@ -74,65 +71,6 @@ namespace Client.NetWork
 
             _events.TryGetValue(key, out var handlersList);
             handlersList?.ForEach(handler => handler(message));
-            
-            //switch (message.Identifier)
-            //{
-            //    case nameof(ConnectionRequest):
-            //        var connectionRequest = ((JObject)message.Payload).ToObject(typeof(ConnectionRequest)) as ConnectionRequest;
-            //        if (connectionRequest == null)
-            //        {
-            //            throw new ArgumentNullException();
-            //        }
-
-            //        string answer = string.Empty;
-
-            //        _code = connectionRequest.CodeConnected;
-            //        switch (_code)
-            //        {
-            //            case ConnectionRequestCode.Connect:
-            //                answer = "подключился";
-            //                if (_login != connectionRequest.Login)
-            //                {
-            //                    UserEvent?.Invoke(this, new UserStatusChangeEventArgs(connectionRequest.Login, true, connectionRequest.Id));
-            //                }
-            //                break;
-            //            case ConnectionRequestCode.Disconnect:
-            //                answer = "отключился";
-            //                if (_login != connectionRequest.Login)
-            //                {
-            //                    UserEvent?.Invoke(this, new UserStatusChangeEventArgs(connectionRequest.Login, false, connectionRequest.Id));
-            //                }
-            //                break;
-            //            case ConnectionRequestCode.LoginIsAlreadyTaken:
-            //                answer = "Логин уже занят";
-            //                _socket.Close();
-            //                return;
-            //        }
-
-            //        if (_login == connectionRequest.Login)
-            //        {
-            //            GetUserIdEvent?.Invoke(this, new UserIdEventArgs(connectionRequest.Id));
-            //            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, ConnectionRequestCode.Connect));
-            //            break;
-            //        }
-            //        // TODO Поменять на логичное событие
-            //        MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connectionRequest.Login, $"{connectionRequest.Login} {answer}"));
-            //        break;
-            //    case nameof(ServerMessageResponse):
-            //        var messageResponse = ((JObject)message.Payload).ToObject(typeof(ServerMessageResponse)) as ServerMessageResponse;
-            //        if (messageResponse == null)
-            //        {
-            //            throw new ArgumentNullException();
-            //        }
-
-            //        MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageResponse.Name, messageResponse.Message, messageResponse.Time));
-            //        break;
-            
-            //   
-            //    default:
-            //        throw new ArgumentNullException();
-            //}
-
         }
 
         public void GetLogs(int selectType, DateTime starTime, DateTime endTime)
@@ -147,9 +85,9 @@ namespace Client.NetWork
             Send();
         }
 
-        public void SendChatMessage(int senderUserId, string text, int chatId, List<int> users, bool isDialog)
+        public void SendChatMessage(int senderUserId, string text, int chatId, List<int> users, bool isDialog, Guid messageId)
         {
-            _sendQueue.Enqueue(new ChatMessageResponse(senderUserId, text, chatId, users, isDialog).GetContainer());
+            _sendQueue.Enqueue(new ChatMessageResponse(senderUserId, text, chatId, users, isDialog, messageId).GetContainer());
             Send();
         }
 

@@ -93,9 +93,9 @@ namespace Client.Services
                 { ChatId = messageRequest.ChatId });
         }
 
-        public void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog)
+        public void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog, Guid messageId)
         {
-            _transport.SendChatMessage(senderUserId, text, chatId, userIds, isDialog);
+            _transport.SendChatMessage(senderUserId, text, chatId, userIds, isDialog, messageId);
         }
         
         public void GetMessages(int chatId)

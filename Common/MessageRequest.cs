@@ -11,11 +11,11 @@ namespace Common
 
         public DateTime Time { get; set; }
 
-        public MessageRequest(MessageStatus status, DateTime time, Guid id)
+        public MessageRequest(MessageStatus status, DateTime time, Guid messageId)
         {
             Status = status;
             Time = time;
-            MessageId = id;
+            MessageId = messageId;
         }
 
         public MessageContainer GetContainer()

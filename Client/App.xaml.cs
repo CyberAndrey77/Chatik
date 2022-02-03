@@ -29,6 +29,7 @@ namespace Client
             containerRegistry.RegisterSingleton<IChatService, ChatService>();
             containerRegistry.RegisterSingleton<ITransport, WsClient>();
             containerRegistry.RegisterSingleton<ILogService, LogService>();
+            containerRegistry.RegisterSingleton<IPackageHelper, PackageHelper>();
             containerRegistry.Register<ChatControlViewModel>();
             containerRegistry.Register<LogControlViewModel>();
             containerRegistry.Register<MainWindowViewModel>();

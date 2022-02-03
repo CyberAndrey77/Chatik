@@ -16,7 +16,7 @@ namespace Client.Services
         EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
         EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
         
-        void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog);
+        void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog, Guid messageId);
         void GetMessages(int chatId);
     }
 }

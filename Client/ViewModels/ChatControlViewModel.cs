@@ -455,7 +455,7 @@ namespace Client.ViewModels
 
             var users = SelectedChat.Users.Select(user => user.Id).ToList();
             
-            _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Chat.Id, users, SelectedChat.IsDialog);
+            _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Chat.Id, users, SelectedChat.IsDialog, message.Id);
 
             //if (SelectedChat.IsDialog)
             //{

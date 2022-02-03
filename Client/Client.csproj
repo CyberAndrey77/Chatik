@@ -40,6 +40,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -67,12 +68,18 @@
     <Compile Include="Models\RecordType.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="NetWork\EventArgs\PrivateMessageEventArgs.cs" />
+    <Compile Include="NetWork\IPackageHelper.cs" />
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />
     <Compile Include="NetWork\EventArgs\UserIdEventArgs.cs" />
     <Compile Include="NetWork\PackageHelper.cs" />
     <Compile Include="NetWork\UsersTakenEventArgs.cs" />
     <Compile Include="NetWork\WsClient.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\ConnectionService.cs" />
     <Compile Include="Services\EventArgs\ChatEventArgs.cs" />
@@ -101,6 +108,9 @@
     <Compile Include="Views\CreateDialogView.xaml.cs">
       <DependentUpon>CreateDialogView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Item\ChatItem.xaml.cs">
+      <DependentUpon>ChatItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LogControlView.xaml.cs">
       <DependentUpon>LogControlView.xaml</DependentUpon>
     </Compile>
@@ -115,6 +125,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CreateDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Item\ChatItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,6 +187,14 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

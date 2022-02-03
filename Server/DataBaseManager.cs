@@ -95,11 +95,11 @@ namespace Server
                 //    e.Time).GetContainer(), e.UserIds[0]);
 
 
-                foreach (var t in e.UserIds)
+                for (int i = 0; i < e.UserIds.Count; i++)
                 {
                     Network.Server.SendMessageToClient(
                         new CreateChatResponse(e.ChatName, e.ChatId, users[0].Name,
-                            e.UserIds, e.Time, e.IsDialog).GetContainer(), t);
+                            e.UserIds, e.Time, e.IsDialog).GetContainer(), e.UserIds[i]);
                 }
             }
         }
