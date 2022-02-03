@@ -55,24 +55,6 @@ namespace Client.Services
             GetUserChats?.Invoke(this, new UserChatEventArgs<Chat>(userChats.Chats));
         }
 
-        private void OnChatIsCreated(MessageContainer message)
-        {
-            if (message.Identifier != nameof(CreateChatRequest))
-            {
-                return;
-            }
-
-            var createChatRequest = ((JObject)message.Payload).ToObject(typeof(CreateChatRequest)) as CreateChatRequest;
-            if (createChatRequest == null)
-            {
-                _logger.Error($"Answer from server {message}:{message.Identifier} is null");
-                return;
-            }
-
-            ChatIsCreated?.Invoke(this, new ChatEventArgs(createChatRequest.ChatName, createChatRequest.ChatId, createChatRequest.CreatorName,
-                createChatRequest.UserIds, createChatRequest.IsDialog, createChatRequest.Time));
-        }
-
         private void OnChatCreated(MessageContainer message)
         {
             if (message.Identifier != nameof(CreateChatResponse))
