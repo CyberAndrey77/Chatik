@@ -118,6 +118,7 @@ namespace Client.ViewModels
 
             _connectionService.UserListEvent += OnGetUsers;
             _connectionService.UserEvent += OnUserConnectOrDisconnect;
+            _connectionService.ConnectStatusChangeEvent += OnConnection;
             _messageService.MessageStatusChangeEvent += OnMessageStatusChange;
             _chatService.GetUserChats += GetChats;
             _messageService.MessageEvent += OnMessageReceived;
@@ -134,6 +135,22 @@ namespace Client.ViewModels
             SendCommand = new DelegateCommand(ExecuteCommand);
             CreateDialog = new DelegateCommand(CreateDialogWithUser);
             CreateChatCommand = new DelegateCommand(CreateChat);
+        }
+
+        private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
+        {
+            switch (e.ConnectionRequestCode)
+            {
+                case ConnectionRequestCode.Connect:
+                    Name = e.Name;
+                    break;
+                default:
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        Users.Clear();
+                    });
+                    break;
+            }
         }
 
         private void OnGetMessages(object sender, GetMessagesEventArgs<Message> e)

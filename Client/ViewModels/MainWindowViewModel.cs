@@ -69,7 +69,6 @@ namespace Client.ViewModels
                 CurrentContentVm = _chatControlViewModel;
                 _connection.Id = e.Id;
                 _connection.Name = e.Name;
-                _chatControlViewModel.Name = e.Name;
             }
             else
             {

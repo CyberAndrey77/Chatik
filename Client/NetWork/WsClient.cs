@@ -19,19 +19,17 @@ namespace Client.NetWork
     {
         private WebSocket _socket;
         private string _login;
-        private ConnectionRequestCode _code;
         private readonly IPackageHelper _packageHelper;
         private readonly Dictionary<EnumKey, List<Action<MessageContainer>>> _events;
 
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
 
-        public EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged { get; set; }
+        public EventHandler<CloseEventArgs> ConnectionStatusChanged { get; set; }
 
         public WsClient(IPackageHelper packageHelper)
         {
             _packageHelper = packageHelper;
             _sendQueue = new ConcurrentQueue<MessageContainer>();
-            _code = ConnectionRequestCode.Disconnect;
             _events = new Dictionary<EnumKey, List<Action<MessageContainer>>>();
         }
 
@@ -99,8 +97,8 @@ namespace Client.NetWork
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login,
-                _code == ConnectionRequestCode.Disconnect ? ConnectionRequestCode.Disconnect : ConnectionRequestCode.LoginIsAlreadyTaken));
+            ConnectionStatusChanged?.Invoke(this, e);
+
 
             _socket.OnOpen -= OnOpen;
             _socket.OnClose -= OnClose;

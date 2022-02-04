@@ -192,7 +192,7 @@ namespace Server
                 }
 
                 CreateLog(new Log() {Time = DateTime.Now, Message = $"{e.Name} {e.ConnectionRequestCode}", Type = type});
-                if (e.ConnectionRequestCode == ConnectionRequestCode.Disconnect)
+                if (e.ConnectionRequestCode != ConnectionRequestCode.Connect)
                 {
                     return;
                 }

@@ -16,7 +16,6 @@ namespace Client.Services
 {
     public class ChatService : IChatService
     {
-        //private readonly IConnectionService _connectionService;
         private readonly ITransport _transport;
         private readonly ILogger _logger;
         public EventHandler<ChatEventArgs> ChatIsCreatedEvent { get; set; }
@@ -34,7 +33,6 @@ namespace Client.Services
             _transport = transport;
             _logger = LogManager.GetCurrentClassLogger();
             _transport.Subscribe(EnumKey.ChatKeyGetChats, OnGetChats);
-            //_transport.Subscribe(EnumKey.ChatKeyChatIsCreate, OnChatIsCreated);
             _transport.Subscribe(EnumKey.ChatKeyCreateChat, OnChatCreated);
 
         }
@@ -61,7 +59,6 @@ namespace Client.Services
             {
                 return;
             }
-            //TODO десериализация х занимется!!!!!
             var createChatResponse = ((JObject)message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
             if (createChatResponse == null)
             {

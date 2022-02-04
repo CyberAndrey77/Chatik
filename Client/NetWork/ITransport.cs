@@ -4,15 +4,13 @@ using System.Text;
 using Client.Enums;
 using Common;
 using Common.EventArgs;
+using WebSocketSharp;
 
 namespace Client.NetWork
 {
-
-    public delegate void MethodHandler(MessageContainer messageContainer);
-
     public interface ITransport
     {
-        EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged { get; set; }
+        EventHandler<CloseEventArgs> ConnectionStatusChanged { get; set; }
         void Connect(string address, int port);
 
         void Disconnect();

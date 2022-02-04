@@ -11,6 +11,7 @@ using Common.Enums;
 using Common.EventArgs;
 using Newtonsoft.Json.Linq;
 using NLog;
+using WebSocketSharp;
 
 namespace Client.Services
 {
@@ -39,9 +40,9 @@ namespace Client.Services
             _transport.Subscribe(EnumKey.ConnectionKeyConnectedUser, OnGetConnectedUser);
         }
 
-        private void OnConnectionChange(object sender, ConnectStatusChangeEventArgs e)
+        private void OnConnectionChange(object sender, CloseEventArgs e)
         {
-            ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(e.Id, e.Name, e.ConnectionRequestCode));
+            ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(Id, Name, (ConnectionRequestCode)e.Code));
         }
 
         private void OnGetConnectedUser(MessageContainer message)

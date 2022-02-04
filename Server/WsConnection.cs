@@ -5,11 +5,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using Common;
+using Common.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Server.Models;
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using Timer = System.Timers.Timer;
 
 namespace Server
 {
@@ -17,6 +19,8 @@ namespace Server
     {
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
         private WsServer _wsServer;
+        private Timer _timer;
+        private double _waitTime = 600000;
 
         public int Id { get; set; }
         public string Login { get; set; }
@@ -26,6 +30,15 @@ namespace Server
             _sendQueue = new ConcurrentQueue<MessageContainer>();
             //UserId = Guid.NewGuid();
             Id = GetHashCode();
+            _timer = new Timer(_waitTime);
+            _timer.Elapsed += CloseTime;
+            _timer.Start();
+        }
+
+        private void CloseTime(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _timer.Stop();
+            Close(ConnectionRequestCode.Inactivity);
         }
 
         public void AddServer(WsServer wsServer)
@@ -40,13 +53,14 @@ namespace Server
 
         protected override void OnClose(CloseEventArgs e)
         {
-            _wsServer.FreeConnection(Id);
-            Context.WebSocket.Close();
+            Close(ConnectionRequestCode.Disconnect);
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
             var message = JsonConvert.DeserializeObject<MessageContainer>(e.Data);
+            _timer.Stop();
+            _timer.Start();
 
             switch (message.Identifier)
             {
@@ -56,16 +70,12 @@ namespace Server
                     {
                         throw new ArgumentNullException();
                     }
-                    _wsServer.HandleConnect(Id, messageRequest);
+
+                    if (!_wsServer.HandleConnect(Id, messageRequest))
+                    {
+                        Close(ConnectionRequestCode.LoginIsAlreadyTaken);
+                    }
                     break;
-                //case nameof(ClientMessageResponse):
-                //    var messageResponse = ((JObject)message.Payload).ToObject(typeof(ClientMessageResponse)) as ClientMessageResponse;
-                //    if (messageResponse == null)
-                //    {
-                //        throw new ArgumentNullException();
-                //    }
-                //    _wsServer.HandleMessage(UserId, messageResponse);
-                //    break;
                 case nameof(CreateChatResponse):
                     var createDialogResponse = ((JObject) message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
 
@@ -75,15 +85,6 @@ namespace Server
                     }
 
                     _wsServer.CreateChat(Id, createDialogResponse);
-                    break;
-                case nameof(PrivateMessageResponseClient):
-                    var privateMessageResponse = ((JObject)message.Payload).ToObject(typeof(PrivateMessageResponseClient)) as PrivateMessageResponseClient;
-
-                    if (privateMessageResponse == null)
-                    {
-                        throw new ArgumentNullException();
-                    }
-                    _wsServer.HandleMessageToClient(Id, privateMessageResponse);
                     break;
                 case nameof(ChatMessageResponse):
                     var chatMessageResponse = ((JObject)message.Payload).ToObject(typeof(ChatMessageResponse)) as ChatMessageResponse;
@@ -119,14 +120,11 @@ namespace Server
            // Thread.Sleep(10000);
         }
 
-        protected override void OnError(ErrorEventArgs e)
+        public void Close(ConnectionRequestCode reason)
         {
-            base.OnError(e);
-        }
-
-        public void Close()
-        {
-            Context.WebSocket.Close();
+            _wsServer.FreeConnection(Id, reason);
+            Context.WebSocket.Close((ushort)reason);
+            _timer.Stop();
         }
 
         public void Send(MessageContainer container)
@@ -142,15 +140,7 @@ namespace Server
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
-            try
-            {
-                SendAsync(serializedMessages, SendCompleted);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            SendAsync(serializedMessages, SendCompleted);
         }
 
         private void SendCompleted(bool obj)
