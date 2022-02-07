@@ -27,6 +27,7 @@ namespace Server
                 configString = streamReader.ReadToEnd();
             }
 
+            // Можно поменять на JsonConvert.DeserializeObject<T>(File.ReadAllText(fullName));
             Config config = JsonConvert.DeserializeObject<Config>(configString);
             return config;
         }

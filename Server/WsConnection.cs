@@ -20,6 +20,7 @@ namespace Server
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
         private WsServer _wsServer;
         private Timer _timer;
+        //TODO В коонфигуратор
         private double _waitTime = 600000;
 
         public int Id { get; set; }

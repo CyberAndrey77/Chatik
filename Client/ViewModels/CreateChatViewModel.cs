@@ -32,12 +32,11 @@ namespace Client.ViewModels
             set => SetProperty(ref _chatName, value);
         }
 
-        public ObservableCollection<SelectedItemViewModel> Users { get; set; }
+        public List<SelectedItemViewModel> Users { get; set; }
 
-        public ObservableCollection<User> SelectedUsers { get; set; }
+        public List<User> SelectedUsers { get; set; }
 
-        public DelegateCommand CloseDialogCommand =>
-            _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand(CloseDialog));
+        public DelegateCommand CloseDialogCommand => _closeDialogCommand ??= new DelegateCommand(CloseDialog);
 
         private string _title = "Создание беседы";
         public string Title
@@ -52,7 +51,7 @@ namespace Client.ViewModels
         {
             ButtonResult result;
 
-            SelectedUsers = new ObservableCollection<User>();
+            SelectedUsers = new List<User>();
 
             foreach (var user in Users)
             {
@@ -86,10 +85,10 @@ namespace Client.ViewModels
 
         public virtual void OnDialogOpened(IDialogParameters parameters)
         {
-            parameters.TryGetValue("users", out ObservableCollection<User> users);
+            parameters.TryGetValue("users", out List<User> sourceUsers);
             //UserIds = users;
-            Users = new ObservableCollection<SelectedItemViewModel>();
-            foreach (var user in users)
+            Users = new List<SelectedItemViewModel>();
+            foreach (var user in sourceUsers)
             {
                 Users.Add(new SelectedItemViewModel(user, false));
             }

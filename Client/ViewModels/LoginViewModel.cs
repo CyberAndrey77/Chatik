@@ -29,8 +29,7 @@ namespace Client.ViewModels
             get => _name;
             set
             {
-                IsButtonEnable = !string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(IpAddress) && string.IsNullOrEmpty(Port);
-                RaisePropertyChanged(nameof(IsButtonEnable));
+                CheckEmpty();
                 SetProperty(ref _name, value);
             }
         }
@@ -39,8 +38,7 @@ namespace Client.ViewModels
             get => _ipAddress;
             set
             {
-                IsButtonEnable = !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(value) && string.IsNullOrEmpty(Port);
-                RaisePropertyChanged(nameof(IsButtonEnable));
+                CheckEmpty();
                 SetProperty(ref _ipAddress, value);
             }
         }
@@ -50,8 +48,7 @@ namespace Client.ViewModels
             get => _port;
             set
             {
-                IsButtonEnable = !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(IpAddress) && string.IsNullOrEmpty(value);
-                RaisePropertyChanged(nameof(IsButtonEnable));
+                CheckEmpty();
                 SetProperty(ref _port, value);
             }
         }
@@ -122,7 +119,7 @@ namespace Client.ViewModels
 
         private void ConnectToServer()
         {
-            _connectionService.Port = int.Parse(Port);
+            _connectionService.Port = _intPort;
             _connectionService.IpAddress = IpAddress;
             _connectionService.Name = Name;
             
@@ -134,6 +131,14 @@ namespace Client.ViewModels
             {
                 MessageError = e.Message;
             }
+        }
+
+
+        private void CheckEmpty()
+        {
+            IsButtonEnable = !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(IpAddress) &&
+                             !string.IsNullOrWhiteSpace(Port);
+            RaisePropertyChanged(nameof(IsButtonEnable));
         }
     }
 }

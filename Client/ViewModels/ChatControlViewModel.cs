@@ -9,6 +9,7 @@ using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -58,7 +59,11 @@ namespace Client.ViewModels
             get => _selectedChat;
             set
             {
-                if (_selectedChat == value)
+                //if (value == null)
+                //{
+                //    return;
+                //}
+                if (_selectedChat == value || value == null)
                 {
                     return;
                 }
@@ -148,6 +153,8 @@ namespace Client.ViewModels
                     App.Current.Dispatcher.Invoke(delegate
                     {
                         Users.Clear();
+                        MessageViewModels.Clear();
+                        ChatViewModels.Clear();
                     });
                     break;
             }
@@ -183,8 +190,8 @@ namespace Client.ViewModels
                         chat.Name = CreateDialogName(chat.Name);
                     }
 
-                    ChatViewModels.Add(new ChatViewModel(
-                        (ObservableCollection<User>)new ObservableCollection<User>().AddRange(chat.Users), chat.Name,
+                    ChatViewModels.Add(new ChatViewModel
+                        (chat.Users, chat.Name,
                         chat.IsDialog)
                     {
                         Chat =
@@ -203,15 +210,10 @@ namespace Client.ViewModels
             App.Current.Dispatcher.Invoke(delegate
             {
 
-                var chat = ChatViewModels.FirstOrDefault(x => x.Name == e.ChatName);
+                var chat = ChatViewModels.FirstOrDefault(x => x.Chat.Id == e.ChatId);
                 if (chat == null)
                 {
-                    var users = new ObservableCollection<User>();
-
-                    foreach (var user in e.UserIds.Select(id => Users.First(x => x.Id == id)))
-                    {
-                        users.Add(user);
-                    }
+                    var users = e.UserIds.Select(id => Users.First(x => x.Id == id)).ToList();
 
                     chat = new ChatViewModel(users, e.ChatName, e.IsDialog) { Chat = { Id = e.ChatId } };
 
@@ -243,7 +245,7 @@ namespace Client.ViewModels
 
                 if (chat == null)
                 {
-                    var users = new ObservableCollection<User>();
+                    var users = new List<User>();
                     foreach (var id in e.UserIds)
                     {
                         users.Add(new User(id, Users.First(x => x.Id == id).Name));
@@ -260,7 +262,7 @@ namespace Client.ViewModels
                     ChatViewModels.Add(chat);
                 }
 
-                if (SelectedChat.Name != chat.Name)
+                if (SelectedChat.Chat.Id != e.ChatId)
                 {
                     chat.CountUnreadMessages++;
                     return;
@@ -303,7 +305,7 @@ namespace Client.ViewModels
                 }
 
                 r.Parameters.TryGetValue("user", out User selectedUser);
-                var selectedUsers = new ObservableCollection<User>()
+                var selectedUsers = new List<User>()
                 {
                     new User(_connectionService.Id, _connectionService.Name),
                     selectedUser
@@ -333,15 +335,18 @@ namespace Client.ViewModels
 
         private void CreateChat()
         {
-            var users = new ObservableCollection<User>();
-            foreach (var user in Users)
-            {
-                if (user.Id == _connectionService.Id)
-                {
-                    continue;
-                }
-                users.Add(user);
-            }
+            //var users = new ObservableCollection<User>();
+            //foreach (var user in Users)
+            //{
+            //    if (user.Id == _connectionService.Id)
+            //    {
+            //        continue;
+            //    }
+            //    users.Add(user);
+            //}
+
+            var users = Users.Where(o => o.Id != _connectionService.Id).ToList();
+
             var dialogParameters = new DialogParameters
             {
                 { "users", users }
@@ -353,7 +358,8 @@ namespace Client.ViewModels
                     return;
                 }
 
-                r.Parameters.TryGetValue("users", out ObservableCollection<User> selectedUsers);
+                // TODO переделать на List
+                r.Parameters.TryGetValue("users", out List<User> selectedUsers);
                 r.Parameters.TryGetValue("chatName", out string chatName);
 
                 selectedUsers.Insert(0, new User(_connectionService.Id, _connectionService.Name));
@@ -372,8 +378,8 @@ namespace Client.ViewModels
 
                 _chatService.CreateChat(chatName, 0, _connectionService.Name, selectedUsersList, false);
 
-                var newChat = new ChatViewModel(selectedUsers, chatName, false);
-                ChatViewModels.Add(newChat);
+                //var newChat = new ChatViewModel(selectedUsers, chatName, false);
+                //ChatViewModels.Add(newChat);
             });
         }
 

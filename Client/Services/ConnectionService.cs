@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Client.Enums;
 using Client.Models;
 using Client.NetWork;
@@ -17,8 +18,7 @@ namespace Client.Services
 {
     public class ConnectionService : IConnectionService
     {
-        //private WsClient _wsClient;
-        private readonly ITransport _transport; 
+        private readonly ITransport _transport;
         private readonly ILogger _logger;
         
         public EventHandler<GetUsersEventArgs> UserListEvent { get; set; }
@@ -83,9 +83,9 @@ namespace Client.Services
             }
         }
 
-        public void ConnectToServer()
+        public async void ConnectToServer()
         {
-            _transport.Connect(IpAddress, Port);
+            await Task.Run(() => _transport.Connect(IpAddress, Port));
             _transport.Login(Name);
         }
 

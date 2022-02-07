@@ -39,11 +39,13 @@ namespace Client.NetWork
             _socket.OnOpen += OnOpen;
             _socket.OnClose += OnClose;
             _socket.OnMessage += OnMessage;
+            _socket.WaitTime = TimeSpan.FromSeconds(200);
             _socket.Connect();
-            if (_socket != null)
-            {
-                _socket.WaitTime = TimeSpan.MaxValue;
-            }
+            //_socket.ConnectAsync();
+            //if (_socket != null)
+            //{
+            //    _socket.WaitTime = TimeSpan.MaxValue;
+            //}
         }
 
         private EnumKey GetKey(string messageIdentifier)
@@ -114,6 +116,7 @@ namespace Client.NetWork
         public void Disconnect()
         {
             Unsubscribe();
+            //_socket?.CloseAsync();
             _socket?.Close();
         }
 
