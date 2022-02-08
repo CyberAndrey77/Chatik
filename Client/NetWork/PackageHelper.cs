@@ -19,14 +19,15 @@ namespace Client.NetWork
             Keys = new Dictionary<string, EnumKey>()
             {
                 {nameof(ConnectionRequest), EnumKey.ConnectionKeyConnection},
-                {nameof(ConnectedUser), EnumKey.ConnectionKeyConnectedUser},
+                {nameof(ConnectedUser), EnumKey.ConnectionKeyOnlineUsers},
                 {nameof(MessageRequest), EnumKey.MessageKeyRequestMessage},
                 {nameof(CreateChatResponse), EnumKey.ChatKeyCreateChat},
                 {nameof(ChatMessageResponseServer), EnumKey.MessageKeyOnChatMessage},
                 {nameof(CreateChatRequest), EnumKey.ChatKeyChatIsCreate},
                 {nameof(UserChats<Chat>), EnumKey.ChatKeyGetChats},
                 {nameof(GetMessageRequest<Message>), EnumKey.MessageKeyGetMessages},
-                {nameof(GetLogsRequest<Log>), EnumKey.LogKey}
+                {nameof(GetLogsRequest<Log>), EnumKey.LogKey},
+                {nameof(GetAllUsers), EnumKey.ConnectionKeyAllUsers}
             };
         }
     }

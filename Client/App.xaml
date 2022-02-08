@@ -6,7 +6,7 @@
     <Application.Resources>
         <Button x:Key="sendButton" Height="30px" Width="50px"  Content="Send" Background="AliceBlue"></Button>
         <TextBox x:Key="sendMessage" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
-        <Style x:Key ="CreateChat" TargetType="Button">
+        <Style x:Key ="MyStaleButton" TargetType="Button">
             <Setter Property="Control.Background" Value="DodgerBlue"/>
             <Setter Property="Control.Foreground" Value="AliceBlue"/>
             <Setter Property="Control.Margin" Value="5 5 5 5"/>

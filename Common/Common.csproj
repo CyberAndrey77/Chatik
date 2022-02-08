@@ -56,6 +56,7 @@
     <Compile Include="EventArgs\MessageReceivedEventArgs.cs" />
     <Compile Include="EventArgs\UserChatEventArgs.cs" />
     <Compile Include="EventArgs\UserStatusChangeEventArgs.cs" />
+    <Compile Include="GetAllUsers.cs" />
     <Compile Include="GetLogsRequest.cs" />
     <Compile Include="GetLogsResponse.cs" />
     <Compile Include="GetMessageRequest.cs" />

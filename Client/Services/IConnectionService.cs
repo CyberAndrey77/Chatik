@@ -11,7 +11,8 @@ namespace Client.Services
 {
     public interface IConnectionService
     {
-        EventHandler<GetUsersEventArgs> UserListEvent { get; set; }
+        EventHandler<GetUsersEventArgs> GetOnlineUsers { get; set; }
+        EventHandler<GetUsersEventArgs> AllUsersEvent { get; set; }
         EventHandler<GetUserEventArgs> UserEvent { get; set; }
         EventHandler<ConnectStatusChangeEventArgs> ConnectStatusChangeEvent { get; set; }
         

@@ -21,7 +21,8 @@ namespace Client.Services
         private readonly ITransport _transport;
         private readonly ILogger _logger;
         
-        public EventHandler<GetUsersEventArgs> UserListEvent { get; set; }
+        public EventHandler<GetUsersEventArgs> GetOnlineUsers { get; set; }
+        public EventHandler<GetUsersEventArgs> AllUsersEvent { get; set; }
         public EventHandler<GetUserEventArgs> UserEvent { get; set; }
 
         public EventHandler<ConnectStatusChangeEventArgs> ConnectStatusChangeEvent { get; set; }
@@ -37,7 +38,23 @@ namespace Client.Services
             _transport.ConnectionStatusChanged += OnConnectionChange;
             _logger = LogManager.GetCurrentClassLogger();
             _transport.Subscribe(EnumKey.ConnectionKeyConnection, OnConnectionChange);
-            _transport.Subscribe(EnumKey.ConnectionKeyConnectedUser, OnGetConnectedUser);
+            _transport.Subscribe(EnumKey.ConnectionKeyOnlineUsers, OnGetOnlineUsers);
+            _transport.Subscribe(EnumKey.ConnectionKeyAllUsers, OnAllUser);
+        }
+
+        private void OnAllUser(MessageContainer message)
+        {
+            if (message.Identifier != nameof(GetAllUsers))
+            {
+                return;
+            }
+            var allUsers = ((JObject)message.Payload).ToObject(typeof(GetAllUsers)) as GetAllUsers;
+            if (allUsers == null)
+            {
+                _logger.Error($"Answer from server {message}:{message.Identifier} is null");
+                return;
+            }
+            AllUsersEvent?.Invoke(this, new GetUsersEventArgs(allUsers.Users));
         }
 
         private void OnConnectionChange(object sender, CloseEventArgs e)
@@ -45,7 +62,7 @@ namespace Client.Services
             ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(Id, Name, (ConnectionRequestCode)e.Code));
         }
 
-        private void OnGetConnectedUser(MessageContainer message)
+        private void OnGetOnlineUsers(MessageContainer message)
         {
             if (message.Identifier != nameof(ConnectedUser))
             {
@@ -57,7 +74,7 @@ namespace Client.Services
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
                 return;
             }
-            UserListEvent?.Invoke(this, new GetUsersEventArgs(connectedUser.Users));
+            GetOnlineUsers?.Invoke(this, new GetUsersEventArgs(connectedUser.Users));
         }
 
         private void OnConnectionChange(MessageContainer message)

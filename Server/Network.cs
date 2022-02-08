@@ -24,6 +24,7 @@ namespace Server
         public event EventHandler<GetMessagesEventArgs<Message>> GetMessageEvent;
         public event EventHandler<CreateChatEventArgs> CreateChatEvent;
         public event EventHandler<LogEventArgs<Log>> GetLogsEvent;
+        public event EventHandler<UserDataEventArgs> GetAllUsersEvent;
 
         private MessageHandler _messageHandler;
         private readonly int _port;
@@ -40,6 +41,12 @@ namespace Server
             Server.GetMessageEvent += OnGetMessageEvent;
             Server.CreateChatEvent += OnChatCreateEvent;
             Server.GetLogsEvent += OnGetLogs;
+            Server.GetAllUsersEvent += OnGetAllUsers;
+        }
+
+        private void OnGetAllUsers(object sender, UserDataEventArgs e)
+        {
+            GetAllUsersEvent?.Invoke(this, e);
         }
 
         private void OnGetLogs(object sender, LogEventArgs<Log> e)

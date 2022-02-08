@@ -11,6 +11,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 
@@ -25,7 +26,8 @@ namespace Client.ViewModels
         private readonly IChatService _chatService;
         private MessageViewModel _messageViewModel;
         private ObservableCollection<MessageViewModel> _messageViewModels;
-        private ObservableCollection<User> _users;
+        private ObservableCollection<User> _onlineUsers;
+        private ObservableCollection<User> _offlineUsers;
         private bool _isButtonEnable;
         private string _chatName;
         private ChatViewModel _selectedChat;
@@ -84,13 +86,21 @@ namespace Client.ViewModels
             set => SetProperty(ref _messageViewModels, value);
         }
 
-        public ObservableCollection<User> Users
+        public List<User> Users
         {
-            get => _users;
-            set
-            {
-                SetProperty(ref _users, value);
-            }
+            get;
+            set;
+        }
+
+        public ObservableCollection<User> OnlineUsers
+        {
+            get => _onlineUsers;
+            set => SetProperty(ref _onlineUsers, value);
+        }
+        public ObservableCollection<User> OfflineUsers
+        {
+            get => _offlineUsers;
+            set => SetProperty(ref _offlineUsers, value);
         }
 
         public ObservableCollection<ChatViewModel> ChatViewModels { get; set; }
@@ -121,9 +131,10 @@ namespace Client.ViewModels
             _dialogService = dialogService;
             _chatService = chatService;
 
-            _connectionService.UserListEvent += OnGetUsers;
+            _connectionService.GetOnlineUsers += OnGetOnlineUsers;
             _connectionService.UserEvent += OnUserConnectOrDisconnect;
             _connectionService.ConnectStatusChangeEvent += OnConnection;
+            _connectionService.AllUsersEvent += OnAllUsers;
             _messageService.MessageStatusChangeEvent += OnMessageStatusChange;
             _chatService.GetUserChats += GetChats;
             _messageService.MessageEvent += OnMessageReceived;
@@ -134,12 +145,40 @@ namespace Client.ViewModels
             IsButtonEnable = false;
 
             MessageViewModels = new ObservableCollection<MessageViewModel>();
-            Users = new ObservableCollection<User>();
+            Users = new List<User>();
+            OnlineUsers = new ObservableCollection<User>();
+            OfflineUsers = new ObservableCollection<User>();
             ChatViewModels = new ObservableCollection<ChatViewModel>();
             
             SendCommand = new DelegateCommand(ExecuteCommand);
             CreateDialog = new DelegateCommand(CreateDialogWithUser);
             CreateChatCommand = new DelegateCommand(CreateChat);
+        }
+
+        private void OnAllUsers(object sender, GetUsersEventArgs e)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                foreach (var user in e.Users)
+                {
+                    Users.Add(new User(user.Key, user.Value));
+                }
+
+                if (OnlineUsers.Count == 0)
+                {
+                    foreach (var user in e.Users)
+                    {
+                        OfflineUsers.Add(new User(user.Key, user.Value));
+                    }
+                }
+                else
+                {
+                    foreach (var user in Users.Where(user => !OnlineUsers.Contains(user)))
+                    {
+                        OfflineUsers.Add(new User(user.Id, user.Name));
+                    }
+                }
+            });
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
@@ -284,15 +323,8 @@ namespace Client.ViewModels
 
         private void CreateDialogWithUser()
         {
-            var users = new ObservableCollection<User>();
-            foreach (var user in Users)
-            {
-                if (user.Id == _connectionService.Id)
-                {
-                    continue;
-                }
-                users.Add(user);
-            }
+            // TODO переделать на List
+            var users = Users.Where(user => user.Id != _connectionService.Id).ToList();
             var dialogParameters = new DialogParameters
             {
                 { "users", users}
@@ -335,30 +367,19 @@ namespace Client.ViewModels
 
         private void CreateChat()
         {
-            //var users = new ObservableCollection<User>();
-            //foreach (var user in Users)
-            //{
-            //    if (user.Id == _connectionService.Id)
-            //    {
-            //        continue;
-            //    }
-            //    users.Add(user);
-            //}
-
             var users = Users.Where(o => o.Id != _connectionService.Id).ToList();
 
             var dialogParameters = new DialogParameters
             {
                 { "users", users }
             };
-            _dialogService.ShowDialog("CreateChat", dialogParameters, r =>
+            _dialogService.ShowDialog("MyStaleButton", dialogParameters, r =>
             {
                 if (r.Result != ButtonResult.OK)
                 {
                     return;
                 }
 
-                // TODO переделать на List
                 r.Parameters.TryGetValue("users", out List<User> selectedUsers);
                 r.Parameters.TryGetValue("chatName", out string chatName);
 
@@ -377,9 +398,6 @@ namespace Client.ViewModels
                 }
 
                 _chatService.CreateChat(chatName, 0, _connectionService.Name, selectedUsersList, false);
-
-                //var newChat = new ChatViewModel(selectedUsers, chatName, false);
-                //ChatViewModels.Add(newChat);
             });
         }
 
@@ -389,27 +407,48 @@ namespace Client.ViewModels
             {
                 if (e.IsConnect)
                 {
-                    Users.Add(new User(e.Id, e.Login));
+                    OnlineUsers.Add(new User(e.Id, e.Login));
+                    OfflineUsers.Remove(OfflineUsers.FirstOrDefault(x => x.Id == e.Id));
                 }
                 else
                 {
-                    Users.Remove(Users.First(x => x.Id == e.Id));
+                    OnlineUsers.Remove(OnlineUsers.FirstOrDefault(x => x.Id == e.Id));
+                    OfflineUsers.Add(new User(e.Id, e.Login));
                 }
 
-                Users = new ObservableCollection<User>(Users.OrderBy(x => x.Name));
+                OnlineUsers = new ObservableCollection<User>(OnlineUsers.OrderBy(x => x.Name));
+                OfflineUsers = new ObservableCollection<User>(OfflineUsers.OrderBy(x => x.Name));
+
+                if (Users.FindIndex(x => x.Id == e.Id) == -1)
+                {
+                    Users.Add(new User(e.Id, e.Login));
+                    Users = Users.OrderBy(x => x.Name).ToList();
+                }
             });
         }
 
-        private void OnGetUsers(object sender, GetUsersEventArgs e)
+        private void OnGetOnlineUsers(object sender, GetUsersEventArgs e)
         {
             App.Current.Dispatcher.Invoke(delegate
             {
-                foreach (var user in e.Users)
+                if (OfflineUsers.Count == 0)
                 {
-                    Users.Add(new User(user.Key, user.Value));
+                    foreach (var user in e.Users)
+                    {
+                        OnlineUsers.Add(new User(user.Key, user.Value));
+                    }
+                }
+                else
+                {
+                    foreach (var user in e.Users)
+                    {
+                        OnlineUsers.Add(new User(user.Key, user.Value));
+                        OfflineUsers.Remove(OfflineUsers.First(x => x.Id == user.Key));
+                    }
+                    OfflineUsers = new ObservableCollection<User>(OfflineUsers.OrderBy(x => x.Name));
                 }
 
-                Users = new ObservableCollection<User>(Users.OrderBy(x => x.Name));
+                OnlineUsers = new ObservableCollection<User>(OnlineUsers.OrderBy(x => x.Name));
             });
         }
 

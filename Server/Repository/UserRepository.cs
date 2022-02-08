@@ -47,6 +47,11 @@ namespace Server.Repository
             throw new NotImplementedException();
         }
 
+        public List<User> GetElementList()
+        {
+            return _context.Users.ToList();
+        }
+
         public void Save()
         {
             _context.SaveChanges();

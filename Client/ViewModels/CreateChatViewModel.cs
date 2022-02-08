@@ -11,10 +11,11 @@ using Prism.Services.Dialogs;
 
 namespace Client.ViewModels
 {
-    class CreateChatViewModel : BindableBase, IDialogAware
+    public class CreateChatViewModel : BindableBase, IDialogAware
     {
         private DelegateCommand _closeDialogCommand;
         private SelectedItemViewModel _selectedUser;
+        private IDialogService _dialogService;
         private string _chatName;
         
         public SelectedItemViewModel SelectedUser
@@ -49,19 +50,30 @@ namespace Client.ViewModels
 
         protected virtual void CloseDialog()
         {
-            ButtonResult result;
-
             SelectedUsers = new List<User>();
 
-            foreach (var user in Users)
+            foreach (var user in Users.Where(user => user.IsSelected))
             {
-                if (user.IsSelected)
-                {
-                    SelectedUsers.Add(user.User);
-                }
+                SelectedUsers.Add(user.User);
             }
 
-            result = SelectedUsers != null && SelectedUsers.Count != 0 ? ButtonResult.OK : ButtonResult.Cancel;
+            ButtonResult result = SelectedUsers != null && SelectedUsers.Count != 0 ? ButtonResult.OK : ButtonResult.Cancel;
+
+            ButtonResult resultContinue = ButtonResult.OK;
+
+            if (result == ButtonResult.Cancel)
+            {
+                var dialogParameters = new DialogParameters();
+                _dialogService.ShowDialog("ShowMessage", dialogParameters, r =>
+                {
+                    resultContinue = r.Result;
+                });
+
+                if (resultContinue == ButtonResult.No)
+                {
+                    return;
+                }
+            }
 
             RaiseRequestClose(new DialogResult(result));
         }
@@ -92,6 +104,11 @@ namespace Client.ViewModels
             {
                 Users.Add(new SelectedItemViewModel(user, false));
             }
+        }
+
+        public CreateChatViewModel(IDialogService dialogService)
+        {
+            _dialogService = dialogService;
         }
     }
 }

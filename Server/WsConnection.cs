@@ -103,7 +103,6 @@ namespace Server
                     {
                         throw new ArgumentNullException();
                     }
-
                     _wsServer.GetMessages(Id, getMessage.ChatId);
                     break;
                 case nameof(GetLogsResponse<Log>):

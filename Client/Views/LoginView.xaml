@@ -88,7 +88,7 @@
                     </TextBox.ToolTip>-->
                 </TextBox>
                 <Button Grid.Row="4" Content="Подключиться" Command="{Binding SendCommand}" Width="100" Height="25" Margin="0, 5, 0,5" 
-                        Style="{StaticResource CreateChat}" IsEnabled="{Binding IsButtonEnable}"/>
+                        Style="{StaticResource MyStaleButton}" IsEnabled="{Binding IsButtonEnable}"/>
                 <TextBlock Grid.Row="5" Text="{Binding MessageError}" Foreground="DarkRed" Height="20" Width="Auto" TextAlignment="Center" Margin="0, 5, 0, 10">
                    <TextBlock.Style>
                        <Style TargetType="{x:Type TextBlock}">

@@ -26,6 +26,7 @@ namespace Server
         public event EventHandler<CreateChatEventArgs> CreateChatEvent;
         public event EventHandler<GetMessagesEventArgs<Message>> GetMessageEvent;
         public event EventHandler<LogEventArgs<Log>> GetLogsEvent;
+        public event EventHandler<UserDataEventArgs> GetAllUsersEvent;
 
         public WsServer(IPEndPoint listenAddress)
         {
@@ -75,8 +76,10 @@ namespace Server
 
             connection.Login = response.Login;
             ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(connection.Id, response.Login, ConnectionRequestCode.Connect));
+            GetAllUsersEvent?.Invoke(this, new UserDataEventArgs(connection.Id));
 
             var connectionUsers = new Dictionary<int, string>();
+
             foreach (var user in Connections)
             {
                 if (user.Value.Login == null)

@@ -26,6 +26,7 @@ namespace Server
             Network.GetMessageEvent += OnGetMessageEvent;
             Network.CreateChatEvent += OnCreateChatEvent;
             Network.GetLogsEvent += OnGetLogs;
+            Network.GetAllUsersEvent += OnGetAllUser;
             _connectionString = connectionString;
 
             // под индексом 1 всегда находится Главный чат.
@@ -36,6 +37,16 @@ namespace Server
                 chat = new Chat() {Name = "Главный чат", IsDialog = false};
                 CreateChat(chat);
             }
+        }
+
+        private void OnGetAllUser(object sender, UserDataEventArgs e)
+        {
+            using (_chatDbContext = new ChatDb(_connectionString))
+            {
+                var users = GetUsers();
+                var allUsers = users.ToDictionary(user => user.Id, user => user.Name);
+                Network.Server.SendMessageToClient(new GetAllUsers(allUsers).GetContainer(), e.Id);
+            }   
         }
 
         private void OnGetLogs(object sender, LogEventArgs<Log> e)
@@ -262,6 +273,28 @@ namespace Server
             }
 
             return user;
+        }
+
+        private List<User> GetUsers()
+        {
+            var repository = new UserRepository(_chatDbContext);
+            List<User> users = null;
+            try
+            {
+                users = repository.GetElementList();
+            }
+            catch (ArgumentNullException e)
+            {
+                var log = new Log
+                {
+                    Time = DateTime.Now,
+                    Message = $"Не удалось получить всех пользователей. {e.Message}",
+                    Type = RecordType.Error
+                };
+                CreateLog(log);
+            }
+
+            return users;
         }
 
         private Chat SearchChat(int id)

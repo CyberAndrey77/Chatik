@@ -102,6 +102,7 @@
     <Compile Include="ViewModels\ChatControlViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\SelectedItemViewModel.cs" />
+    <Compile Include="ViewModels\ShowMessageViewModel.cs" />
     <Compile Include="Views\CreateChatView.xaml.cs">
       <DependentUpon>CreateChatView.xaml</DependentUpon>
     </Compile>
@@ -119,6 +120,9 @@
     </Compile>
     <Compile Include="Views\ChatControlView.xaml.cs">
       <DependentUpon>ChatControlView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ShowMessageView.xaml.cs">
+      <DependentUpon>ShowMessageView.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\CreateChatView.xaml">
       <SubType>Designer</SubType>
@@ -154,6 +158,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\ChatControlView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ShowMessageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
