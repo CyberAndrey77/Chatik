@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Client.NetWork;
 using Client.Services;
+using Common.Enums;
+using Common.EventArgs;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
@@ -110,11 +112,36 @@ namespace Client.ViewModels
         {
             _messageError = string.Empty;
             _connectionService = connectionService;
+            _connectionService.ConnectStatusChangeEvent += OnConnection;
             IpAddress = "127.0.0.1";
             Port = "8080";
             Name = "Andrey";
             IsButtonEnable = true;
             SendCommand = new DelegateCommand(ConnectToServer);
+        }
+
+        private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
+        {
+            switch (e.ConnectionRequestCode)
+            {
+                case ConnectionRequestCode.Connect:
+                    MessageError = "Подключение успешно!";
+                    break;
+                case ConnectionRequestCode.Disconnect:
+                    MessageError = "Отключен от сервера!";
+                    break;
+                case ConnectionRequestCode.LoginIsAlreadyTaken:
+                    MessageError = "Логин уже занят!";
+                    break;
+                case ConnectionRequestCode.Inactivity:
+                    MessageError = "Отключен из-за бездействия!";
+                    break;
+                case ConnectionRequestCode.ServerNotResponding:
+                    MessageError = "Сервер не отвечает!";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void ConnectToServer()

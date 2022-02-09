@@ -23,7 +23,6 @@ namespace ServerService
 
         protected override void OnStart(string[] args)
         {
-            Thread.Sleep(30000);
             _fileManager = new FileManager();
             _fileManager.CreateLog("Начало");
             try

@@ -32,6 +32,18 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Menu>
+            <Menu.Style>
+                <Style TargetType="{x:Type Menu}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsConnect}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsConnect}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Menu.Style>
             <MenuItem Header="Чаты" Command="{Binding ShowChat}"></MenuItem>
             <MenuItem Header="Логи" Command="{Binding ShowLog}"></MenuItem>
         </Menu>

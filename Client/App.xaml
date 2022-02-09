@@ -11,6 +11,10 @@
             <Setter Property="Control.Foreground" Value="AliceBlue"/>
             <Setter Property="Control.Margin" Value="5 5 5 5"/>
         </Style>
+        <Style x:Key="TextBlockStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
 
         <DrawingImage x:Uid="Tick" x:Key="Tick">
             <DrawingImage.Drawing>

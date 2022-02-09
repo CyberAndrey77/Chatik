@@ -14,7 +14,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Выберите пользователя"/>
+        <TextBlock Grid.Row="0" Text="Выберите пользователя" HorizontalAlignment="Center" Margin="5" FontSize="14"/>
         <ListBox Grid.Row="1" SelectedItem="{Binding SelectedUser}" ItemsSource="{Binding Users, Mode=OneWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>

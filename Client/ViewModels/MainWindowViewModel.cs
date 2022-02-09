@@ -23,7 +23,7 @@ namespace Client.ViewModels
     {
         private string _title = "Chatik";
         private object _currentContentVm;
-        private readonly ChatControlViewModel _chatControlViewModel;
+        private ChatControlViewModel _chatControlViewModel;
         private readonly LogControlViewModel _logControlView;
         private readonly LoginViewModel _loginViewModel;
         private readonly IConnectionService _connection;
@@ -39,6 +39,12 @@ namespace Client.ViewModels
         {
             get => _currentContentVm;
             set => SetProperty(ref _currentContentVm, value);
+        }
+
+        public bool IsConnect
+        {
+            get => _isConnect;
+            set => SetProperty(ref _isConnect, value);
         }
 
         public DelegateCommand ShowChat { get; }
@@ -65,22 +71,21 @@ namespace Client.ViewModels
         {
             if (e.ConnectionRequestCode == ConnectionRequestCode.Connect)
             {
-                _isConnect = true;
+                IsConnect = true;
                 CurrentContentVm = _chatControlViewModel;
                 _connection.Id = e.Id;
                 _connection.Name = e.Name;
             }
             else
             {
-                _loginViewModel.MessageError = e.ConnectionRequestCode.ToString();
-                _isConnect = false;
+                IsConnect = false;
                 CurrentContentVm = _loginViewModel;
             }
         }
 
         private void ShowLogCommand()
         {
-            if (!_isConnect)
+            if (!IsConnect)
             {
                 return;
             }
@@ -89,7 +94,7 @@ namespace Client.ViewModels
 
         private void ShowChatCommand()
         {
-            if (!_isConnect)
+            if (!IsConnect)
             {
                 return;
             }

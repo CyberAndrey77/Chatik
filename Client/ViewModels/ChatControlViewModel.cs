@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Client.ViewModels
 {
@@ -148,6 +149,11 @@ namespace Client.ViewModels
             Users = new List<User>();
             OnlineUsers = new ObservableCollection<User>();
             OfflineUsers = new ObservableCollection<User>();
+            //for (int i = 2; i < 102; i++)
+            //{
+            //    OnlineUsers.Add(new User(i, "123456"));
+            //    OfflineUsers.Add(new User(1000 - i, "qweqwe"));
+            //}
             ChatViewModels = new ObservableCollection<ChatViewModel>();
             
             SendCommand = new DelegateCommand(ExecuteCommand);
@@ -194,6 +200,9 @@ namespace Client.ViewModels
                         Users.Clear();
                         MessageViewModels.Clear();
                         ChatViewModels.Clear();
+                        OfflineUsers.Clear();
+                        OnlineUsers.Clear();
+                        //this = new ChatControlViewModel(_messageService, _connectionService, _chatService, _dialogService);
                     });
                     break;
             }
@@ -323,7 +332,6 @@ namespace Client.ViewModels
 
         private void CreateDialogWithUser()
         {
-            // TODO переделать на List
             var users = Users.Where(user => user.Id != _connectionService.Id).ToList();
             var dialogParameters = new DialogParameters
             {
@@ -456,7 +464,7 @@ namespace Client.ViewModels
         {
             var message = new MessageViewModel()
             {
-                Text = SendText,
+                Text = SendText.Trim(),
                 Name = _connectionService.Name,
                 Time = DateTime.Now,
                 MessageStatus = MessageStatus.Sending,
@@ -489,6 +497,7 @@ namespace Client.ViewModels
                     MessageType = MessageType.Ingoing
                 });
             });
+            Thread.Sleep(100000);
         }
         private void OnMessageStatusChange(object sender, MessageRequestEvent e)
         {
