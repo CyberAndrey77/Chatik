@@ -5,98 +5,129 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client.Views"
              xmlns:viewModels="clr-namespace:Client.ViewModels" 
+             xmlns:chatItem ="clr-namespace:Client.Views.Item"
              d:DataContext="{d:DesignInstance viewModels:ChatControlViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MaxWidth="300" MinWidth="150"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="1*" SharedSizeGroup="A"/>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" MaxWidth="300"  MinWidth="150"/>
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding ChatName}"/>
-        <ListBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding MessageViewModels, Mode=OneWay}">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="{Binding Column}" Width="Auto">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
 
-                            <Label Grid.Row="0" Grid.Column="0" FontSize="10px" Content="{Binding Name}"/>
-                            <Label Grid.Row="0" Grid.Column="1" FontSize="10px" Content="{Binding Time}"/>
-                            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="15px">
-                                <Label.Content>
-                                    <TextBlock Text="{Binding  Text}" TextWrapping="Wrap" />
-                                </Label.Content>
-                            </Label>
-                        </Grid>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <Expander Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" ExpandDirection="Left" >
-            <ListBox ItemsSource="{Binding Users, Mode=OneWay}">
+        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center"/>
+        <GridSplitter Grid.Column="3" Width="3" HorizontalAlignment="Center"/>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Чаты" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            <ListBox Grid.Row="1" ItemsSource="{Binding ChatViewModels}" SelectedItem="{Binding SelectedChat}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel>
-                            <Label Content="{Binding Name}"/>
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="{Binding Name}"/>
+                            <Label Grid.Column="1" Content="{Binding CountUnreadMessages}">
+                                <Label.Style>
+                                    <Style TargetType="{x:Type Label}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CountUnreadMessages}" Value="0">
+                                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Label.Style>
+                            </Label>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </Expander>
-        <Expander Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" ExpandDirection="Right" >
-           <Grid>
-               <Grid.RowDefinitions>
-                   <RowDefinition Height="1*"/>
-                   <RowDefinition Height="Auto"/>
-                   <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <ListBox Grid.Row="0" ItemsSource="{Binding ChatViewModels}" SelectedItem="{Binding SelectedChat}">
-                   <ListBox.ItemTemplate>
-                       <DataTemplate>
-                           <Grid>
-                               <Grid.ColumnDefinitions>
-                                   <ColumnDefinition Width="*"/>
-                                   <ColumnDefinition Width="Auto"/>
-                               </Grid.ColumnDefinitions>
-                               <Label Grid.Column="0" Content="{Binding Name}"/>
-                               <Label Grid.Column="1" Content="{Binding CountUnreadMessages}" />
-                           </Grid>
-                       </DataTemplate>
-                   </ListBox.ItemTemplate>
-               </ListBox>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <Button Grid.Row="1" Content="Новый чат" Height="20" Command="{Binding CreateChatCommand}"/>
-                <Button Grid.Row="2" Content="Новый диалог" Command="{Binding CreateDialog}" Height="20"/>
+                <Button Grid.Column="0" Content="Создать диалог" Style="{StaticResource MyStaleButton}" Command="{Binding CreateDialog}"/>
+                <Button Grid.Column="1" Content="Создать чат" Style="{StaticResource MyStaleButton}" Command="{Binding CreateChatCommand}"/>
             </Grid>
-        </Expander>
-        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding SendText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-        <Button Grid.Row="2" Grid.Column="2" Height="30px" Width="50px"  
-                Content="Send" Background="AliceBlue" Command="{Binding SendCommand}"
-                IsEnabled="{Binding IsButtonEnable}"
-        ></Button>
+        </Grid>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{Binding ChatName}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            <ListBox Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <chatItem:ChatItem/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.2*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding SendText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                <Button Grid.Column="1" Content="Send" Background="AliceBlue" Command="{Binding SendCommand}"
+                        IsEnabled="{Binding IsButtonEnable}" HorizontalAlignment="Stretch"/>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Пользователи" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            
+            <Border Grid.Row="1" BorderThickness="1" BorderBrush="LightGray">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <Grid ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="В сети" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+                        <ListBox Grid.Row ="1"  ItemsSource="{Binding OnlineUsers, Mode=OneWay}" BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Label Content="{Binding Name}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock Grid.Row="2" Text="Не в сети" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+                        <ListBox Grid.Row ="3"  ItemsSource="{Binding OfflineUsers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Label Content="{Binding Name}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+            <TextBlock Grid.Row="2" Text ="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+        </Grid>
     </Grid>
 </UserControl>

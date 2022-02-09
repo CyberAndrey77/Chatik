@@ -6,9 +6,13 @@ using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Input;
 using Client.Models;
+using Client.NetWork;
 using Client.Services;
 using Client.Services.EventArgs;
 using Client.Views;
+using Common.Enums;
+using Common.EventArgs;
+using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
@@ -18,13 +22,12 @@ namespace Client.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         private string _title = "Chatik";
-        private object _currentContentVM;
+        private object _currentContentVm;
         private ChatControlViewModel _chatControlViewModel;
-        private LoginViewModel _loginViewModel;
-        private IConnectionService _connectionService;
-        private readonly IMessageService _messageService;
-        private IDialogService _dialogService;
-        private IChatService _chatService;
+        private readonly LogControlViewModel _logControlView;
+        private readonly LoginViewModel _loginViewModel;
+        private readonly IConnectionService _connection;
+        private bool _isConnect;
 
         public string Title
         {
@@ -32,43 +35,76 @@ namespace Client.ViewModels
             set => SetProperty(ref _title, value);
         }
 
-        public object CurrentContentVM
+        public object CurrentContentVm
         {
-            get => _currentContentVM;
-            set => SetProperty(ref _currentContentVM, value);
+            get => _currentContentVm;
+            set => SetProperty(ref _currentContentVm, value);
         }
-        //<!--Closing="{Binding OnClosingMainWindow}"-->
-        //public CancelEventHandler OnClosingMainWindow { get; set; }
-        public MainWindowViewModel(IMessageService messageService, IConnectionService connectionService, IChatService chatService, IDialogService dialogService)
+
+        public bool IsConnect
         {
-            _messageService = messageService;
-            _connectionService = connectionService;
-            _dialogService = dialogService;
-            _chatService = chatService;
-            //OnClosingMainWindow += CloseWindows;
-            _connectionService.ConnectionEvent += OnConnection;
-            _loginViewModel = new LoginViewModel(connectionService);
-            CurrentContentVM = _loginViewModel;
+            get => _isConnect;
+            set => SetProperty(ref _isConnect, value);
+        }
+
+        public DelegateCommand ShowChat { get; }
+        public DelegateCommand ShowLog { get; }
+
+        public MainWindowViewModel(LoginViewModel loginViewModel, LogControlViewModel logControlViewModel, ChatControlViewModel chatControlViewModel, IConnectionService connection)
+        {
+            var config = new NLog.Config.LoggingConfiguration();
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "file.txt" };
+            config.AddRule(LogLevel.Error, LogLevel.Fatal, logfile);
+            NLog.LogManager.Configuration = config;
+            ShowChat = new DelegateCommand(ShowChatCommand);
+            ShowLog = new DelegateCommand(ShowLogCommand);
+            _chatControlViewModel = chatControlViewModel;
+            _connection = connection;
+            _connection.ConnectStatusChangeEvent += OnConnection;
+            _loginViewModel = loginViewModel;
+            _logControlView = logControlViewModel;
+            CurrentContentVm = _loginViewModel;
             Application.Current.Exit += CloseWindows;
+        }
+
+        private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
+        {
+            if (e.ConnectionRequestCode == ConnectionRequestCode.Connect)
+            {
+                IsConnect = true;
+                CurrentContentVm = _chatControlViewModel;
+                _connection.Id = e.Id;
+                _connection.Name = e.Name;
+            }
+            else
+            {
+                IsConnect = false;
+                CurrentContentVm = _loginViewModel;
+            }
+        }
+
+        private void ShowLogCommand()
+        {
+            if (!IsConnect)
+            {
+                return;
+            }
+            CurrentContentVm = _logControlView;
+        }
+
+        private void ShowChatCommand()
+        {
+            if (!IsConnect)
+            {
+                return;
+            }
+
+            CurrentContentVm = _chatControlViewModel;
         }
 
         private void CloseWindows(object sender, ExitEventArgs eventArgs)
         {
-            _connectionService.Disconnect();
-        }
-
-        private void OnConnection(object sender, ConnectionEventArgs e)
-        {
-            if (e.IsConnectSuccess)
-            {
-                _chatControlViewModel = new ChatControlViewModel(_messageService, _connectionService, _chatService, _dialogService);
-                CurrentContentVM = _chatControlViewModel;
-            }
-            else
-            {
-                _loginViewModel.MessageError = e.ConnectedMessage;
-                CurrentContentVM = _loginViewModel;
-            }
+            _connection.Disconnect();
         }
     }
 }

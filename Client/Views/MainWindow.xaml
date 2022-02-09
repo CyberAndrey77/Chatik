@@ -9,11 +9,14 @@
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
         prism:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="350" Width="525"
+        Title="{Binding Title}" Height="450" Width="800"  MinWidth="800" MinHeight="500"
         >
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:ChatControlViewModel}">
             <view:ChatControlView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:LogControlViewModel}">
+            <view:LogControlView/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:LoginViewModel}">
             <view:LoginView/>
@@ -23,5 +26,28 @@
     <!--<Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
     </Grid>-->
-    <ContentPresenter Content="{Binding CurrentContentVM}"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <Menu.Style>
+                <Style TargetType="{x:Type Menu}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsConnect}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsConnect}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Menu.Style>
+            <MenuItem Header="Чаты" Command="{Binding ShowChat}"></MenuItem>
+            <MenuItem Header="Логи" Command="{Binding ShowLog}"></MenuItem>
+        </Menu>
+        <ContentPresenter Grid.Row="1" Content="{Binding CurrentContentVm}"/>
+    </Grid>
+    
 </Window>

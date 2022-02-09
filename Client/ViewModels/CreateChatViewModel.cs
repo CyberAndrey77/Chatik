@@ -11,10 +11,11 @@ using Prism.Services.Dialogs;
 
 namespace Client.ViewModels
 {
-    class CreateChatViewModel : BindableBase, IDialogAware
+    public class CreateChatViewModel : BindableBase, IDialogAware
     {
         private DelegateCommand _closeDialogCommand;
         private SelectedItemViewModel _selectedUser;
+        private IDialogService _dialogService;
         private string _chatName;
         
         public SelectedItemViewModel SelectedUser
@@ -32,12 +33,11 @@ namespace Client.ViewModels
             set => SetProperty(ref _chatName, value);
         }
 
-        public ObservableCollection<SelectedItemViewModel> Users { get; set; }
+        public List<SelectedItemViewModel> Users { get; set; }
 
-        public ObservableCollection<User> SelectedUsers { get; set; }
+        public List<User> SelectedUsers { get; set; }
 
-        public DelegateCommand CloseDialogCommand =>
-            _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand(CloseDialog));
+        public DelegateCommand CloseDialogCommand => _closeDialogCommand ??= new DelegateCommand(CloseDialog);
 
         private string _title = "Создание беседы";
         public string Title
@@ -50,19 +50,30 @@ namespace Client.ViewModels
 
         protected virtual void CloseDialog()
         {
-            ButtonResult result;
+            SelectedUsers = new List<User>();
 
-            SelectedUsers = new ObservableCollection<User>();
-
-            foreach (var user in Users)
+            foreach (var user in Users.Where(user => user.IsSelected))
             {
-                if (user.IsSelected)
-                {
-                    SelectedUsers.Add(user.User);
-                }
+                SelectedUsers.Add(user.User);
             }
 
-            result = SelectedUsers != null && SelectedUsers.Count != 0 ? ButtonResult.OK : ButtonResult.Cancel;
+            ButtonResult result = SelectedUsers != null && SelectedUsers.Count != 0 ? ButtonResult.OK : ButtonResult.Cancel;
+
+            ButtonResult resultContinue = ButtonResult.OK;
+
+            if (result == ButtonResult.Cancel)
+            {
+                var dialogParameters = new DialogParameters();
+                _dialogService.ShowDialog("ShowMessage", dialogParameters, r =>
+                {
+                    resultContinue = r.Result;
+                });
+
+                if (resultContinue == ButtonResult.No)
+                {
+                    return;
+                }
+            }
 
             RaiseRequestClose(new DialogResult(result));
         }
@@ -86,13 +97,18 @@ namespace Client.ViewModels
 
         public virtual void OnDialogOpened(IDialogParameters parameters)
         {
-            parameters.TryGetValue("users", out ObservableCollection<User> users);
+            parameters.TryGetValue("users", out List<User> sourceUsers);
             //UserIds = users;
-            Users = new ObservableCollection<SelectedItemViewModel>();
-            foreach (var user in users)
+            Users = new List<SelectedItemViewModel>();
+            foreach (var user in sourceUsers)
             {
                 Users.Add(new SelectedItemViewModel(user, false));
             }
+        }
+
+        public CreateChatViewModel(IDialogService dialogService)
+        {
+            _dialogService = dialogService;
         }
     }
 }

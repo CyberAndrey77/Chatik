@@ -25,7 +25,7 @@ namespace Client.ViewModels
                 Chat.Name = value;
             }
         }
-        public ObservableCollection<User> Users { get; set; }
+        public List<User> Users { get; set; }
 
         public bool IsDialog
         {
@@ -47,9 +47,9 @@ namespace Client.ViewModels
             }
         }
 
-        public ChatViewModel(ObservableCollection<User> users, string name, bool isDialog)
+        public ChatViewModel(List<User> users, string name, bool isDialog)
         {
-            Chat = new Chat(users.ToList(), name, isDialog);
+            Chat = new Chat(users, name, isDialog);
             Users = users;
             Name = name;
             IsDialog = isDialog;

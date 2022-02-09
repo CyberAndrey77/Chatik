@@ -5,10 +5,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using Common;
+using Common.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Server.Models;
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using Timer = System.Timers.Timer;
 
 namespace Server
 {
@@ -16,6 +19,8 @@ namespace Server
     {
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
         private WsServer _wsServer;
+        private Timer _timer;
+        public double WaitTime { get; set; }
 
         public int Id { get; set; }
         public string Login { get; set; }
@@ -27,25 +32,36 @@ namespace Server
             Id = GetHashCode();
         }
 
-        public void AddServer(WsServer wsServer)
+        private void CloseTime(object sender, System.Timers.ElapsedEventArgs e)
         {
+            _timer.Stop();
+            Close(ConnectionRequestCode.Inactivity);
+        }
+
+        public void AddServer(WsServer wsServer, int time)
+        { 
+            WaitTime = time;
             _wsServer = wsServer;
         }
 
         protected override void OnOpen()
         {
+            _timer = new Timer(WaitTime);
+            _timer.Elapsed += CloseTime;
+            _timer.Start();
             _wsServer.AddConnection(this);
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
-            _wsServer.FreeConnection(Id);
-            Context.WebSocket.Close();
+            Close(ConnectionRequestCode.Disconnect);
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
             var message = JsonConvert.DeserializeObject<MessageContainer>(e.Data);
+            _timer.Stop();
+            _timer.Start();
 
             switch (message.Identifier)
             {
@@ -55,16 +71,12 @@ namespace Server
                     {
                         throw new ArgumentNullException();
                     }
-                    _wsServer.HandleConnect(Id, messageRequest);
+
+                    if (!_wsServer.HandleConnect(Id, messageRequest))
+                    {
+                        Close(ConnectionRequestCode.LoginIsAlreadyTaken);
+                    }
                     break;
-                //case nameof(ClientMessageResponse):
-                //    var messageResponse = ((JObject)message.Payload).ToObject(typeof(ClientMessageResponse)) as ClientMessageResponse;
-                //    if (messageResponse == null)
-                //    {
-                //        throw new ArgumentNullException();
-                //    }
-                //    _wsServer.HandleMessage(UserId, messageResponse);
-                //    break;
                 case nameof(CreateChatResponse):
                     var createDialogResponse = ((JObject) message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
 
@@ -74,15 +86,6 @@ namespace Server
                     }
 
                     _wsServer.CreateChat(Id, createDialogResponse);
-                    break;
-                case nameof(PrivateMessageResponseClient):
-                    var privateMessageResponse = ((JObject)message.Payload).ToObject(typeof(PrivateMessageResponseClient)) as PrivateMessageResponseClient;
-
-                    if (privateMessageResponse == null)
-                    {
-                        throw new ArgumentNullException();
-                    }
-                    _wsServer.HandleMessageToClient(Id, privateMessageResponse);
                     break;
                 case nameof(ChatMessageResponse):
                     var chatMessageResponse = ((JObject)message.Payload).ToObject(typeof(ChatMessageResponse)) as ChatMessageResponse;
@@ -100,8 +103,16 @@ namespace Server
                     {
                         throw new ArgumentNullException();
                     }
-
                     _wsServer.GetMessages(Id, getMessage.ChatId);
+                    break;
+                case nameof(GetLogsResponse<Log>):
+                    var logs =
+                        ((JObject) message.Payload).ToObject(typeof(GetLogsResponse<Log>)) as GetLogsResponse<Log>;
+                    if (logs == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    _wsServer.GetLogs(Id, logs);
                     break;
                 default:
                     throw new ArgumentNullException();
@@ -109,9 +120,11 @@ namespace Server
            // Thread.Sleep(10000);
         }
 
-        public void Close()
+        public void Close(ConnectionRequestCode reason)
         {
-            Context.WebSocket.Close();
+            _wsServer.FreeConnection(Id, reason);
+            Context.WebSocket.Close((ushort)reason);
+            _timer.Stop();
         }
 
         public void Send(MessageContainer container)
@@ -134,5 +147,6 @@ namespace Server
         {
             
         }
+
     }
 }

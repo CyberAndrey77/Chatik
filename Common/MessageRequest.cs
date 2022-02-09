@@ -5,17 +5,17 @@ namespace Common
 {
     public class MessageRequest
     {
-        public int  ChatId { get; set; }    
+        public int ChatId { get; set; }    
         public Guid MessageId { get; private set; }
         public MessageStatus Status { get; set; }
 
         public DateTime Time { get; set; }
 
-        public MessageRequest(MessageStatus status, DateTime time, Guid id)
+        public MessageRequest(MessageStatus status, DateTime time, Guid messageId)
         {
             Status = status;
             Time = time;
-            MessageId = id;
+            MessageId = messageId;
         }
 
         public MessageContainer GetContainer()

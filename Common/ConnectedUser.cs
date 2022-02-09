@@ -12,7 +12,7 @@ namespace Common
             Users = users;
         }
 
-        public MessageContainer GetContainer()
+        public virtual MessageContainer GetContainer()
         {
             var container = new MessageContainer
             {

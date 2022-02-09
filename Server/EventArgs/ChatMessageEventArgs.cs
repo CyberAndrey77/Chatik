@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Server.Models;
-
-namespace Server
+﻿namespace Server.EventArgs
 {
+    using System;
+    using System.Collections.Generic;
+    using Server.Models;
     public class ChatMessageEventArgs: EventArgs
     {
         public Guid MessageId { get; }
@@ -16,13 +15,13 @@ namespace Server
 
         public DateTime Time { get; set; }
 
-        public ChatMessageEventArgs(int senderUserId, string message, int chatId, List<int> userIds, bool isDialog)
+        public ChatMessageEventArgs(int senderUserId, string message, int chatId, List<int> userIds, bool isDialog, Guid messageId)
         {
             Message = message;
             SenderUserId = senderUserId;
             ChatId = chatId;
             UserIds = userIds;
-            MessageId = Guid.NewGuid();
+            MessageId = messageId;
             IsDialog = isDialog;
         }
     }

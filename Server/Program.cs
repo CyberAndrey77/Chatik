@@ -9,17 +9,25 @@ namespace Server
     {
         static void Main()
         {
-            var config = FileManager.GetConfig();
+            var fileManager =  new FileManager();
+            var config = fileManager.GetConfig();
+            //fileManager = null;
             //DataBaseManager dataBaseManager = new DataBaseManager(new Network(config.Port), new ChatRepositoryNoRight(config.ConnectionString));
-            DataBaseManager dataBaseManager = new DataBaseManager(new Network(config.Port), config.ConnectionString);
-            dataBaseManager.Network.StartSever(ShowMessage);
+            var dataBaseManager = new DataBaseManager(new Network(), config.ConnectionString)
+            {
+                Network =
+                {
+                    MessageHandlerDelegate = ShowMessage
+                }
+            };
+            dataBaseManager.Network.StartSever(config.WaitTimeInSecond, config.Port);
             Console.ReadKey();
             dataBaseManager.Network.StopServer();
         }
 
         private static void ShowMessage(string message)
         {
-            Console.WriteLine(message);
+            Console.Write(message);
         }
     }
 }

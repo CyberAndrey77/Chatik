@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Server
+﻿namespace Server.EventArgs
 {
+    using System;
+    using System.Collections.Generic;
     public class CreateChatEventArgs: EventArgs
     {
         public int ChatId

@@ -5,6 +5,7 @@ using Prism.Mvvm;
 using Prism.Unity;
 using Client.ViewModels;
 using System;
+using Client.NetWork;
 using Client.Services;
 
 namespace Client
@@ -22,11 +23,16 @@ namespace Client
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterDialog<CreateDialogView, CreateDialogViewModel>("CreateDialog");
-            containerRegistry.RegisterDialog<CreateChatView, CreateChatViewModel>("CreateChat");
+            containerRegistry.RegisterDialog<CreateChatView, CreateChatViewModel>("MyStaleButton");
+            containerRegistry.RegisterDialog<ShowMessageView, ShowMessageViewModel>("ShowMessage");
             containerRegistry.RegisterSingleton<IMessageService, MessageService>();
             containerRegistry.RegisterSingleton<IConnectionService, ConnectionService>();
             containerRegistry.RegisterSingleton<IChatService, ChatService>();
+            containerRegistry.RegisterSingleton<ITransport, WsClient>();
+            containerRegistry.RegisterSingleton<ILogService, LogService>();
+            containerRegistry.RegisterSingleton<IPackageHelper, PackageHelper>();
             containerRegistry.Register<ChatControlViewModel>();
+            containerRegistry.Register<LogControlViewModel>();
             containerRegistry.Register<MainWindowViewModel>();
         }
 
@@ -34,9 +40,10 @@ namespace Client
         {
             base.ConfigureViewModelLocator();
 
+            BindViewModelToView<LogControlViewModel, LogControlView>();
             BindViewModelToView<ChatControlViewModel, ChatControlView>();
             BindViewModelToView<MainWindowViewModel, MainWindow>();
-            BindViewModelToView<LoginView, LoginViewModel>();
+            BindViewModelToView<LoginViewModel, LoginView>();
         }
 
 

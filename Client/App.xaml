@@ -6,7 +6,23 @@
     <Application.Resources>
         <Button x:Key="sendButton" Height="30px" Width="50px"  Content="Send" Background="AliceBlue"></Button>
         <TextBox x:Key="sendMessage" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+        <Style x:Key ="MyStaleButton" TargetType="Button">
+            <Setter Property="Control.Background" Value="DodgerBlue"/>
+            <Setter Property="Control.Foreground" Value="AliceBlue"/>
+            <Setter Property="Control.Margin" Value="5 5 5 5"/>
+        </Style>
+        <Style x:Key="TextBlockStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
 
+        <DrawingImage x:Uid="Tick" x:Key="Tick">
+            <DrawingImage.Drawing>
+                <DrawingGroup x:Uid="TickDrawingGroup">
+                    <GeometryDrawing x:Uid="GeometryDrawing_421" Brush="#00FF00" Geometry="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
     </Application.Resources>
 </prism:PrismApplication>
 

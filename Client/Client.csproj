@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,11 +35,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -57,40 +59,61 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converts\EnumToCollectionConverter.cs" />
+    <Compile Include="Enums\EnumKey.cs" />
     <Compile Include="Models\Chat.cs" />
+    <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\MessageType.cs" />
+    <Compile Include="Models\RecordType.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="NetWork\EventArgs\PrivateMessageEventArgs.cs" />
+    <Compile Include="NetWork\IPackageHelper.cs" />
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />
     <Compile Include="NetWork\EventArgs\UserIdEventArgs.cs" />
+    <Compile Include="NetWork\PackageHelper.cs" />
     <Compile Include="NetWork\UsersTakenEventArgs.cs" />
     <Compile Include="NetWork\WsClient.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\ConnectionService.cs" />
     <Compile Include="Services\EventArgs\ChatEventArgs.cs" />
     <Compile Include="Services\EventArgs\ChatMessageEventArgs.cs" />
     <Compile Include="Services\EventArgs\GetUserEventArgs.cs" />
     <Compile Include="Services\IChatService.cs" />
+    <Compile Include="Services\ILogService.cs" />
     <Compile Include="Services\IMessageService.cs" />
     <Compile Include="Services\EventArgs\ConnectionEventArgs.cs" />
     <Compile Include="Services\EventArgs\MessageEventArgs.cs" />
     <Compile Include="Services\IConnectionService.cs" />
+    <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Services\EventArgs\GetUsersEventArgs.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="ViewModels\CreateChatViewModel.cs" />
     <Compile Include="ViewModels\CreateDialogViewModel.cs" />
+    <Compile Include="ViewModels\LogControlViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ChatControlViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\SelectedItemViewModel.cs" />
+    <Compile Include="ViewModels\ShowMessageViewModel.cs" />
     <Compile Include="Views\CreateChatView.xaml.cs">
       <DependentUpon>CreateChatView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CreateDialogView.xaml.cs">
       <DependentUpon>CreateDialogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Item\ChatItem.xaml.cs">
+      <DependentUpon>ChatItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogControlView.xaml.cs">
+      <DependentUpon>LogControlView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -98,11 +121,22 @@
     <Compile Include="Views\ChatControlView.xaml.cs">
       <DependentUpon>ChatControlView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ShowMessageView.xaml.cs">
+      <DependentUpon>ShowMessageView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\CreateChatView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CreateDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Item\ChatItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LogControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -127,6 +161,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ShowMessageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -136,6 +174,15 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.7.13</Version>
+    </PackageReference>
+    <PackageReference Include="NLog.Config">
+      <Version>4.7.13</Version>
+    </PackageReference>
+    <PackageReference Include="NLog.Schema">
+      <Version>4.7.13</Version>
     </PackageReference>
     <PackageReference Include="Prism.Unity" Version="8.1.97" />
     <PackageReference Include="WebSocketSharp-netstandard">
@@ -148,6 +195,14 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

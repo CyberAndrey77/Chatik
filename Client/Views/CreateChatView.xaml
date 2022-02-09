@@ -5,9 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client.Views"
              xmlns:viewModels="clr-namespace:Client.ViewModels"
+             
+             d:DataContext="{d:DesignInstance viewModels:CreateChatViewModel}"
              mc:Ignorable="d" 
-             Height="450" Width="238"
-             d:DataContext="{d:DesignInstance viewModels:CreateChatViewModel}">
+             d:DesignHeight="450" d:DesignWidth="300" MinHeight="600" MinWidth="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -16,7 +17,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Выберите пользователей"/>
+        <TextBlock Grid.Row="0" Text="Выберите пользователей" HorizontalAlignment="Center" Margin="5" FontSize="14"/>
         <ListBox Grid.Row="1"  SelectedItem="{Binding SelectedUser, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Multiple" 
                  ItemsSource="{Binding Users, Mode=OneWay, NotifyOnSourceUpdated=True}">
             <ListBox.ItemTemplate>
@@ -32,8 +33,8 @@
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>
-        <TextBlock Height="25" Grid.Row="2" Text="Введите название чата"/>
-        <TextBox Height="25" Grid.Row="3" Text="{Binding ChatName}"/>
-        <Button Grid.Row="4" Content="Создать" Height="30" Command="{Binding CloseDialogCommand}"/>
+        <TextBlock Height="20" Grid.Row="2" Text="Введите название чата" HorizontalAlignment="Center" Margin="5" FontSize="14"/>
+        <TextBox Height="25" Grid.Row="3" Text="{Binding ChatName}" />
+        <Button Grid.Row="4" Content="Создать" Style="{StaticResource MyStaleButton}" Height="30" Command="{Binding CloseDialogCommand}"/>
     </Grid>
 </UserControl>

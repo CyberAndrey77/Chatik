@@ -17,8 +17,9 @@ namespace Client.ViewModels
     {
         private DelegateCommand _closeDialogCommand;
         private User _selectedUser;
+        private IDialogService _dialogService;
 
-        public ObservableCollection<User> Users { get; set; }
+        public List<User> Users { get; set; }
 
         public User SelectedUser
         {
@@ -27,7 +28,7 @@ namespace Client.ViewModels
         }
 
         public DelegateCommand CloseDialogCommand =>
-            _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand(CloseDialog));
+            _closeDialogCommand ??= new DelegateCommand(CloseDialog);
         
         private string _title = "Создание диалога";
         public string Title
@@ -40,10 +41,22 @@ namespace Client.ViewModels
 
         protected virtual void CloseDialog()
         {
-            ButtonResult result;
+            ButtonResult result = SelectedUser != null ? ButtonResult.OK : ButtonResult.Cancel;
+            ButtonResult resultContinue = ButtonResult.OK;
 
-            result = SelectedUser != null ? ButtonResult.OK : ButtonResult.Cancel;
+            if (result == ButtonResult.Cancel)
+            {
+                var dialogParameters = new DialogParameters();
+                _dialogService.ShowDialog("ShowMessage", dialogParameters, r =>
+                {
+                    resultContinue = r.Result;
+                });
 
+                if (resultContinue == ButtonResult.No)
+                {
+                    return;
+                }
+            }
             RaiseRequestClose(new DialogResult(result));
         }
 
@@ -65,8 +78,13 @@ namespace Client.ViewModels
 
         public virtual void OnDialogOpened(IDialogParameters parameters)
         {
-            parameters.TryGetValue("users", out ObservableCollection<User> users);
+            parameters.TryGetValue("users", out List<User> users);
             Users = users;
+        }
+
+        public CreateDialogViewModel(IDialogService dialogService)
+        {
+            _dialogService = dialogService;
         }
     }
 }
