@@ -17,7 +17,8 @@ namespace Server.Repository
 
         public ChatDb(string stringConnection): base(stringConnection)
         {
-            
+            var ensureDLLIsCopied =
+                System.Data.Entity.SqlServer.SqlProviderServices.Instance;
         }
 
         public ChatDb()

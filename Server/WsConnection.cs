@@ -20,8 +20,7 @@ namespace Server
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
         private WsServer _wsServer;
         private Timer _timer;
-        //TODO В коонфигуратор
-        private double _waitTime = 600000;
+        public double WaitTime { get; set; }
 
         public int Id { get; set; }
         public string Login { get; set; }
@@ -31,9 +30,6 @@ namespace Server
             _sendQueue = new ConcurrentQueue<MessageContainer>();
             //UserId = Guid.NewGuid();
             Id = GetHashCode();
-            _timer = new Timer(_waitTime);
-            _timer.Elapsed += CloseTime;
-            _timer.Start();
         }
 
         private void CloseTime(object sender, System.Timers.ElapsedEventArgs e)
@@ -42,13 +38,17 @@ namespace Server
             Close(ConnectionRequestCode.Inactivity);
         }
 
-        public void AddServer(WsServer wsServer)
-        {
+        public void AddServer(WsServer wsServer, int time)
+        { 
+            WaitTime = time;
             _wsServer = wsServer;
         }
 
         protected override void OnOpen()
         {
+            _timer = new Timer(WaitTime);
+            _timer.Elapsed += CloseTime;
+            _timer.Start();
             _wsServer.AddConnection(this);
         }
 

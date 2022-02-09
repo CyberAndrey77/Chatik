@@ -17,6 +17,7 @@ namespace Server
     {
         private readonly IPEndPoint _listenAddress;
         private WebSocketServer _server;
+        private int _time;
         internal readonly ConcurrentDictionary<int, WsConnection> Connections;
 
         public event EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
@@ -34,10 +35,11 @@ namespace Server
             Connections = new ConcurrentDictionary<int, WsConnection>();
         }
 
-        public string Start()
+        public string Start(int time)
         {
+            _time = time;
             _server = new WebSocketServer(_listenAddress.Address, _listenAddress.Port, false);
-            _server.AddWebSocketService<WsConnection>("/", client => { client.AddServer(this); });
+            _server.AddWebSocketService<WsConnection>("/", client => { client.AddServer(this, time); });
             _server.Start();
             _server.WaitTime = TimeSpan.MaxValue;
             return $"Сервер запущен IP: {_listenAddress.Address}, Port: {_listenAddress.Port}";
@@ -45,6 +47,7 @@ namespace Server
 
         public void AddConnection(WsConnection connection)
         {
+            connection.WaitTime = _time;
             Connections.TryAdd(connection.Id, connection);
         }
 

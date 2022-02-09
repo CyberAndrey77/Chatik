@@ -522,12 +522,14 @@ namespace Server
                     Message = $"Не удалось записать лог в бд. {e.Message}",
                     Type = RecordType.Error
                 };
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"ОШИБКА!!!! {log.Type}: {log.Message}: {log.Time}");
-                Console.ResetColor();
+                Network.MessageHandlerDelegate($"ОШИБКА!!!! {log.Type}: {log.Message}: {log.Time}");
+                //Console.ForegroundColor = ConsoleColor.Red;
+                //Console.WriteLine($"ОШИБКА!!!! {log.Type}: {log.Message}: {log.Time}");
+                //Console.ResetColor();
                 //CreateLog(log);
             }
         }
+
         private void DeleteUser(User user)
         {
             var repository = new UserRepository(_chatDbContext);
