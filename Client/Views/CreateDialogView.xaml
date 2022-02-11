@@ -24,6 +24,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button Grid.Row="2" Content="Написать" Height="30" Command="{Binding CloseDialogCommand}"/>
+        <Button Grid.Row="2" Content="Написать" Height="30" Style="{DynamicResource MyStaleButton}" 
+                Command="{Binding CloseDialogCommand}"/>
     </Grid>
 </UserControl>

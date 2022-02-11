@@ -35,12 +35,14 @@
                    <RowDefinition Height="Auto"/>
                </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Text="Авторизация" TextAlignment="Center" FontSize="18" FontWeight="Bold"/>
-               <TextBox Grid.Row="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Height="20" Width="200" Margin="0, 10, 0, 5">
+               <TextBox Grid.Row="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                        Height="20" Width="200" Margin="0, 10, 0, 5">
                     <TextBox.ToolTip>
                         <ToolTip Content="Введите имя"/>
                     </TextBox.ToolTip>
                </TextBox>
-                <TextBox Grid.Row="2" Height="20" Width="200" Margin="0, 5, 0, 5" Text="{Binding IpAddress, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                <TextBox Grid.Row="2" Height="20" Width="200" Margin="0, 5, 0, 5" 
+                         Text="{Binding IpAddress, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
                     <!--Text="{Binding IpAddress, UpdateSourceTrigger=PropertyChanged}"-->
                     <!--<TextBox.Text>
                         <Binding Path="IpAddress">
@@ -63,7 +65,8 @@
                         </Style>
                     </TextBox.Style>
                 </TextBox>
-                <TextBox Grid.Row="3"  Height="20" Width="200" Margin="0, 5, 0, 5" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                <TextBox Grid.Row="3"  Height="20" Width="200" Margin="0, 5, 0, 5"
+                         Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
                     <!--Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}"--> 
                     <!--<Binding Path="Port">
                         <Binding.ValidationRules>
@@ -87,9 +90,11 @@
                         <ToolTip Content="Введите порт"/>
                     </TextBox.ToolTip>-->
                 </TextBox>
-                <Button Grid.Row="4" Content="Подключиться" Command="{Binding SendCommand}" Width="100" Height="25" Margin="0, 5, 0,5" 
-                        Style="{StaticResource MyStaleButton}" IsEnabled="{Binding IsButtonEnable}"/>
-                <TextBlock Grid.Row="5" Text="{Binding MessageError}" Foreground="DarkRed" Height="20" Width="Auto" TextAlignment="Center" Margin="0, 5, 0, 10">
+                <Button Grid.Row="4" Content="Подключиться" Command="{Binding SendCommand}" 
+                        Width="100" Height="25" Margin="0, 5, 0,5" 
+                        Style="{DynamicResource MyStaleButton}" IsEnabled="{Binding IsButtonEnable}"/>
+                <TextBlock Grid.Row="5" Text="{Binding MessageError}" 
+                           Foreground="DarkRed" Height="20" Width="Auto" TextAlignment="Center" Margin="0, 5, 0, 10">
                    <TextBlock.Style>
                        <Style TargetType="{x:Type TextBlock}">
                             <Style.Triggers>

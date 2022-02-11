@@ -44,8 +44,18 @@
                     </Style.Triggers>
                 </Style>
             </Menu.Style>
-            <MenuItem Header="Чаты" Command="{Binding ShowChat}"></MenuItem>
-            <MenuItem Header="Логи" Command="{Binding ShowLog}"></MenuItem>
+            <MenuItem Header="Действия">
+                <MenuItem Header="Отключится"/>
+                <MenuItem Header="Закрыть"/>
+            </MenuItem>
+            <MenuItem Header="Вкладки">
+                <MenuItem Header="Чаты" Command="{Binding ShowChat}"/>
+                <MenuItem Header="Логи" Command="{Binding ShowLog}"/>
+            </MenuItem>
+            <MenuItem Header="Вид">
+                <MenuItem Header="Светлая тема"/>
+                <MenuItem Header="Тёмная тема"/>
+            </MenuItem>
         </Menu>
         <ContentPresenter Grid.Row="1" Content="{Binding CurrentContentVm}"/>
     </Grid>

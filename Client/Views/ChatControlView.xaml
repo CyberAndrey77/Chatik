@@ -27,7 +27,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Чаты" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Grid.Row="0" Text="Чаты" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource TextBlockStyle}"/>
             <ListBox Grid.Row="1" ItemsSource="{Binding ChatViewModels}" SelectedItem="{Binding SelectedChat}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -58,8 +58,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="Создать диалог" Style="{StaticResource MyStaleButton}" Command="{Binding CreateDialog}"/>
-                <Button Grid.Column="1" Content="Создать чат" Style="{StaticResource MyStaleButton}" Command="{Binding CreateChatCommand}"/>
+                <Button Grid.Column="0" Content="Создать диалог" Style="{DynamicResource MyStaleButton}" 
+                        Command="{Binding CreateDialog}"/>
+                <Button Grid.Column="1" Content="Создать чат" Style="{DynamicResource MyStaleButton}" 
+                        Command="{Binding CreateChatCommand}"/>
             </Grid>
         </Grid>
 
@@ -69,8 +71,20 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="{Binding ChatName}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
-            <ListBox Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <TextBlock Grid.Row="0" Text="{Binding ChatName}" HorizontalAlignment="Center" 
+                       VerticalAlignment="Center" Style="{DynamicResource TextBlockStyle}"/>
+            <ListBox Name="listBox" Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}" 
+                     HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     DataContextChanged="ListBox_OnDataContextChanged" Loaded="ListBox_OnLoaded" SourceUpdated="ListBox_OnSourceUpdated" TargetUpdated ="ListBox_OnTargetUpdated" LayoutUpdated="ListBox_OnLayoutUpdated">
+                <!--<ListBox.Style>
+                    <Style TargetType="{x:Type ListBox}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MessageViewModels.Count}" Value=">1">
+                                <Setter Property="SelectedItem" Value="[-1]"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Style>-->
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <chatItem:ChatItem/>
@@ -82,7 +96,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="0.2*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding SendText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                <TextBox Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding SendText, 
+                    UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 <Button Grid.Column="1" Content="Send" Background="AliceBlue" Command="{Binding SendCommand}"
                         IsEnabled="{Binding IsButtonEnable}" HorizontalAlignment="Stretch"/>
             </Grid>
@@ -93,7 +108,8 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Пользователи" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Grid.Row="0" Text="Пользователи" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Style="{DynamicResource TextBlockStyle}"/>
             
             <Border Grid.Row="1" BorderThickness="1" BorderBrush="LightGray">
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -104,7 +120,8 @@
                             <RowDefinition Height="20"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="В сети" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+                        <TextBlock Grid.Row="0" Text="В сети" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   Style="{DynamicResource TextBlockStyle}"/>
                         <ListBox Grid.Row ="1"  ItemsSource="{Binding OnlineUsers, Mode=OneWay}" BorderThickness="0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
@@ -114,8 +131,10 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <TextBlock Grid.Row="2" Text="Не в сети" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
-                        <ListBox Grid.Row ="3"  ItemsSource="{Binding OfflineUsers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0">
+                        <TextBlock Grid.Row="2" Text="Не в сети" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   Style="{DynamicResource TextBlockStyle}"/>
+                        <ListBox Grid.Row ="3"  ItemsSource="{Binding OfflineUsers, Mode=OneWay, 
+                            UpdateSourceTrigger=PropertyChanged}" BorderThickness="0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
@@ -127,7 +146,8 @@
                     </Grid>
                 </ScrollViewer>
             </Border>
-            <TextBlock Grid.Row="2" Text ="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Grid.Row="2" Text ="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Style="{DynamicResource TextBlockStyle}"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -19,8 +19,10 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Style="{StaticResource MyStaleButton}" Content="Да" Command="{Binding CloseDialogPositiveCommand}"/>
-            <Button Grid.Column="1" Style="{StaticResource MyStaleButton}" Content="Нет" Command="{Binding CloseDialogNegativeCommand}"/>
+            <Button Grid.Column="0" Style="{DynamicResource MyStaleButton}" Content="Да" 
+                    Command="{Binding CloseDialogPositiveCommand}"/>
+            <Button Grid.Column="1" Style="{DynamicResource MyStaleButton}" Content="Нет" 
+                    Command="{Binding CloseDialogNegativeCommand}"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -35,6 +35,7 @@
         </ListBox>
         <TextBlock Height="20" Grid.Row="2" Text="Введите название чата" HorizontalAlignment="Center" Margin="5" FontSize="14"/>
         <TextBox Height="25" Grid.Row="3" Text="{Binding ChatName}" />
-        <Button Grid.Row="4" Content="Создать" Style="{StaticResource MyStaleButton}" Height="30" Command="{Binding CloseDialogCommand}"/>
+        <Button Grid.Row="4" Content="Создать" Style="{DynamicResource MyStaleButton}" 
+                Height="30" Command="{Binding CloseDialogCommand}"/>
     </Grid>
 </UserControl>
