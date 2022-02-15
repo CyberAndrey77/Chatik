@@ -27,19 +27,7 @@
             </Style>
         </Border.Style>
 
-        <Grid>
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding MessageType}" Value="{x:Static enums:MessageType.Ingoing}">
-                            <Setter Property="Background" Value="#70C1"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding MessageType}" Value="{x:Static enums:MessageType.Outgoing}">
-                            <Setter Property="Background" Value="#70B1fb"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
+        <Grid Style="{DynamicResource GridChatItemStyle}">
 
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -51,8 +39,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" FontSize="10px" Content="{Binding Name}"/>
-            <Label Grid.Row="0" Grid.Column="1" FontSize="10px" Content="{Binding Time}"/>
+            <Label Grid.Row="0" Grid.Column="0" FontSize="10px" Content="{Binding Name}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
+            <Label Grid.Row="0" Grid.Column="1" FontSize="10px" Content="{Binding Time}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
             <Viewbox Grid.Row="0" Grid.Column="2" Width="15" Height="10" HorizontalAlignment="Right" Margin="0, 0 ,5, 5">
                 <Canvas Width="18" Height="18">
                     <Path>
@@ -74,7 +62,7 @@
                     </Path>
                 </Canvas>
             </Viewbox>
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="15px">
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="15px" Style="{DynamicResource ListBoxItemChatViewStyle}">
                 <Label.Content>
                     <TextBlock Text="{Binding  Text}" TextWrapping="Wrap"/>
                 </Label.Content>

@@ -49,6 +49,8 @@ namespace Client.ViewModels
 
         public DelegateCommand ShowChat { get; }
         public DelegateCommand ShowLog { get; }
+        public DelegateCommand DisconnectCommand { get; }
+        public DelegateCommand CloseApp { get; }
 
         public MainWindowViewModel(LoginViewModel loginViewModel, LogControlViewModel logControlViewModel, ChatControlViewModel chatControlViewModel, IConnectionService connection)
         {
@@ -58,6 +60,8 @@ namespace Client.ViewModels
             NLog.LogManager.Configuration = config;
             ShowChat = new DelegateCommand(ShowChatCommand);
             ShowLog = new DelegateCommand(ShowLogCommand);
+            DisconnectCommand = new DelegateCommand(Diconnect);
+            CloseApp = new DelegateCommand(Close);
             _chatControlViewModel = chatControlViewModel;
             _connection = connection;
             _connection.ConnectStatusChangeEvent += OnConnection;
@@ -65,6 +69,16 @@ namespace Client.ViewModels
             _logControlView = logControlViewModel;
             CurrentContentVm = _loginViewModel;
             Application.Current.Exit += CloseWindows;
+        }
+
+        private void Close()
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void Diconnect()
+        {
+            _connection.Disconnect();
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)

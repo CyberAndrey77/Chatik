@@ -31,30 +31,18 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Menu>
-            <Menu.Style>
-                <Style TargetType="{x:Type Menu}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsConnect}" Value="True">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsConnect}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Menu.Style>
-            <MenuItem Header="Действия">
-                <MenuItem Header="Отключится"/>
-                <MenuItem Header="Закрыть"/>
+        <Menu Style="{DynamicResource MenuStyle}">
+            <MenuItem Header="Действия" Style="{DynamicResource MenuItemStyle}">
+                <MenuItem Header="Отключится" Style="{DynamicResource MenuItemStyle}"  Command="{Binding DisconnectCommand}"/>
+                <MenuItem Header="Закрыть" Style="{DynamicResource MenuItemStyle}" Command="{Binding CloseApp}"/>
             </MenuItem>
-            <MenuItem Header="Вкладки">
-                <MenuItem Header="Чаты" Command="{Binding ShowChat}"/>
-                <MenuItem Header="Логи" Command="{Binding ShowLog}"/>
+            <MenuItem Header="Вкладки" Style="{DynamicResource MenuItemStyle}">
+                <MenuItem Header="Чаты" Style="{DynamicResource MenuItemStyle}" Command="{Binding ShowChat}"/>
+                <MenuItem Header="Логи" Style="{DynamicResource MenuItemStyle}" Command="{Binding ShowLog}"/>
             </MenuItem>
-            <MenuItem Header="Вид">
-                <MenuItem Header="Светлая тема"/>
-                <MenuItem Header="Тёмная тема"/>
+            <MenuItem Header="Вид" Style="{DynamicResource MenuItemStyle}">
+                <MenuItem Header="Светлая тема" Style="{DynamicResource MenuItemStyle}" Click="MenuItem_OnClick_SelectLightTheme"/>
+                <MenuItem Header="Тёмная тема" Style="{DynamicResource MenuItemStyle}" Click="MenuItem_OnClick_SelectDarkTheme"/>
             </MenuItem>
         </Menu>
         <ContentPresenter Grid.Row="1" Content="{Binding CurrentContentVm}"/>
