@@ -37,9 +37,7 @@ namespace Client.Services
             _transport = transport;
             _transport.ConnectionStatusChanged += OnConnectionChange;
             _logger = LogManager.GetCurrentClassLogger();
-            _transport.Subscribe(EnumKey.ConnectionKeyConnection, OnConnectionChange);
-            _transport.Subscribe(EnumKey.ConnectionKeyOnlineUsers, OnGetOnlineUsers);
-            _transport.Subscribe(EnumKey.ConnectionKeyAllUsers, OnAllUser);
+           
         }
 
         private void OnAllUser(MessageContainer message)
@@ -104,6 +102,9 @@ namespace Client.Services
         {
             await Task.Run(() => _transport.Connect(IpAddress, Port));
             _transport.Login(Name);
+            _transport.Subscribe(EnumKey.ConnectionKeyConnection, OnConnectionChange);
+            _transport.Subscribe(EnumKey.ConnectionKeyOnlineUsers, OnGetOnlineUsers);
+            _transport.Subscribe(EnumKey.ConnectionKeyAllUsers, OnAllUser);
         }
 
         public void Disconnect()

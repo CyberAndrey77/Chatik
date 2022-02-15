@@ -193,6 +193,8 @@ namespace Client.ViewModels
             {
                 case ConnectionRequestCode.Connect:
                     Name = e.Name;
+                    _messageService.Subscribe();
+                    _chatService.Subscribe();
                     break;
                 default:
                     App.Current.Dispatcher.Invoke(delegate

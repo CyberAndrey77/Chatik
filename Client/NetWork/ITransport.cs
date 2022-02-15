@@ -22,5 +22,6 @@ namespace Client.NetWork
         void GetMessages(MessageContainer container);
         void GetLogs(MessageContainer container);
         void CreateChat(MessageContainer container);
+        void Unsubscribe();
     }
 }

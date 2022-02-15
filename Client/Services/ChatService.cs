@@ -32,8 +32,6 @@ namespace Client.Services
         {
             _transport = transport;
             _logger = LogManager.GetCurrentClassLogger();
-            _transport.Subscribe(EnumKey.ChatKeyGetChats, OnGetChats);
-            _transport.Subscribe(EnumKey.ChatKeyCreateChat, OnChatCreated);
 
         }
 
@@ -67,6 +65,12 @@ namespace Client.Services
             }
             CreatedChat?.Invoke(this, new ChatEventArgs(createChatResponse.ChatName, createChatResponse.ChatId, createChatResponse.CreatorName,
                 createChatResponse.UserIds, createChatResponse.IsDialog, createChatResponse.Time));
+        }
+
+        public void Subscribe()
+        {
+            _transport.Subscribe(EnumKey.ChatKeyGetChats, OnGetChats);
+            _transport.Subscribe(EnumKey.ChatKeyCreateChat, OnChatCreated);
         }
     }
 }

@@ -16,5 +16,6 @@ namespace Client.Services
         EventHandler<ChatEventArgs> ChatIsCreated { get; set; }
         EventHandler<ChatEventArgs> CreatedChat { get; set; }
         void CreateChat(string chatName,int chatId, string creator, List<int> invented, bool isDialog);
+        void Subscribe();
     }
 }

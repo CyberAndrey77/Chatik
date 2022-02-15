@@ -18,5 +18,6 @@ namespace Client.Services
         
         void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog, Guid messageId);
         void GetMessages(int chatId);
+        void Subscribe();
     }
 }

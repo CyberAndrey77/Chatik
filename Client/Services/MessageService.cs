@@ -28,9 +28,6 @@ namespace Client.Services
         {
             _transport = transport;
             _logger = LogManager.GetCurrentClassLogger();
-            _transport.Subscribe(EnumKey.MessageKeyOnChatMessage, OnChatMessage);
-            _transport.Subscribe(EnumKey.MessageKeyRequestMessage, OnMessageStatusChange);
-            _transport.Subscribe(EnumKey.MessageKeyGetMessages, OnGetMessages);
         }
 
         private void OnChatMessageSend(MessageContainer message)
@@ -101,6 +98,13 @@ namespace Client.Services
         public void GetMessages(int chatId)
         {
             _transport.GetMessages(new GetMessageResponse(chatId).GetContainer());
+        }
+
+        public void Subscribe()
+        {
+            _transport.Subscribe(EnumKey.MessageKeyOnChatMessage, OnChatMessage);
+            _transport.Subscribe(EnumKey.MessageKeyRequestMessage, OnMessageStatusChange);
+            _transport.Subscribe(EnumKey.MessageKeyGetMessages, OnGetMessages);
         }
     }
 }
