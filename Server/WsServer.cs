@@ -20,7 +20,6 @@ namespace Server
         internal readonly ConcurrentDictionary<int, WsConnection> Connections;
 
         public event EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<CreateChatEventArgs> CreateChatEvent;

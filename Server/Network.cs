@@ -29,7 +29,6 @@ namespace Server
             MessageHandlerDelegate(Server.Start(time));
             Server.ConnectionStatusChanged += OnConnection;
             Server.GetUserChats += OnGetUserChats;
-            Server.MessageReceived += OnMessage;
             Server.ChatMessageEvent += OnChatMessageEvent;
             Server.GetMessageEvent += OnGetMessageEvent;
             Server.CreateChatEvent += OnChatCreateEvent;
@@ -70,15 +69,6 @@ namespace Server
         public void StopServer()
         {
             Server.Stop();
-        }
-
-        private void OnMessage(object sender, MessageReceivedEventArgs e)
-        {
-            if (e.ReceiverName == string.Empty)
-            {
-                MessageHandlerDelegate($"{e.Time}: {e.SenderName}: {e.Message}");
-            }
-            MessageHandlerDelegate($"{e.Time}: {e.SenderName}: {e.Message}: {e.ReceiverName}");
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)

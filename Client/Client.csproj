@@ -86,7 +86,6 @@
     <Compile Include="Services\IChatService.cs" />
     <Compile Include="Services\ILogService.cs" />
     <Compile Include="Services\IMessageService.cs" />
-    <Compile Include="Services\EventArgs\ConnectionEventArgs.cs" />
     <Compile Include="Services\EventArgs\MessageEventArgs.cs" />
     <Compile Include="Services\IConnectionService.cs" />
     <Compile Include="Services\LogService.cs" />
