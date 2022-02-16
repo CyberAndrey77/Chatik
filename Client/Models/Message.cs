@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
-using System.Text;
-using System.Windows.Media;
-using Common.Enums;
+﻿using Common.Enums;
+using System;
 
 namespace Client.Models
 {

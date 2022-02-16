@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Net;
-using System.ServiceModel.Configuration;
-using System.Text;
-using System.Text.RegularExpressions;
-using Client.NetWork;
-using Client.Services;
+﻿using Client.Services;
 using Common.Enums;
 using Common.EventArgs;
 using Prism.Commands;
 using Prism.Mvvm;
-using Prism.Services.Dialogs;
+using System;
+using System.ComponentModel;
+using System.Net;
 
 namespace Client.ViewModels
 {
@@ -149,7 +143,7 @@ namespace Client.ViewModels
             _connectionService.Port = _intPort;
             _connectionService.IpAddress = IpAddress;
             _connectionService.Name = Name;
-            
+
             try
             {
                 _connectionService.ConnectToServer();

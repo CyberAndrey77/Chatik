@@ -1,6 +1,6 @@
-﻿using System;
-using Client.Models;
+﻿using Client.Models;
 using Common.EventArgs;
+using System;
 
 namespace Client.Services
 {

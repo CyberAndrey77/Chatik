@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Common
 {
@@ -25,7 +21,7 @@ namespace Common
             UserIds = userIds;
             Time = time;
         }
-        
+
         public MessageContainer GetContainer()
         {
             var container = new MessageContainer

@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Enums;
+﻿using Client.Enums;
 using Client.Models;
 using Client.NetWork;
 using Common;
 using Common.EventArgs;
 using Newtonsoft.Json.Linq;
 using NLog;
+using System;
 
 namespace Client.Services
 {
     public class LogService : ILogService
     {
-        private ITransport _transport;
+        private readonly ITransport _transport;
         private readonly ILogger _logger;
 
         public EventHandler<LogEventArgs<Log>> GetLogsEvent { get; set; }
@@ -30,7 +26,7 @@ namespace Client.Services
 
         public void GetLogs(int selectType, DateTime starTime, DateTime endTime)
         {
-            _transport.GetLogs(new GetLogsResponse<Log>(selectType, starTime, endTime).GetContainer());
+            _transport.SendRequest(new GetLogsResponse<Log>(selectType, starTime, endTime).GetContainer());
         }
 
         private void OnGetLogs(MessageContainer message)

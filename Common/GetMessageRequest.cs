@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Common
 {
-    public class GetMessageRequest<T>: GetMessageResponse
+    public class GetMessageRequest<T> : GetMessageResponse
     {
         public List<T> Messages { get; set; }
         public Dictionary<int, string> Users { get; set; }

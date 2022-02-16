@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using Common;
+﻿using Common;
 using Common.Enums;
 using Common.EventArgs;
 using Server.EventArgs;
 using Server.Models;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using WebSocketSharp.Server;
 
 namespace Server
@@ -21,7 +20,6 @@ namespace Server
         internal readonly ConcurrentDictionary<int, WsConnection> Connections;
 
         public event EventHandler<ConnectStatusChangeEventArgs> ConnectionStatusChanged;
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
         public event EventHandler<CreateChatEventArgs> CreateChatEvent;
@@ -56,7 +54,7 @@ namespace Server
             foreach (var connection in Connections)
             {
                 //FreeConnection(connection.Key);
-                connection.Value.Close( ConnectionRequestCode.Disconnect);
+                connection.Value.Close(ConnectionRequestCode.Disconnect);
             }
             Connections.Clear();
             _server?.Stop();

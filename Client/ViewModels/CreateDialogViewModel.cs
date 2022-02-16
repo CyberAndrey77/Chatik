@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using Client.Models;
+﻿using Client.Models;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
+using System;
+using System.Collections.Generic;
 
 namespace Client.ViewModels
 {
@@ -29,7 +23,7 @@ namespace Client.ViewModels
 
         public DelegateCommand CloseDialogCommand =>
             _closeDialogCommand ??= new DelegateCommand(CloseDialog);
-        
+
         private string _title = "Создание диалога";
         public string Title
         {
@@ -61,7 +55,7 @@ namespace Client.ViewModels
         }
 
         public virtual void RaiseRequestClose(IDialogResult dialogResult)
-        { 
+        {
             dialogResult.Parameters.Add("user", _selectedUser);
             RequestClose?.Invoke(dialogResult);
         }

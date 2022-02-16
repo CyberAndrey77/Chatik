@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    public class CreateChatEventArgs: EventArgs
+    public class CreateChatEventArgs : EventArgs
     {
         public int ChatId
         {

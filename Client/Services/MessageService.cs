@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Client.Enums;
+﻿using Client.Enums;
 using Client.Models;
 using Client.NetWork;
-using Client.NetWork.EventArgs;
 using Client.Services.EventArgs;
 using Common;
 using Common.EventArgs;
 using Newtonsoft.Json.Linq;
 using NLog;
+using System;
+using System.Collections.Generic;
 
 namespace Client.Services
 {
@@ -22,23 +20,12 @@ namespace Client.Services
         public EventHandler<GetMessagesEventArgs<Message>> GetMessagesEvent { get; set; }
 
         public EventHandler<MessageRequestEvent> MessageStatusChangeEvent { get; set; }
-        
+
 
         public MessageService(ITransport transport)
         {
             _transport = transport;
             _logger = LogManager.GetCurrentClassLogger();
-            _transport.Subscribe(EnumKey.MessageKeyOnChatMessage, OnChatMessage);
-            _transport.Subscribe(EnumKey.MessageKeyRequestMessage, OnMessageStatusChange);
-            _transport.Subscribe(EnumKey.MessageKeyGetMessages, OnGetMessages);
-        }
-
-        private void OnChatMessageSend(MessageContainer message)
-        {
-            if (message.Identifier == nameof(MessageRequest))
-            {
-                return;
-            }
         }
 
         private void OnGetMessages(MessageContainer message)
@@ -89,18 +76,25 @@ namespace Client.Services
                 _logger.Error($"Answer from server {message}:{message.Identifier} is null");
                 return;
             }
-            MessageStatusChangeEvent?.Invoke(this, new MessageRequestEvent(messageRequest.MessageId, messageRequest.Status, messageRequest.Time) 
-                { ChatId = messageRequest.ChatId });
+            MessageStatusChangeEvent?.Invoke(this, new MessageRequestEvent(messageRequest.MessageId, messageRequest.Status, messageRequest.Time)
+            { ChatId = messageRequest.ChatId });
         }
 
         public void SendChatMessage(int senderUserId, string text, int chatId, List<int> userIds, bool isDialog, Guid messageId)
         {
-            _transport.SendChatMessage(new ChatMessageResponse(senderUserId, text, chatId, userIds, isDialog, messageId).GetContainer());
+            _transport.SendRequest(new ChatMessageResponse(senderUserId, text, chatId, userIds, isDialog, messageId).GetContainer());
         }
-        
+
         public void GetMessages(int chatId)
         {
-            _transport.GetMessages(new GetMessageResponse(chatId).GetContainer());
+            _transport.SendRequest(new GetMessageResponse(chatId).GetContainer());
+        }
+
+        public void Subscribe()
+        {
+            _transport.Subscribe(EnumKey.MessageKeyOnChatMessage, OnChatMessage);
+            _transport.Subscribe(EnumKey.MessageKeyRequestMessage, OnMessageStatusChange);
+            _transport.Subscribe(EnumKey.MessageKeyGetMessages, OnGetMessages);
         }
     }
 }

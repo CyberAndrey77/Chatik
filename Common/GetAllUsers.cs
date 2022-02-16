@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Common
 {
-    public class GetAllUsers: ConnectedUser
+    public class GetAllUsers : ConnectedUser
     {
         public GetAllUsers(Dictionary<int, string> users) : base(users)
         {

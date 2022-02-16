@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Models;
+﻿using Client.Models;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Client.ViewModels
 {
@@ -17,7 +14,7 @@ namespace Client.ViewModels
         private SelectedItemViewModel _selectedUser;
         private IDialogService _dialogService;
         private string _chatName;
-        
+
         public SelectedItemViewModel SelectedUser
         {
             get => _selectedUser;

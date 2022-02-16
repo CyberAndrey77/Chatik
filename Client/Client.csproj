@@ -67,11 +67,9 @@
     <Compile Include="Models\MessageType.cs" />
     <Compile Include="Models\RecordType.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="NetWork\EventArgs\PrivateMessageEventArgs.cs" />
     <Compile Include="NetWork\IPackageHelper.cs" />
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />
-    <Compile Include="NetWork\EventArgs\UserIdEventArgs.cs" />
     <Compile Include="NetWork\PackageHelper.cs" />
     <Compile Include="NetWork\UsersTakenEventArgs.cs" />
     <Compile Include="NetWork\WsClient.cs" />
@@ -88,7 +86,6 @@
     <Compile Include="Services\IChatService.cs" />
     <Compile Include="Services\ILogService.cs" />
     <Compile Include="Services\IMessageService.cs" />
-    <Compile Include="Services\EventArgs\ConnectionEventArgs.cs" />
     <Compile Include="Services\EventArgs\MessageEventArgs.cs" />
     <Compile Include="Services\IConnectionService.cs" />
     <Compile Include="Services\LogService.cs" />
@@ -124,6 +121,14 @@
     <Compile Include="Views\ShowMessageView.xaml.cs">
       <DependentUpon>ShowMessageView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Themes\DarkTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\LightTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CreateChatView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

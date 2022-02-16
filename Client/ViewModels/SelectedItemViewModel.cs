@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Models;
+﻿using Client.Models;
 using Prism.Mvvm;
 
 namespace Client.ViewModels
 {
-    public class SelectedItemViewModel: BindableBase
+    public class SelectedItemViewModel : BindableBase
     {
         private User _user;
         private bool _isSelected;

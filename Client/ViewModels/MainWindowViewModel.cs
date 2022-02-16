@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Net.Mime;
-using System.Security.AccessControl;
-using System.Windows;
-using System.Windows.Input;
-using Client.Models;
-using Client.NetWork;
-using Client.Services;
-using Client.Services.EventArgs;
-using Client.Views;
+﻿using Client.Services;
 using Common.Enums;
 using Common.EventArgs;
 using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
-using Prism.Services.Dialogs;
+using System.Windows;
 
 namespace Client.ViewModels
 {
@@ -23,7 +12,7 @@ namespace Client.ViewModels
     {
         private string _title = "Chatik";
         private object _currentContentVm;
-        private ChatControlViewModel _chatControlViewModel;
+        private readonly ChatControlViewModel _chatControlViewModel;
         private readonly LogControlViewModel _logControlView;
         private readonly LoginViewModel _loginViewModel;
         private readonly IConnectionService _connection;
@@ -49,6 +38,8 @@ namespace Client.ViewModels
 
         public DelegateCommand ShowChat { get; }
         public DelegateCommand ShowLog { get; }
+        public DelegateCommand DisconnectCommand { get; }
+        public DelegateCommand CloseApp { get; }
 
         public MainWindowViewModel(LoginViewModel loginViewModel, LogControlViewModel logControlViewModel, ChatControlViewModel chatControlViewModel, IConnectionService connection)
         {
@@ -58,6 +49,8 @@ namespace Client.ViewModels
             NLog.LogManager.Configuration = config;
             ShowChat = new DelegateCommand(ShowChatCommand);
             ShowLog = new DelegateCommand(ShowLogCommand);
+            DisconnectCommand = new DelegateCommand(Diconnect);
+            CloseApp = new DelegateCommand(Close);
             _chatControlViewModel = chatControlViewModel;
             _connection = connection;
             _connection.ConnectStatusChangeEvent += OnConnection;
@@ -65,6 +58,16 @@ namespace Client.ViewModels
             _logControlView = logControlViewModel;
             CurrentContentVm = _loginViewModel;
             Application.Current.Exit += CloseWindows;
+        }
+
+        private void Close()
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void Diconnect()
+        {
+            _connection.Disconnect();
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)

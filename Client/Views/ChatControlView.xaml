@@ -9,17 +9,17 @@
              d:DataContext="{d:DesignInstance viewModels:ChatControlViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid Style="{DynamicResource GridChatViewStyle}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MaxWidth="300" MinWidth="150"/>
+            <ColumnDefinition Width="*" MaxWidth="300" MinWidth="200"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*" MaxWidth="300"  MinWidth="150"/>
         </Grid.ColumnDefinitions>
 
-        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center"/>
-        <GridSplitter Grid.Column="3" Width="3" HorizontalAlignment="Center"/>
+        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center" Style="{DynamicResource GridSplitterStyle}"/>
+        <GridSplitter Grid.Column="3" Width="3" HorizontalAlignment="Center" Style="{DynamicResource GridSplitterStyle}"/>
 
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -27,8 +27,8 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Чаты" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
-            <ListBox Grid.Row="1" ItemsSource="{Binding ChatViewModels}" SelectedItem="{Binding SelectedChat}">
+            <TextBlock Grid.Row="0" Text="Чаты" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource TextBlockChatViewStyle}"/>
+            <ListBox Grid.Row="1" ItemsSource="{Binding ChatViewModels}" SelectedItem="{Binding SelectedChat}" Style="{DynamicResource ListBoxChatViewStyle}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -36,7 +36,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Content="{Binding Name}"/>
+                            <Label Grid.Column="0" Content="{Binding Name}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
                             <Label Grid.Column="1" Content="{Binding CountUnreadMessages}">
                                 <Label.Style>
                                     <Style TargetType="{x:Type Label}">
@@ -58,8 +58,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="Создать диалог" Style="{StaticResource MyStaleButton}" Command="{Binding CreateDialog}"/>
-                <Button Grid.Column="1" Content="Создать чат" Style="{StaticResource MyStaleButton}" Command="{Binding CreateChatCommand}"/>
+                <Button Grid.Column="0" Content="Создать диалог" Style="{DynamicResource MyStaleButton}" 
+                        Command="{Binding CreateDialog}"/>
+                <Button Grid.Column="1" Content="Создать чат" Style="{DynamicResource MyStaleButton}" 
+                        Command="{Binding CreateChatCommand}"/>
             </Grid>
         </Grid>
 
@@ -69,8 +71,21 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="{Binding ChatName}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
-            <ListBox Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <TextBlock Grid.Row="0" Text="{Binding ChatName}" HorizontalAlignment="Center" 
+                       VerticalAlignment="Center" Style="{DynamicResource TextBlockChatViewStyle}"/>
+            <ListBox Name="listBox" Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}" 
+                     HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxChatViewStyle}"
+                     DataContextChanged="ListBox_OnDataContextChanged" Loaded="ListBox_OnLoaded" SourceUpdated="ListBox_OnSourceUpdated" TargetUpdated ="ListBox_OnTargetUpdated" LayoutUpdated="ListBox_OnLayoutUpdated">
+                
+                <!--<ListBox.Style>
+                    <Style TargetType="{x:Type ListBox}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MessageViewModels.Count}" Value=">1">
+                                <Setter Property="SelectedItem" Value="[-1]"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Style>-->
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <chatItem:ChatItem/>
@@ -80,11 +95,12 @@
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding SendText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                <Button Grid.Column="1" Content="Send" Background="AliceBlue" Command="{Binding SendCommand}"
-                        IsEnabled="{Binding IsButtonEnable}" HorizontalAlignment="Stretch"/>
+                <TextBox Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding SendText, 
+                    UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource TexBoxSendTextStyle}"/>
+                <Button Grid.Column="1" Content="Send" Command="{Binding SendCommand}"
+                        IsEnabled="{Binding IsButtonEnable}" Style="{DynamicResource ButtonSendTextStyle}"/>
             </Grid>
         </Grid>
         <Grid Grid.Column="4">
@@ -93,7 +109,8 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Пользователи" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Grid.Row="0" Text="Пользователи" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Style="{DynamicResource TextBlockChatViewStyle}"/>
             
             <Border Grid.Row="1" BorderThickness="1" BorderBrush="LightGray">
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -104,22 +121,25 @@
                             <RowDefinition Height="20"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="В сети" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
-                        <ListBox Grid.Row ="1"  ItemsSource="{Binding OnlineUsers, Mode=OneWay}" BorderThickness="0">
+                        <TextBlock Grid.Row="0" Text="В сети" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   Style="{DynamicResource TextBlockChatViewStyle}"/>
+                        <ListBox Grid.Row ="1"  ItemsSource="{Binding OnlineUsers, Mode=OneWay}" BorderThickness="0" Style="{DynamicResource ListBoxChatViewStyle}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <Label Content="{Binding Name}"/>
+                                        <Label Content="{Binding Name}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <TextBlock Grid.Row="2" Text="Не в сети" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
-                        <ListBox Grid.Row ="3"  ItemsSource="{Binding OfflineUsers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0">
+                        <TextBlock Grid.Row="2" Text="Не в сети" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   Style="{DynamicResource TextBlockChatViewStyle}"/>
+                        <ListBox Grid.Row ="3"  ItemsSource="{Binding OfflineUsers, Mode=OneWay, 
+                            UpdateSourceTrigger=PropertyChanged}" BorderThickness="0" Style="{DynamicResource ListBoxChatViewStyle}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <Label Content="{Binding Name}"/>
+                                        <Label Content="{Binding Name}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
@@ -127,7 +147,8 @@
                     </Grid>
                 </ScrollViewer>
             </Border>
-            <TextBlock Grid.Row="2" Text ="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Grid.Row="2" Text ="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Style="{DynamicResource TextBlockChatViewStyle}"/>
         </Grid>
     </Grid>
 </UserControl>

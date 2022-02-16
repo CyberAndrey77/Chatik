@@ -8,10 +8,8 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,7 +23,6 @@ namespace Client.ViewModels
         private readonly IConnectionService _connectionService;
         private readonly IDialogService _dialogService;
         private readonly IChatService _chatService;
-        private MessageViewModel _messageViewModel;
         private ObservableCollection<MessageViewModel> _messageViewModels;
         private ObservableCollection<User> _onlineUsers;
         private ObservableCollection<User> _offlineUsers;
@@ -62,10 +59,6 @@ namespace Client.ViewModels
             get => _selectedChat;
             set
             {
-                //if (value == null)
-                //{
-                //    return;
-                //}
                 if (_selectedChat == value || value == null)
                 {
                     return;
@@ -126,7 +119,6 @@ namespace Client.ViewModels
 
         public ChatControlViewModel(IMessageService messageService, IConnectionService connectionService, IChatService chatService, IDialogService dialogService)
         {
-            _messageViewModel = new MessageViewModel();
             _messageService = messageService;
             _connectionService = connectionService;
             _dialogService = dialogService;
@@ -149,13 +141,8 @@ namespace Client.ViewModels
             Users = new List<User>();
             OnlineUsers = new ObservableCollection<User>();
             OfflineUsers = new ObservableCollection<User>();
-            //for (int i = 2; i < 102; i++)
-            //{
-            //    OnlineUsers.Add(new User(i, "123456"));
-            //    OfflineUsers.Add(new User(1000 - i, "qweqwe"));
-            //}
             ChatViewModels = new ObservableCollection<ChatViewModel>();
-            
+
             SendCommand = new DelegateCommand(ExecuteCommand);
             CreateDialog = new DelegateCommand(CreateDialogWithUser);
             CreateChatCommand = new DelegateCommand(CreateChat);
@@ -193,6 +180,8 @@ namespace Client.ViewModels
             {
                 case ConnectionRequestCode.Connect:
                     Name = e.Name;
+                    _messageService.Subscribe();
+                    _chatService.Subscribe();
                     break;
                 default:
                     App.Current.Dispatcher.Invoke(delegate

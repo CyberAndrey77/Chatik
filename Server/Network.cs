@@ -1,14 +1,9 @@
-﻿using Common.EventArgs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Common;
-using Common.Enums;
+﻿using Common.Enums;
+using Common.EventArgs;
 using Server.EventArgs;
 using Server.Models;
+using System;
+using System.Net;
 
 namespace Server
 {
@@ -17,7 +12,7 @@ namespace Server
         public delegate void MessageHandler(string message);
 
         public WsServer Server { get; set; }
-        
+
         public EventHandler<ConnectStatusChangeEventArgs> ConnectionEvent;
         public EventHandler<UserChatEventArgs<Chat>> GetUserChats;
         public event EventHandler<ChatMessageEventArgs> ChatMessageEvent;
@@ -27,15 +22,13 @@ namespace Server
         public event EventHandler<UserDataEventArgs> GetAllUsersEvent;
 
         public MessageHandler MessageHandlerDelegate;
-        
+
         public void StartSever(int time, int port)
         {
-            //MessageHandlerDelegate = messageHandler;
             Server = new WsServer(new IPEndPoint(IPAddress.Any, port));
             MessageHandlerDelegate(Server.Start(time));
             Server.ConnectionStatusChanged += OnConnection;
             Server.GetUserChats += OnGetUserChats;
-            Server.MessageReceived += OnMessage;
             Server.ChatMessageEvent += OnChatMessageEvent;
             Server.GetMessageEvent += OnGetMessageEvent;
             Server.CreateChatEvent += OnChatCreateEvent;
@@ -76,15 +69,6 @@ namespace Server
         public void StopServer()
         {
             Server.Stop();
-        }
-
-        private void OnMessage(object sender, MessageReceivedEventArgs e)
-        {
-            if (e.ReceiverName == string.Empty)
-            {
-                MessageHandlerDelegate($"{e.Time}: {e.SenderName}: {e.Message}");
-            }
-            MessageHandlerDelegate($"{e.Time}: {e.SenderName}: {e.Message}: {e.ReceiverName}");
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
