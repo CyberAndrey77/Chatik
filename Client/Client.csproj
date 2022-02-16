@@ -67,11 +67,9 @@
     <Compile Include="Models\MessageType.cs" />
     <Compile Include="Models\RecordType.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="NetWork\EventArgs\PrivateMessageEventArgs.cs" />
     <Compile Include="NetWork\IPackageHelper.cs" />
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />
-    <Compile Include="NetWork\EventArgs\UserIdEventArgs.cs" />
     <Compile Include="NetWork\PackageHelper.cs" />
     <Compile Include="NetWork\UsersTakenEventArgs.cs" />
     <Compile Include="NetWork\WsClient.cs" />

@@ -1,16 +1,13 @@
-﻿using Client.Services.EventArgs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Enums;
+﻿using Client.Enums;
 using Client.Models;
 using Client.NetWork;
+using Client.Services.EventArgs;
 using Common;
 using Common.EventArgs;
 using Newtonsoft.Json.Linq;
 using NLog;
+using System;
+using System.Collections.Generic;
 
 namespace Client.Services
 {
@@ -25,7 +22,7 @@ namespace Client.Services
 
         public void CreateChat(string chatName, int chatId, string creator, List<int> invented, bool isDialog)
         {
-            _transport.CreateChat(new CreateChatResponse(chatName, chatId, creator, invented, DateTime.Now, isDialog).GetContainer());
+            _transport.SendRequest(new CreateChatResponse(chatName, chatId, creator, invented, DateTime.Now, isDialog).GetContainer());
         }
 
         public ChatService(ITransport transport)

@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Enums;
-using Client.Models;
+﻿using Client.Enums;
 using Client.NetWork;
-using Client.NetWork.EventArgs;
 using Client.Services.EventArgs;
 using Common;
 using Common.Enums;
 using Common.EventArgs;
 using Newtonsoft.Json.Linq;
 using NLog;
+using System;
+using System.Threading.Tasks;
 using WebSocketSharp;
 
 namespace Client.Services
@@ -20,7 +16,7 @@ namespace Client.Services
     {
         private readonly ITransport _transport;
         private readonly ILogger _logger;
-        
+
         public EventHandler<GetUsersEventArgs> GetOnlineUsers { get; set; }
         public EventHandler<GetUsersEventArgs> AllUsersEvent { get; set; }
         public EventHandler<GetUserEventArgs> UserEvent { get; set; }
@@ -28,7 +24,7 @@ namespace Client.Services
         public EventHandler<ConnectStatusChangeEventArgs> ConnectStatusChangeEvent { get; set; }
 
         public string Name { get; set; }
-        public int Id{ get; set; }
+        public int Id { get; set; }
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
@@ -37,7 +33,7 @@ namespace Client.Services
             _transport = transport;
             _transport.ConnectionStatusChanged += OnConnectionChange;
             _logger = LogManager.GetCurrentClassLogger();
-           
+
         }
 
         private void OnAllUser(MessageContainer message)

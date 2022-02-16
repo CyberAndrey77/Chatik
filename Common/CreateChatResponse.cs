@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Common
 {
@@ -15,14 +12,6 @@ namespace Common
 
         public DateTime Time { get; set; }
         public bool IsDialog { get; set; }
-
-        //public CreateChatResponse(string chatName, string creator, List<string> user)
-        //{
-        //    Chats = chatName;
-        //    CreatorName = creator;
-        //    UserIds = user;
-        //}
-
 
         public CreateChatResponse(string chatName, int chatId, string creator, List<int> user, DateTime time, bool isDialog)
         {

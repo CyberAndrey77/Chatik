@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Client.Services.EventArgs
+﻿namespace Client.Services.EventArgs
 {
     public class ConnectionEventArgs : System.EventArgs
     {

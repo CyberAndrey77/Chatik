@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Net.Mime;
-using System.Security.AccessControl;
-using System.Windows;
-using System.Windows.Input;
-using Client.Models;
-using Client.NetWork;
-using Client.Services;
-using Client.Services.EventArgs;
-using Client.Views;
+﻿using Client.Services;
 using Common.Enums;
 using Common.EventArgs;
 using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
-using Prism.Services.Dialogs;
+using System.Windows;
 
 namespace Client.ViewModels
 {
@@ -23,7 +12,7 @@ namespace Client.ViewModels
     {
         private string _title = "Chatik";
         private object _currentContentVm;
-        private ChatControlViewModel _chatControlViewModel;
+        private readonly ChatControlViewModel _chatControlViewModel;
         private readonly LogControlViewModel _logControlView;
         private readonly LoginViewModel _loginViewModel;
         private readonly IConnectionService _connection;

@@ -22,7 +22,6 @@
             ChatId = chatId;
             UserIds = userIds;
             MessageId = messageId;
-            IsDialog = isDialog;
         }
     }
 }

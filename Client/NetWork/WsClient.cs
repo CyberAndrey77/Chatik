@@ -1,14 +1,8 @@
-﻿using Common;
-using Common.Enums;
-using Common.EventArgs;
+﻿using Client.Enums;
+using Common;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Client.Enums;
-using Client.Models;
-using Client.NetWork.EventArgs;
-using Client.Services.EventArgs;
 
 namespace Client.NetWork
 {
@@ -36,16 +30,10 @@ namespace Client.NetWork
         public void Connect(string address, int port)
         {
             _socket = new WebSocket($"ws://{address}:{port}");
-            _socket.OnOpen += OnOpen;
             _socket.OnClose += OnClose;
             _socket.OnMessage += OnMessage;
             _socket.WaitTime = TimeSpan.FromSeconds(200);
             _socket.Connect();
-            //_socket.ConnectAsync();
-            //if (_socket != null)
-            //{
-            //    _socket.WaitTime = TimeSpan.MaxValue;
-            //}
         }
 
         private EnumKey GetKey(string messageIdentifier)
@@ -73,25 +61,7 @@ namespace Client.NetWork
             handlersList?.ForEach(handler => handler(message));
         }
 
-        public void GetLogs(MessageContainer container)
-        {
-            _sendQueue.Enqueue(container);
-            Send();
-        }
-
-        public void GetMessages(MessageContainer container)
-        {
-            _sendQueue.Enqueue(container);
-            Send();
-        }
-
-        public void SendChatMessage(MessageContainer container)
-        {
-            _sendQueue.Enqueue(container);
-            Send();
-        }
-
-        public void CreateChat(MessageContainer container)
+        public void SendRequest(MessageContainer container)
         {
             _sendQueue.Enqueue(container);
             Send();
@@ -100,23 +70,14 @@ namespace Client.NetWork
         private void OnClose(object sender, CloseEventArgs e)
         {
             ConnectionStatusChanged?.Invoke(this, e);
-
-
-            _socket.OnOpen -= OnOpen;
             _socket.OnClose -= OnClose;
             _socket.OnMessage -= OnMessage;
             _socket = null;
         }
 
-        private void OnOpen(object sender, System.EventArgs e)
-        {
-            //ConnectionStatusChanged?.Invoke(this, new ConnectStatusChangeEventArgs(_login, ConnectionRequestCode.Connect));
-        }
-
         public void Disconnect()
         {
             Unsubscribe();
-            //_socket?.CloseAsync();
             _socket?.Close();
         }
 
@@ -140,20 +101,11 @@ namespace Client.NetWork
             }
 
             string serializedMessages = JsonConvert.SerializeObject(message);
-
-            //if (_socket.IsAlive)
-            //{
-            //    _socket.SendAsync(serializedMessages, SendCompleted);
-            //}
             _socket.SendAsync(serializedMessages, SendCompleted);
         }
 
         private void SendCompleted(bool completed)
         {
-            if (!completed)
-            {
-                //MessageRequestEvent?.Invoke(this, new MessageRequestEvent(MessageStatus.NotDelivered, DateTime.Now));
-            }
         }
 
         public void Subscribe(EnumKey key, Action<MessageContainer> handler)
@@ -161,7 +113,7 @@ namespace Client.NetWork
             _events.TryGetValue(key, out var handlerList);
             if (handlerList == null)
             {
-                _events.Add(key, new List<Action<MessageContainer>>(){ handler });
+                _events.Add(key, new List<Action<MessageContainer>>() { handler });
             }
             else
             {

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using Common;
+﻿using Common;
 using Common.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Server.Models;
+using System;
+using System.Collections.Concurrent;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using Timer = System.Timers.Timer;
@@ -28,7 +24,7 @@ namespace Server
         public WsConnection()
         {
             _sendQueue = new ConcurrentQueue<MessageContainer>();
-            //UserId = Guid.NewGuid();
+            //нужно для присваивания пользователю id, пока его данные не извлечены из бд
             Id = GetHashCode();
         }
 
@@ -39,7 +35,7 @@ namespace Server
         }
 
         public void AddServer(WsServer wsServer, int time)
-        { 
+        {
             WaitTime = time;
             _wsServer = wsServer;
         }
@@ -78,7 +74,7 @@ namespace Server
                     }
                     break;
                 case nameof(CreateChatResponse):
-                    var createDialogResponse = ((JObject) message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
+                    var createDialogResponse = ((JObject)message.Payload).ToObject(typeof(CreateChatResponse)) as CreateChatResponse;
 
                     if (createDialogResponse == null)
                     {
@@ -98,7 +94,7 @@ namespace Server
                     break;
 
                 case nameof(GetMessageResponse):
-                    var getMessage = ((JObject) message.Payload).ToObject(typeof(GetMessageResponse)) as GetMessageResponse;
+                    var getMessage = ((JObject)message.Payload).ToObject(typeof(GetMessageResponse)) as GetMessageResponse;
                     if (getMessage == null)
                     {
                         throw new ArgumentNullException();
@@ -107,7 +103,7 @@ namespace Server
                     break;
                 case nameof(GetLogsResponse<Log>):
                     var logs =
-                        ((JObject) message.Payload).ToObject(typeof(GetLogsResponse<Log>)) as GetLogsResponse<Log>;
+                        ((JObject)message.Payload).ToObject(typeof(GetLogsResponse<Log>)) as GetLogsResponse<Log>;
                     if (logs == null)
                     {
                         throw new ArgumentNullException();
@@ -117,7 +113,6 @@ namespace Server
                 default:
                     throw new ArgumentNullException();
             }
-           // Thread.Sleep(10000);
         }
 
         public void Close(ConnectionRequestCode reason)
@@ -145,7 +140,7 @@ namespace Server
 
         private void SendCompleted(bool obj)
         {
-            
+
         }
 
     }

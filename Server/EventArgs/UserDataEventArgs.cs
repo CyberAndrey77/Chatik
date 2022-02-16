@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Server.EventArgs
+﻿namespace Server.EventArgs
 {
-    public class UserDataEventArgs: System.EventArgs
+    public class UserDataEventArgs : System.EventArgs
     {
         public int Id { get; set; }
 

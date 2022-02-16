@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common;
+﻿using Common;
 using Common.Enums;
 using Common.EventArgs;
 using Server.EventArgs;
 using Server.Models;
 using Server.Repository;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Server
 {
@@ -34,7 +32,7 @@ namespace Server
             {
                 var chat = SearchChat(1);
                 if (chat != null) return;
-                chat = new Chat() {Name = "Главный чат", IsDialog = false};
+                chat = new Chat() { Name = "Главный чат", IsDialog = false };
                 CreateChat(chat);
             }
         }
@@ -46,7 +44,7 @@ namespace Server
                 var users = GetUsers();
                 var allUsers = users.ToDictionary(user => user.Id, user => user.Name);
                 Network.Server.SendMessageToClient(new GetAllUsers(allUsers).GetContainer(), e.Id);
-            }   
+            }
         }
 
         private void OnGetLogs(object sender, LogEventArgs<Log> e)
@@ -102,22 +100,18 @@ namespace Server
                     ChatId = e.ChatId
                 });
 
-                //Network.Server.SendMessageToClient(new CreateChatRequest(e.ChatName, e.ChatId, users[0].Name, e.IsDialog, e.UserIds,
-                //    e.Time).GetContainer(), e.UserIds[0]);
 
-
-                for (int i = 0; i < e.UserIds.Count; i++)
+                foreach (var id in e.UserIds)
                 {
                     Network.Server.SendMessageToClient(
                         new CreateChatResponse(e.ChatName, e.ChatId, users[0].Name,
-                            e.UserIds, e.Time, e.IsDialog).GetContainer(), e.UserIds[i]);
+                            e.UserIds, e.Time, e.IsDialog).GetContainer(), id);
                 }
             }
         }
 
         private void OnGetMessageEvent<T>(object sender, GetMessagesEventArgs<T> e)
         {
-            //хуярим получение сообщений из бд
             using (_chatDbContext = new ChatDb(_connectionString))
             {
                 e.Messages = GetMessages(e.ChatId) as List<T>;
@@ -140,12 +134,6 @@ namespace Server
                 {
                     var users = e.UserIds.Select(userId => SearchUser(userId)).ToList();
 
-                    //var chatName = new StringBuilder();
-                    //foreach (var user in users)
-                    //{
-                    //    chatName.Append(user.Name);
-                    //}
-
                     var chatName = $"{users[0].Name}|{users[1].Name}";
                     chat = new Chat()
                     {
@@ -156,8 +144,7 @@ namespace Server
                     CreateChat(chat);
                     e.ChatId = chat.Id;
                 }
-
-                //var senderUser = SearchUser(e.SenderUserId);
+                
                 var message = new Message()
                 {
                     Text = e.Message,
@@ -182,7 +169,6 @@ namespace Server
             using (_chatDbContext = new ChatDb(_connectionString))
             {
                 var chats = SearchChats(e.UserId);
-                //e.Chats = chats;
                 Network.Server.SendMessageToClient(new UserChats<Chat>(chats).GetContainer(), e.UserId);
             }
         }
@@ -202,7 +188,7 @@ namespace Server
                         break;
                 }
 
-                CreateLog(new Log() {Time = DateTime.Now, Message = $"{e.Name} {e.ConnectionRequestCode}", Type = type});
+                CreateLog(new Log() { Time = DateTime.Now, Message = $"{e.Name} {e.ConnectionRequestCode}", Type = type });
                 if (e.ConnectionRequestCode != ConnectionRequestCode.Connect)
                 {
                     return;
@@ -217,9 +203,9 @@ namespace Server
                     var chat = SearchChat(1);
                     if (chat == null)
                     {
-                        CreateChat(chat = new Chat() {Id = 1, Name = "Главный чат", IsDialog = false });
+                        CreateChat(chat = new Chat() { Id = 1, Name = "Главный чат", IsDialog = false });
                     }
-                    user.Chats = new List<Chat>(){chat};
+                    user.Chats = new List<Chat>() { chat };
                     CreateUser(user);
                 }
 
@@ -523,10 +509,6 @@ namespace Server
                     Type = RecordType.Error
                 };
                 Network.MessageHandlerDelegate($"ОШИБКА!!!! {log.Type}: {log.Message}: {log.Time}");
-                //Console.ForegroundColor = ConsoleColor.Red;
-                //Console.WriteLine($"ОШИБКА!!!! {log.Type}: {log.Message}: {log.Time}");
-                //Console.ResetColor();
-                //CreateLog(log);
             }
         }
 

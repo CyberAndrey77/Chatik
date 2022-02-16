@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Models;
-using Client.NetWork;
+﻿using Client.Models;
 using Client.Services;
 using Common.EventArgs;
 using Prism.Commands;
 using Prism.Mvvm;
+using System;
+using System.Collections.ObjectModel;
 
 namespace Client.ViewModels
 {
-    public class LogControlViewModel: BindableBase
+    public class LogControlViewModel : BindableBase
     {
         private int _id;
         private RecordType _type;

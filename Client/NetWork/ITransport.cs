@@ -18,10 +18,7 @@ namespace Client.NetWork
         void Login(string login);
 
         void Subscribe(EnumKey key, Action<MessageContainer> method);
-        void SendChatMessage(MessageContainer container);
-        void GetMessages(MessageContainer container);
-        void GetLogs(MessageContainer container);
-        void CreateChat(MessageContainer container);
+        void SendRequest(MessageContainer container);
         void Unsubscribe();
     }
 }

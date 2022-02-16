@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Client.Enums;
+﻿using Client.Enums;
 using Client.Models;
 using Common;
+using System.Collections.Generic;
 
 namespace Client.NetWork
 {
-    public class PackageHelper: IPackageHelper
+    public class PackageHelper : IPackageHelper
     {
         public Dictionary<string, EnumKey> Keys { get; set; }
 

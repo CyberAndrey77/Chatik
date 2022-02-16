@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Common
 {
     public class ConnectedUser
     {
-        public Dictionary<int,string> Users { get; set; }
+        public Dictionary<int, string> Users { get; set; }
 
         public ConnectedUser(Dictionary<int, string> users)
         {

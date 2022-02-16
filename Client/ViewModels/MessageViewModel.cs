@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Models;
+﻿using Client.Models;
 using Common.Enums;
 using Prism.Mvvm;
+using System;
 
 namespace Client.ViewModels
 {

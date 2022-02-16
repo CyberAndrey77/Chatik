@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Server
 {
@@ -31,15 +27,6 @@ namespace Server
             {
                 CreateConfig(600000, 8080, @"Server=(localdb)\mssqllocaldb; Database=ChatDatabase; Trusted_Connection=True;");
             }
-
-            //string configString;
-            //using (StreamReader streamReader = new StreamReader(Path.Combine(_filePath, _fileName)))
-            //{
-            //    configString = streamReader.ReadToEnd();
-            //}
-
-            // Можно поменять на JsonConvert.DeserializeObject<T>(File.ReadAllText(fullName));
-            //Config config = JsonConvert.DeserializeObject<Config>(configString);
             Config config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Path.Combine(_filePath, _fileName)));
             return config;
         }

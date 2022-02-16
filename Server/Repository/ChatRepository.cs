@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Server.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Server.Models;
 
 namespace Server.Repository
 {
@@ -39,8 +37,6 @@ namespace Server.Repository
 
         public List<Chat> GetElementList(int id)
         {
-            //var users = _context.Users.Where(u => u.Id == id).Include(c => c.Chats).ToList()[0];//.Select(c => c.Chats);
-            //var users = _context.Users.Include(c => c.Chats).FirstOrDefault(u => u.Id == id);//.ToList().Find(u => u.Id == id);
             var users = _context.Users.Include(c => c.Chats).ToList().Find(u => u.Id == id);
             return users.Chats;
         }
