@@ -5,6 +5,7 @@ using Prism.Mvvm;
 using Prism.Unity;
 using Client.ViewModels;
 using System;
+using Client.File;
 using Client.NetWork;
 using Client.Services;
 
@@ -31,9 +32,14 @@ namespace Client
             containerRegistry.RegisterSingleton<ITransport, WsClient>();
             containerRegistry.RegisterSingleton<ILogService, LogService>();
             containerRegistry.RegisterSingleton<IPackageHelper, PackageHelper>();
+            containerRegistry.RegisterSingleton<IFileManager, FileManager>();
+            containerRegistry.RegisterSingleton<IConfig, Config>();
+            //containerRegistry.RegisterInstance<IConfig>(new Config());
             containerRegistry.Register<ChatControlViewModel>();
             containerRegistry.Register<LogControlViewModel>();
             containerRegistry.Register<MainWindowViewModel>();
+            containerRegistry.Register<LoginViewModel>();
+            //containerRegistry.Register<MainWindow>();
         }
 
         protected override void ConfigureViewModelLocator()

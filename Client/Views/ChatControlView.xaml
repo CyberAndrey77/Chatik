@@ -37,16 +37,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Content="{Binding Name}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
-                            <Label Grid.Column="1" Content="{Binding CountUnreadMessages}">
-                                <Label.Style>
-                                    <Style TargetType="{x:Type Label}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding CountUnreadMessages}" Value="0">
-                                                <Setter Property="Visibility" Value="Hidden"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Label.Style>
+                            <Label Grid.Column="1" Content="{Binding CountUnreadMessages}" Style="{DynamicResource ListBoxItemCountMessageChatViewStyle}">
                             </Label>
                         </Grid>
                     </DataTemplate>

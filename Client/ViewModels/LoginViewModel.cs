@@ -6,6 +6,8 @@ using Prism.Mvvm;
 using System;
 using System.ComponentModel;
 using System.Net;
+using System.Windows;
+using Client.File;
 
 namespace Client.ViewModels
 {
@@ -19,6 +21,7 @@ namespace Client.ViewModels
         private bool _isButtonEnable;
         private string _messageError;
         private int _intPort;
+        private IConfig _config;
 
         public string Name
         {
@@ -102,16 +105,32 @@ namespace Client.ViewModels
             return Error;
         }
 
-        public LoginViewModel(IConnectionService connectionService)
+        public LoginViewModel(IConnectionService connectionService,IConfig config)
         {
             _messageError = string.Empty;
             _connectionService = connectionService;
+            _config = config;
+            _connectionService.Name = _config.Name;
+            _connectionService.IpAddress = _config.IpAddress;
+            _connectionService.Port = _config.Port;
             _connectionService.ConnectStatusChangeEvent += OnConnection;
-            IpAddress = "127.0.0.1";
-            Port = "8080";
-            Name = "Andrey";
+            //IpAddress = "127.0.0.1";
+            //Port = "8080";
+            //Name = "Andrey";
+            IpAddress = _connectionService.IpAddress;
+            Port = _connectionService.Port.ToString();
+            Name = _connectionService.Name;
             IsButtonEnable = true;
             SendCommand = new DelegateCommand(ConnectToServer);
+            Application.Current.Exit += CloseWindows;
+        }
+
+        private void CloseWindows(object sender, ExitEventArgs e)
+        {
+            _config.Name = Name;
+            _config.IpAddress = IpAddress;
+            _config.Port = _intPort;
+            _config.SaveSelf();
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)

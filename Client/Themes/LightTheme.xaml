@@ -53,6 +53,14 @@
         <Setter Property="Background" Value="White"/>
         <Setter Property="Foreground" Value="Black"/>
     </Style>
+    <Style x:Key="ListBoxItemCountMessageChatViewStyle" TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="Black"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CountUnreadMessages}" Value="0">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
     <Style x:Key="ListBoxItemChatViewStyle" TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="Black"/>
     </Style>

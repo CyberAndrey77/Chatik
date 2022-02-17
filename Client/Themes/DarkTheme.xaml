@@ -16,6 +16,7 @@
     <Style x:Key="MenuStyle" TargetType="Menu">
         <Setter Property="Background" Value=" #1E1E1E"/>
         <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsConnect}" Value="True">
                 <Setter Property="Visibility" Value="Visible"></Setter>
@@ -27,6 +28,7 @@
     </Style>
     <Style x:Key="MenuItemStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="#1E1E1E"/>
+        <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <Style x:Key="GridBackgroundStyle" TargetType="Grid">
         <Setter Property="Background" Value="#23282B"/>
@@ -55,6 +57,14 @@
     </Style>
     <Style x:Key="ListBoxItemChatViewStyle" TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="AliceBlue"/>
+    </Style>
+    <Style x:Key="ListBoxItemCountMessageChatViewStyle" TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="AliceBlue"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CountUnreadMessages}" Value="0">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
     <Style x:Key="GridChatViewStyle" TargetType="{x:Type Grid}">
         <Setter Property="Background" Value="#23282B"></Setter>

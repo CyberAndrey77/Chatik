@@ -61,6 +61,10 @@
     </ApplicationDefinition>
     <Compile Include="Converts\EnumToCollectionConverter.cs" />
     <Compile Include="Enums\EnumKey.cs" />
+    <Compile Include="File\Config.cs" />
+    <Compile Include="File\FileManager.cs" />
+    <Compile Include="File\IConfig.cs" />
+    <Compile Include="File\IFileManager.cs" />
     <Compile Include="Models\Chat.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Message.cs" />

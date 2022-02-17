@@ -8,18 +8,18 @@
              mc:Ignorable="d" 
              Height="450" Width="238"
              d:DataContext="{d:DesignInstance viewModels:CreateDialogViewModel}">
-    <Grid>
+    <Grid Style="{DynamicResource GridBackgroundStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Выберите пользователя" HorizontalAlignment="Center" Margin="5" FontSize="14"/>
-        <ListBox Grid.Row="1" SelectedItem="{Binding SelectedUser}" ItemsSource="{Binding Users, Mode=OneWay}">
+        <TextBlock Grid.Row="0" Text="Выберите пользователя" HorizontalAlignment="Center" Margin="5" FontSize="14" Style="{DynamicResource TextBlockChatViewStyle}"/>
+        <ListBox Grid.Row="1" SelectedItem="{Binding SelectedUser}" ItemsSource="{Binding Users, Mode=OneWay}" Style="{DynamicResource ListBoxChatViewStyle}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <Label Content="{Binding Name}"/>
+                        <Label Content="{Binding Name}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
