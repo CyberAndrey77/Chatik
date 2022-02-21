@@ -51,7 +51,7 @@ namespace Client.ViewModels
             ShowChat = new DelegateCommand(ShowChatCommand);
             ShowLog = new DelegateCommand(ShowLogCommand);
             DisconnectCommand = new DelegateCommand(Disconnect);
-            CloseApp = new DelegateCommand(Close);
+            CloseApp = new DelegateCommand(Application.Current.Shutdown);
             _chatControlViewModel = chatControlViewModel;
             _connection = connection;
            
@@ -62,14 +62,12 @@ namespace Client.ViewModels
             Application.Current.Exit += CloseWindows;
         }
 
-        private void Close()
-        {
-            Application.Current.Shutdown();
-        }
-
         private void Disconnect()
         {
-            _connection.Disconnect();
+            if (IsConnect)
+            {
+                _connection.Disconnect();
+            }
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)
