@@ -13,18 +13,41 @@
         <Setter Property="FontWeight" Value="Medium"/>
         <Setter Property="Foreground" Value="AliceBlue"/>
     </Style>
+    <Style x:Key="TitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Padding" Value="5, 5, 0, 0"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value=" #1E1E1E"></Setter>
+    </Style>
     <Style x:Key="MenuStyle" TargetType="Menu">
         <Setter Property="Background" Value=" #1E1E1E"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Style.Triggers>
+        <!--<Style.Triggers>
             <DataTrigger Binding="{Binding IsConnect}" Value="True">
                 <Setter Property="Visibility" Value="Visible"></Setter>
             </DataTrigger>
             <DataTrigger Binding="{Binding IsConnect}" Value="False">
                 <Setter Property="Visibility" Value="Collapsed"></Setter>
             </DataTrigger>
-        </Style.Triggers>
+        </Style.Triggers>-->
+    </Style>
+    <Style x:Key="WindowsButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value=" #1E1E1E"/>
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="BorderThickness"  Value="0"/>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+    </Style>
+    <Style x:Key="WindowsMinimizeButtonStyle" TargetType="{x:Type Path}">
+        <Setter Property="Data" Value="M0 19h12v2H6v-2z"/>
+        <Setter Property="Fill" Value="White"></Setter>
+    </Style>
+    <Style x:Key="WindowsMaximizeButtonStyle" TargetType="{x:Type Path}">
+        <Setter Property="Data" Value="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        <Setter Property="Fill" Value="White"></Setter>
+    </Style>
+    <Style x:Key="WindowsCloseButtonStyle" TargetType="{x:Type Path}">
+        <Setter Property="Data" Value="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+        <Setter Property="Fill" Value="White"></Setter>
     </Style>
     <Style x:Key="MenuItemStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="#1E1E1E"/>

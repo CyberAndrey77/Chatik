@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 using Client.File;
 
 namespace Client.Views
@@ -38,5 +39,17 @@ namespace Client.Views
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
             _config.PathToTheme = @"../Themes/DarkTheme.xaml";
         }
+
+        private void Button_OnClick_MinimizeWindowButton(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void Button_OnClick_MaximizeWindowButton(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void TexBlock_MouseDown(object sender, MouseButtonEventArgs e) => DragMove();
     }
 }
