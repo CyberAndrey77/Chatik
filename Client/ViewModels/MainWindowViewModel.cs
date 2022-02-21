@@ -5,6 +5,7 @@ using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
 using System.Windows;
+using Client.File;
 
 namespace Client.ViewModels
 {
@@ -43,16 +44,17 @@ namespace Client.ViewModels
 
         public MainWindowViewModel(LoginViewModel loginViewModel, LogControlViewModel logControlViewModel, ChatControlViewModel chatControlViewModel, IConnectionService connection)
         {
-            var config = new NLog.Config.LoggingConfiguration();
+            var loggingConfiguration = new NLog.Config.LoggingConfiguration();
             var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "file.txt" };
-            config.AddRule(LogLevel.Error, LogLevel.Fatal, logfile);
-            NLog.LogManager.Configuration = config;
+            loggingConfiguration.AddRule(LogLevel.Error, LogLevel.Fatal, logfile);
+            NLog.LogManager.Configuration = loggingConfiguration;
             ShowChat = new DelegateCommand(ShowChatCommand);
             ShowLog = new DelegateCommand(ShowLogCommand);
-            DisconnectCommand = new DelegateCommand(Diconnect);
-            CloseApp = new DelegateCommand(Close);
+            DisconnectCommand = new DelegateCommand(Disconnect);
+            CloseApp = new DelegateCommand(Application.Current.Shutdown);
             _chatControlViewModel = chatControlViewModel;
             _connection = connection;
+           
             _connection.ConnectStatusChangeEvent += OnConnection;
             _loginViewModel = loginViewModel;
             _logControlView = logControlViewModel;
@@ -60,14 +62,12 @@ namespace Client.ViewModels
             Application.Current.Exit += CloseWindows;
         }
 
-        private void Close()
+        private void Disconnect()
         {
-            Application.Current.Shutdown();
-        }
-
-        private void Diconnect()
-        {
-            _connection.Disconnect();
+            if (IsConnect)
+            {
+                _connection.Disconnect();
+            }
         }
 
         private void OnConnection(object sender, ConnectStatusChangeEventArgs e)

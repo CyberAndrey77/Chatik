@@ -9,7 +9,7 @@
              d:DataContext="{d:DesignInstance viewModels:CreateChatViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="300" MinHeight="600" MinWidth="300">
-    <Grid>
+    <Grid Style="{DynamicResource GridBackgroundStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -17,13 +17,13 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Выберите пользователей" HorizontalAlignment="Center" Margin="5" FontSize="14"/>
+        <TextBlock Grid.Row="0" Text="Выберите пользователей" HorizontalAlignment="Center" Margin="5" FontSize="14" Style="{DynamicResource TextBlockChatViewStyle}"/>
         <ListBox Grid.Row="1"  SelectedItem="{Binding SelectedUser, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Multiple" 
-                 ItemsSource="{Binding Users, Mode=OneWay, NotifyOnSourceUpdated=True}">
+                 ItemsSource="{Binding Users, Mode=OneWay, NotifyOnSourceUpdated=True}" Style="{DynamicResource ListBoxChatViewStyle}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <Label Content="{Binding User.Name}"/>
+                        <Label Content="{Binding User.Name}" Style="{DynamicResource ListBoxItemChatViewStyle}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -33,8 +33,8 @@
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>
-        <TextBlock Height="20" Grid.Row="2" Text="Введите название чата" HorizontalAlignment="Center" Margin="5" FontSize="14"/>
-        <TextBox Height="25" Grid.Row="3" Text="{Binding ChatName}" />
+        <TextBlock Height="20" Grid.Row="2" Text="Введите название чата" HorizontalAlignment="Center" Margin="5" FontSize="14" Style="{DynamicResource TextBlockChatViewStyle}"/>
+        <TextBox Height="25" Grid.Row="3" Text="{Binding ChatName}" Style="{DynamicResource TexBoxSendTextStyle}"/>
         <Button Grid.Row="4" Content="Создать" Style="{DynamicResource MyStaleButton}" 
                 Height="30" Command="{Binding CloseDialogCommand}"/>
     </Grid>

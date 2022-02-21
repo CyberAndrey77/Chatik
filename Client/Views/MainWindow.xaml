@@ -8,9 +8,9 @@
         xmlns:viewModels="clr-namespace:Client.ViewModels"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        mc:Ignorable="d"
-        Title="{Binding Title}" Height="450" Width="800"  MinWidth="800" MinHeight="500"
-        >
+        mc:Ignorable="d" Height="450" Width="800"  MinWidth="800" MinHeight="500"
+        WindowStyle="None"
+        AllowsTransparency="True">
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:ChatControlViewModel}">
             <view:ChatControlView/>
@@ -22,7 +22,6 @@
             <view:LoginView/>
         </DataTemplate>
     </Window.Resources>
-    
     <!--<Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
     </Grid>-->
@@ -31,20 +30,50 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Menu Style="{DynamicResource MenuStyle}">
-            <MenuItem Header="Действия" Style="{DynamicResource MenuItemStyle}">
-                <MenuItem Header="Отключится" Style="{DynamicResource MenuItemStyle}"  Command="{Binding DisconnectCommand}"/>
-                <MenuItem Header="Закрыть" Style="{DynamicResource MenuItemStyle}" Command="{Binding CloseApp}"/>
-            </MenuItem>
-            <MenuItem Header="Вкладки" Style="{DynamicResource MenuItemStyle}">
-                <MenuItem Header="Чаты" Style="{DynamicResource MenuItemStyle}" Command="{Binding ShowChat}"/>
-                <MenuItem Header="Логи" Style="{DynamicResource MenuItemStyle}" Command="{Binding ShowLog}"/>
-            </MenuItem>
-            <MenuItem Header="Вид" Style="{DynamicResource MenuItemStyle}">
-                <MenuItem Header="Светлая тема" Style="{DynamicResource MenuItemStyle}" Click="MenuItem_OnClick_SelectLightTheme"/>
-                <MenuItem Header="Тёмная тема" Style="{DynamicResource MenuItemStyle}" Click="MenuItem_OnClick_SelectDarkTheme"/>
-            </MenuItem>
-        </Menu>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Style="{DynamicResource TitleStyle}" Text="{Binding Title}" MouseDown="TexBlock_MouseDown"/>
+                <Button Grid.Column="1" Name="MinimizeWindowButton" Click="Button_OnClick_MinimizeWindowButton" Style="{DynamicResource WindowsButtonStyle}">
+                    <Canvas Width="20" Height="20">
+                        <Path Style="{DynamicResource WindowsMinimizeButtonStyle}"/>
+                    </Canvas>
+                </Button>
+                <Button Grid.Column="2" Name="MaximizeWindowButton" Click="Button_OnClick_MaximizeWindowButton" Style="{DynamicResource WindowsButtonStyle}">
+                    <Canvas Width="22" Height="22">
+                        <Path Style="{DynamicResource WindowsMaximizeButtonStyle}"/>
+                    </Canvas>
+                </Button>
+                <Button Grid.Column="3" Name="CloseWindowButton" Command="{Binding CloseApp}" Style="{DynamicResource WindowsButtonStyle}">
+                    <Canvas Width="22" Height="22">
+                        <Path Style="{DynamicResource WindowsCloseButtonStyle}"/>
+                    </Canvas>
+                </Button>
+            </Grid>
+            <Menu Grid.Row="1" Style="{DynamicResource MenuStyle}">
+                <MenuItem Header="Действия" Style="{DynamicResource MenuItemStyle}">
+                    <MenuItem Header="Отключится" Style="{DynamicResource MenuItemStyle}"  Command="{Binding DisconnectCommand}"/>
+                    <MenuItem Header="Закрыть" Style="{DynamicResource MenuItemStyle}" Command="{Binding CloseApp}"/>
+                </MenuItem>
+                <MenuItem Header="Вкладки" Style="{DynamicResource MenuItemStyle}">
+                    <MenuItem Header="Чаты" Style="{DynamicResource MenuItemStyle}" Command="{Binding ShowChat}"/>
+                    <MenuItem Header="Логи" Style="{DynamicResource MenuItemStyle}" Command="{Binding ShowLog}"/>
+                </MenuItem>
+                <MenuItem Header="Вид" Style="{DynamicResource MenuItemStyle}">
+                    <MenuItem Header="Светлая тема" Style="{DynamicResource MenuItemStyle}" Click="MenuItem_OnClick_SelectLightTheme"/>
+                    <MenuItem Header="Тёмная тема" Style="{DynamicResource MenuItemStyle}" Click="MenuItem_OnClick_SelectDarkTheme"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
         <ContentPresenter Grid.Row="1" Content="{Binding CurrentContentVm}"/>
     </Grid>
     
