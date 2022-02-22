@@ -65,8 +65,7 @@
             <TextBlock Grid.Row="0" Text="{Binding ChatName}" HorizontalAlignment="Center" 
                        VerticalAlignment="Center" Style="{DynamicResource TextBlockChatViewStyle}"/>
             <ListBox Name="listBox" Grid.Row="1" ItemsSource="{Binding MessageViewModels, Mode=OneWay}" 
-                     HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxChatViewStyle}"
-                     DataContextChanged="ListBox_OnDataContextChanged" Loaded="ListBox_OnLoaded" SourceUpdated="ListBox_OnSourceUpdated" TargetUpdated ="ListBox_OnTargetUpdated" LayoutUpdated="ListBox_OnLayoutUpdated">
+                     HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxChatViewStyle}" DataContextChanged="ListBox_OnDataContextChanged">
                 
                 <!--<ListBox.Style>
                     <Style TargetType="{x:Type ListBox}">

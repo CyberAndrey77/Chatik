@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Client.ViewModels;
 
 namespace Client.Views
 {
@@ -15,15 +16,7 @@ namespace Client.Views
             InitializeComponent();
         }
 
-        private void ListBox_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (((ListBox)sender).Items.Count > 0)
-            {
-                listBox.ScrollIntoView(listBox.Items[listBox.Items.Count - 1]);
-            }
-        }
-
-        private void ListBox_OnLoaded(object sender, RoutedEventArgs e)
+        private void OnScroll(object sender, EventArgs e)
         {
             if (listBox.Items.Count > 0)
             {
@@ -31,19 +24,10 @@ namespace Client.Views
             }
         }
 
-        private void ListBox_OnSourceUpdated(object sender, DataTransferEventArgs e)
+        private void ListBox_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            listBox.ScrollIntoView(listBox.Items[listBox.Items.Count - 1]);
-        }
-
-        private void ListBox_OnTargetUpdated(object sender, DataTransferEventArgs e)
-        {
-            listBox.ScrollIntoView(listBox.Items[listBox.Items.Count - 1]);
-        }
-
-        private void ListBox_OnLayoutUpdated(object sender, EventArgs e)
-        {
-            
+            var vm = (ChatControlViewModel)this.DataContext;
+            vm.MessageEvent += OnScroll;
         }
     }
 }
