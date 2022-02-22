@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Client.Views"
              xmlns:viewModels="clr-namespace:Client.ViewModels"
              mc:Ignorable="d" 
-             Height="450" Width="238"
+             d:DesignHeight="450" d:DesignWidth="300"
+             MinHeight="450" MinWidth="238"
              d:DataContext="{d:DesignInstance viewModels:CreateDialogViewModel}">
     <Grid Style="{DynamicResource GridBackgroundStyle}">
         <Grid.RowDefinitions>

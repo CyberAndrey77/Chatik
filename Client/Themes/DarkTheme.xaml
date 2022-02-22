@@ -14,7 +14,7 @@
         <Setter Property="Foreground" Value="AliceBlue"/>
     </Style>
     <Style x:Key="TitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Padding" Value="5, 5, 0, 0"/>
+        <Setter Property="Padding" Value="5, 10, 0, 10"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Background" Value=" #1E1E1E"></Setter>
     </Style>
@@ -33,7 +33,7 @@
     </Style>
     <Style x:Key="WindowsButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Background" Value=" #1E1E1E"/>
-        <Setter Property="Height" Value="25"/>
+        <Setter Property="Height" Value="36"/>
         <Setter Property="BorderThickness"  Value="0"/>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
@@ -122,5 +122,16 @@
                 <Setter Property="Background" Value=" #3B3C36"/>
             </DataTrigger>
         </Style.Triggers>
+    </Style>
+    <Style x:Key="LogTextBlockStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+    <Style x:Key="LogDatePickerStyle" TargetType="DatePicker">
+        <Setter Property="Background" Value="#23282B"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+    <Style x:Key="LogComboBoxStyle" TargetType="{x:Type ComboBox}">
+        <Setter Property="Background" Value="#23282B"/>
+        <Setter Property="Foreground" Value="White"/>
     </Style>
 </ResourceDictionary>
