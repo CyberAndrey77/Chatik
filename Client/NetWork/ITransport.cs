@@ -10,7 +10,7 @@ namespace Client.NetWork
 {
     public interface ITransport
     {
-        EventHandler<CloseEventArgs> ConnectionStatusChanged { get; set; }
+        EventHandler<ConnectionStatusChangeEventArgs> ConnectionStatusChanged { get; set; }
         void Connect(string address, int port);
 
         void Disconnect();

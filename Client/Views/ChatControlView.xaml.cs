@@ -14,6 +14,7 @@ namespace Client.Views
         public ChatControlView()
         {
             InitializeComponent();
+           
         }
 
         private void OnScroll(object sender, EventArgs e)
@@ -21,12 +22,14 @@ namespace Client.Views
             if (listBox.Items.Count > 0)
             {
                 listBox.ScrollIntoView(listBox.Items[listBox.Items.Count - 1]);
+                //ScrollViewer.LineDown();
             }
+            //ScrollViewer.LineDown();
         }
 
         private void ListBox_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var vm = (ChatControlViewModel)this.DataContext;
+            var vm = (ChatControlViewModel)DataContext;
             vm.MessageEvent += OnScroll;
         }
     }

@@ -71,6 +71,7 @@
     <Compile Include="Models\MessageType.cs" />
     <Compile Include="Models\RecordType.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="NetWork\ConnectionStatusChangeEventArgs.cs" />
     <Compile Include="NetWork\IPackageHelper.cs" />
     <Compile Include="NetWork\ITransport.cs" />
     <Compile Include="NetWork\MessageRequestEvent.cs" />

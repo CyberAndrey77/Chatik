@@ -27,6 +27,7 @@ namespace Client.Services
         public int Id { get; set; }
         public string IpAddress { get; set; }
         public int Port { get; set; }
+        private bool _isConnect;
 
         public ConnectionService(ITransport transport)
         {
@@ -51,9 +52,18 @@ namespace Client.Services
             AllUsersEvent?.Invoke(this, new GetUsersEventArgs(allUsers.Users));
         }
 
-        private void OnConnectionChange(object sender, CloseEventArgs e)
+        private void OnConnectionChange(object sender, ConnectionStatusChangeEventArgs e)
         {
-            ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(Id, Name, (ConnectionRequestCode)e.Code));
+            if ((ConnectionRequestCode)e.Code == ConnectionRequestCode.Connect)
+            {
+                _isConnect = true;
+            }
+            else
+            {
+                ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(Id, Name, (ConnectionRequestCode)e.Code));
+                _isConnect = false;
+                Disconnect();
+            }
         }
 
         private void OnGetOnlineUsers(MessageContainer message)
@@ -87,6 +97,7 @@ namespace Client.Services
             if (Name == connectionRequest.Login)
             {
                 ConnectStatusChangeEvent?.Invoke(this, new ConnectStatusChangeEventArgs(connectionRequest.Id, connectionRequest.Login, connectionRequest.CodeConnected));
+                //return;
             }
             else
             {
@@ -97,10 +108,13 @@ namespace Client.Services
         public async void ConnectToServer()
         {
             await Task.Run(() => _transport.Connect(IpAddress, Port));
-            _transport.Login(Name);
-            _transport.Subscribe(EnumKey.ConnectionKeyConnection, OnConnectionChange);
-            _transport.Subscribe(EnumKey.ConnectionKeyOnlineUsers, OnGetOnlineUsers);
-            _transport.Subscribe(EnumKey.ConnectionKeyAllUsers, OnAllUser);
+            if (_isConnect)
+            {
+                _transport.Login(Name);
+                _transport.Subscribe(EnumKey.ConnectionKeyConnection, OnConnectionChange);
+                _transport.Subscribe(EnumKey.ConnectionKeyOnlineUsers, OnGetOnlineUsers);
+                _transport.Subscribe(EnumKey.ConnectionKeyAllUsers, OnAllUser);
+            }
         }
 
         public void Disconnect()

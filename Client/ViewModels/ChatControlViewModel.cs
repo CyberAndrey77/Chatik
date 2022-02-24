@@ -318,6 +318,7 @@ namespace Client.ViewModels
                 };
 
                 MessageViewModels.Add(messageViewModel);
+                MessageEvent?.Invoke(this, EventArgs.Empty);
             });
         }
 
