@@ -76,10 +76,13 @@ namespace Client.NetWork
         private void OnClose(object sender, CloseEventArgs e)
         {
             ConnectionStatusChanged?.Invoke(this, new ConnectionStatusChangeEventArgs(e.Code));
-            _socket.OnClose -= OnClose;
-            _socket.OnMessage -= OnMessage;
-            _socket.OnOpen -= OnOpen;
-            _socket = null;
+            if (_socket != null)
+            {
+                _socket.OnClose -= OnClose;
+                _socket.OnMessage -= OnMessage;
+                _socket.OnOpen -= OnOpen;
+                _socket = null;
+            }
         }
 
         public void Disconnect()

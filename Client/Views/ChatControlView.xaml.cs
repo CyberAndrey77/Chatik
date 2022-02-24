@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using Client.ViewModels;
 
 namespace Client.Views
@@ -30,7 +31,10 @@ namespace Client.Views
         private void ListBox_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var vm = (ChatControlViewModel)DataContext;
-            vm.MessageEvent += OnScroll;
+            if (vm != null)
+            {
+                vm.MessageEvent += OnScroll;
+            }
         }
     }
 }

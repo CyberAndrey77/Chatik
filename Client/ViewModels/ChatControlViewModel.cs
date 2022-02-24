@@ -318,7 +318,7 @@ namespace Client.ViewModels
                 };
 
                 MessageViewModels.Add(messageViewModel);
-                MessageEvent?.Invoke(this, EventArgs.Empty);
+                //MessageEvent?.Invoke(this, EventArgs.Empty);
             });
         }
 
