@@ -18,7 +18,7 @@ namespace Client.NetWork
 
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
 
-        public EventHandler<CloseEventArgs> ConnectionStatusChanged { get; set; }
+        public EventHandler<ConnectionStatusChangeEventArgs> ConnectionStatusChanged { get; set; }
 
         public WsClient(IPackageHelper packageHelper)
         {
@@ -33,7 +33,13 @@ namespace Client.NetWork
             _socket.OnClose += OnClose;
             _socket.OnMessage += OnMessage;
             _socket.WaitTime = TimeSpan.FromSeconds(200);
+            _socket.OnOpen += OnOpen;
             _socket.Connect();
+        }
+
+        private void OnOpen(object sender, EventArgs e)
+        {
+            ConnectionStatusChanged?.Invoke(this, new ConnectionStatusChangeEventArgs(1000));
         }
 
         private EnumKey GetKey(string messageIdentifier)
@@ -69,10 +75,14 @@ namespace Client.NetWork
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            ConnectionStatusChanged?.Invoke(this, e);
-            _socket.OnClose -= OnClose;
-            _socket.OnMessage -= OnMessage;
-            _socket = null;
+            ConnectionStatusChanged?.Invoke(this, new ConnectionStatusChangeEventArgs(e.Code));
+            if (_socket != null)
+            {
+                _socket.OnClose -= OnClose;
+                _socket.OnMessage -= OnMessage;
+                _socket.OnOpen -= OnOpen;
+                _socket = null;
+            }
         }
 
         public void Disconnect()

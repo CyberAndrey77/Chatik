@@ -31,6 +31,8 @@ namespace Client.ViewModels
         private ChatViewModel _selectedChat;
         private string _name;
 
+        public EventHandler MessageEvent;
+
         public string Name
         {
             get => _name;
@@ -213,6 +215,7 @@ namespace Client.ViewModels
                         Message = message
                     });
                 }
+                MessageEvent?.Invoke(this, EventArgs.Empty);
             });
         }
 
@@ -315,6 +318,7 @@ namespace Client.ViewModels
                 };
 
                 MessageViewModels.Add(messageViewModel);
+                //MessageEvent?.Invoke(this, EventArgs.Empty);
             });
         }
 
@@ -466,6 +470,7 @@ namespace Client.ViewModels
 
             _messageService.SendChatMessage(_connectionService.Id, message.Text, SelectedChat.Chat.Id, users, SelectedChat.IsDialog, message.Id);
             SendText = string.Empty;
+            MessageEvent?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnMessageReceived(object sender, MessageEventArgs e)

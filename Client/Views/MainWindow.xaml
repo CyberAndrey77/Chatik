@@ -10,7 +10,7 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d" Height="450" Width="800"  MinWidth="800" MinHeight="500"
         WindowStyle="None"
-        AllowsTransparency="True">
+        AllowsTransparency="False">
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:ChatControlViewModel}">
             <view:ChatControlView/>
@@ -30,7 +30,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" >
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>

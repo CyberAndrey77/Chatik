@@ -32,7 +32,7 @@
     </Style>
     <Style x:Key="WindowsButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="White"/>
-        <Setter Property="Height" Value="25"/>
+        <Setter Property="Height" Value="36"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <Style x:Key="WindowsMinimizeButtonStyle" TargetType="{x:Type Path}">

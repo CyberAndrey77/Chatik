@@ -2,7 +2,7 @@
 {
     public enum ConnectionRequestCode
     {
-        Connect,
+        Connect = 1000,
         Disconnect = 1005,
         LoginIsAlreadyTaken = 1101,
         Inactivity = 1100,
